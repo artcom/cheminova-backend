@@ -24,6 +24,7 @@ BASE_DIR = os.path.dirname(PROJECT_DIR)
 # Application definition
 
 INSTALLED_APPS = [
+    "custom_images",
     "home",
     "image_upload",
     "wagtail.contrib.forms",
@@ -176,6 +177,7 @@ STORAGES = {
 # can exceed this limit within Wagtail's page editor.
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10_000
 
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Wagtail settings
 
@@ -207,3 +209,5 @@ WAGTAIL_CONTENT_LANGUAGES = LANGUAGES = [
     ('fr', "French"),
     ('es', "Spanish"),
 ]
+
+WAGTAILIMAGES_IMAGE_MODEL = "custom_images.CustomImage"

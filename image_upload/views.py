@@ -18,6 +18,7 @@ def upload_image_view(request):
     data = {
         "file": file,
         "title": title,
+        "api_upload": True,
     }
     serializer = ImageModelSerializer(data=data)
     if serializer.is_valid():
