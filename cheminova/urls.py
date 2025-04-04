@@ -1,7 +1,9 @@
 from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
+from image_upload import urls as image_upload_urls
 from rest_framework.routers import DefaultRouter
+from rest_framework import urls as rest_framework_urls
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
@@ -14,7 +16,8 @@ urlpatterns = [
     path("django-admin/", admin.site.urls),
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
-    path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
+    path("api/upload/", include(image_upload_urls)),
+    path("api-auth/", include(rest_framework_urls, namespace="rest_framework")),
 ]
 
 urlpatterns = urlpatterns + router.urls
