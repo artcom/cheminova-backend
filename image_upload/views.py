@@ -11,14 +11,14 @@ from .serializers import ImageModelSerializer
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def upload_image_view(request):
-    file = request.data.get("picture")
+    file = request.data.get("image")
     title = file.name
     file_path = Path(file.name)
     file.name = file_path.stem + f"-{uuid.uuid4()}" + file_path.suffix
     data = {
         "file": file,
         "title": title,
-        "api_upload": True,
+        "hidden": True,
     }
     serializer = ImageModelSerializer(data=data)
     if serializer.is_valid():

@@ -14,7 +14,8 @@ EXPOSE 8000
 ENV PYTHONUNBUFFERED=1 \
     PORT=8000
 
-ENV DJANGO_SETTINGS_MODULE="cheminova.settings.production"
+ARG DJANGO_SETTINGS_MODULE="cheminova.settings.production"
+ENV DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
 
 # Install system packages required by Wagtail and Django.
 RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-recommends \

@@ -10,7 +10,7 @@ class CustomImageModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomImage
-        fields = ['id', 'title', 'imageUrl', 'file', 'api_upload']
+        fields = ['id', 'title', 'imageUrl', 'file', 'hidden']
         depth = 1
 
     def get_imageUrl(self, obj):
