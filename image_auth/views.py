@@ -25,10 +25,16 @@ def check_permissions(request: Request) -> Response:
         )
 
     else:
+        if not request.headers.get("X-Original-Uri"):
+            return Response(
+                data={"message": "Bad Request"},
+                status=400
+            )
+
         requested_image = get_image_file(request.headers.get("X-Original-Uri"))
         image_type = get_image_type(requested_image)
 
-        if not requested_image or not image_type:
+        if not image_type:
             return Response(
                 data={"message": "Bad Request"},
                 status=400
