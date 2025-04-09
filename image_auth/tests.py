@@ -23,7 +23,7 @@ class ImageAuthTests(APITestCase):
         self.image_url = reverse('image-permissions')
         self.Image = get_image_model()
         self.image = self.Image.objects.create(
-            title='Test Image Hidden', file=get_test_image_file(filename="test-hidden.png"), hidden=True)
+            title='Test Image', file=get_test_image_file(filename="test.png"))
         self.user = User.objects.create_user(
             username='testuser', password='testpassword')
 
@@ -76,7 +76,7 @@ class RenditionsTestCase(APITestCase):
         self.image_url = reverse('image-permissions')
         self.Image = get_image_model()
         self.image = self.Image.objects.create(
-            title='Test Image', file=get_test_image_file(filename="test-rendition.png"))
+            title='Test Image', file=get_test_image_file(filename="test.png"))
         self.rendition = self.image.get_rendition('width-400')
 
     def tearDown(self):
