@@ -19,30 +19,47 @@ def check_permissions(request):
     """
     if request.user.is_authenticated:
         return Response({"message": "OK"}, status=200)
+
     else:
-        Image = get_image_model()
-        requested_image = get_image_file(
-            request.headers.get("X-Original-Uri"))
-        if not requested_image:
+        requested_image = get_image_file(request.headers.get("X-Original-Uri"))
+        image_type = get_image_type(requested_image)
+
+        if not requested_image or not image_type:
             return Response({"message": "Bad Request"}, status=400)
-        if re.match(r"^images/", requested_image):
+
+        if image_type == "rendition":
             try:
                 db_image = CustomRendition.objects.get(file=requested_image).image
             except CustomRendition.DoesNotExist:
                 return Response({"message": "Not found"}, status=404)
-        elif re.match(r"^original_images/", requested_image):
+
+        elif image_type == "original":
+            Image = get_image_model()
             try:
                 db_image = Image.objects.get(file=requested_image)
             except Image.DoesNotExist:
                 return Response({"message": "Not found"}, status=404)
+
         if not db_image.hidden:
             return Response({"message": "OK"}, status=200)
-        else:
-            return Response({"message": "Unauthorized"}, status=401)
+
+        return Response({"message": "Unauthorized"}, status=401)
 
 
 def get_image_file(image_url):
     """
-    Get the original image URL from the image URL.
+    Get the original image file from the image URL.
     """
     return image_url.replace(settings.MEDIA_URL, "")
+
+
+def get_image_type(image):
+    """
+    Check if the image is a rendition.
+    """
+    if re.match(r"^images/", image):
+        return "rendition"
+    elif re.match(r"^original_images/", image):
+        return "original"
+    else:
+        return None
