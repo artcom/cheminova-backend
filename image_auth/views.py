@@ -27,18 +27,19 @@ def check_permissions(request):
         if not requested_image or not image_type:
             return Response({"message": "Bad Request"}, status=400)
 
-        if image_type == "rendition":
-            try:
-                db_image = CustomRendition.objects.get(file=requested_image).image
-            except CustomRendition.DoesNotExist:
-                return Response({"message": "Not found"}, status=404)
+        match image_type:
+            case "rendition":
+                try:
+                    db_image = CustomRendition.objects.get(file=requested_image).image
+                except CustomRendition.DoesNotExist:
+                    return Response({"message": "Not found"}, status=404)
 
-        elif image_type == "original":
-            Image = get_image_model()
-            try:
-                db_image = Image.objects.get(file=requested_image)
-            except Image.DoesNotExist:
-                return Response({"message": "Not found"}, status=404)
+            case "original":
+                Image = get_image_model()
+                try:
+                    db_image = Image.objects.get(file=requested_image)
+                except Image.DoesNotExist:
+                    return Response({"message": "Not found"}, status=404)
 
         if not db_image.hidden:
             return Response({"message": "OK"}, status=200)
