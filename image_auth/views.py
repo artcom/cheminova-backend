@@ -7,8 +7,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from wagtail.images import get_image_model
 
-from custom_images.models import CustomRendition
-
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
@@ -40,18 +38,20 @@ def check_permissions(request: Request) -> Response:
                 status=400
             )
 
+        Image = get_image_model()
+
         match image_type:
             case "rendition":
+                RenditionsModel = Image.get_rendition_model()
                 try:
-                    db_image = CustomRendition.objects.get(file=requested_image).image
-                except CustomRendition.DoesNotExist:
+                    db_image = RenditionsModel.objects.get(file=requested_image).image
+                except RenditionsModel.DoesNotExist:
                     return Response(
                         data={"message": "Not found"},
                         status=404
                     )
 
             case "original":
-                Image = get_image_model()
                 try:
                     db_image = Image.objects.get(file=requested_image)
                 except Image.DoesNotExist:
