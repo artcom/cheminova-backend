@@ -3,6 +3,7 @@ from pathlib import Path
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
+from rest_framework.request import Request
 from rest_framework.response import Response
 
 from .serializers import ImageModelSerializer
@@ -10,7 +11,7 @@ from .serializers import ImageModelSerializer
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
-def upload_image_view(request):
+def upload_image_view(request: Request) -> Response:
     file = request.data.get("image")
     title = file.name
     file_path = Path(file.name)
@@ -21,6 +22,7 @@ def upload_image_view(request):
         "hidden": True,
     }
     serializer = ImageModelSerializer(data=data)
+
     if serializer.is_valid():
         serializer.save()
         return Response(
@@ -28,6 +30,7 @@ def upload_image_view(request):
             status=201,
             headers={"Location": serializer.data["file"]}
         )
+
     else:
         return Response(
             data=serializer.errors,

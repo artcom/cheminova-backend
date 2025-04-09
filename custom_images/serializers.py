@@ -13,5 +13,5 @@ class CustomImageModelSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'imageUrl', 'file', 'hidden']
         depth = 1
 
-    def get_imageUrl(self, obj):
+    def get_imageUrl(self, obj: CustomImage) -> str:
         return settings.WAGTAILADMIN_BASE_URL + obj.file.url
