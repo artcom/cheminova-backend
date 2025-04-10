@@ -16,17 +16,17 @@ class Home(Page):
     )
 
     search_fields = Page.search_fields + [
-        SearchField('title'),
+        SearchField("title"),
     ]
 
     content_panels = Page.content_panels + [
-        FieldPanel('image'),
+        FieldPanel("image"),
     ]
 
     api_fields = [
-        APIField('title'),
-        APIField('image'),
+        APIField("title"),
+        APIField("image"),
     ]
 
-    parent_page_types = ['wagtailcore.Page']
+    parent_page_types = ["wagtailcore.Page"]
     max_count = 1

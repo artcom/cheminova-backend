@@ -43,11 +43,11 @@ if BASE_PATH != "/":
     LOGIN_REDIRECT_URL = BASE_PATH
     LOGOUT_REDIRECT_URL = BASE_PATH
 
-    STATIC_URL = f'{BASE_PATH}static/'
+    STATIC_URL = f"{BASE_PATH}static/"
 
     STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
     # Media files
-    MEDIA_URL = f'{BASE_PATH}media/'
+    MEDIA_URL = f"{BASE_PATH}media/"
 
     MEDIA_ROOT = os.path.join(BASE_DIR, "media/")

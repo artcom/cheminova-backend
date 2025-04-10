@@ -5,13 +5,13 @@ from wagtail.images.models import AbstractImage, AbstractRendition, Image
 class CustomImage(AbstractImage):
     public = models.BooleanField(default=False)
 
-    admin_form_fields = Image.admin_form_fields + ('public',)
+    admin_form_fields = Image.admin_form_fields + ("public",)
 
 
 class CustomRendition(AbstractRendition):
-    image = models.ForeignKey(CustomImage, on_delete=models.CASCADE, related_name='renditions')
+    image = models.ForeignKey(CustomImage, on_delete=models.CASCADE, related_name="renditions")
 
     class Meta:
         unique_together = (
-            ('image', 'filter_spec', 'focal_point_key'),
+            ("image", "filter_spec", "focal_point_key"),
         )

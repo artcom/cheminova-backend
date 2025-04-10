@@ -20,12 +20,12 @@ def get_test_image_file(filename="test.png", colour="white", size=(640, 480)):
 
 class ImageAuthTests(APITestCase):
     def setUp(self):
-        self.image_url = reverse('image-permissions')
+        self.image_url = reverse("image-permissions")
         self.Image = get_image_model()
         self.image = self.Image.objects.create(
-            title='Test Image', file=get_test_image_file(filename="test.png"))
+            title="Test Image", file=get_test_image_file(filename="test.png"))
         self.user = User.objects.create_user(
-            username='testuser', password='testpassword')
+            username="testuser", password="testpassword")
 
     def tearDown(self):
         image = Path(settings.MEDIA_ROOT).joinpath(str(self.image.file))
@@ -34,7 +34,7 @@ class ImageAuthTests(APITestCase):
         self.image.delete()
 
     def test_check_permissions_authenticated(self):
-        self.client.login(username='testuser', password='testpassword')
+        self.client.login(username="testuser", password="testpassword")
         response = self.client.get(self.image_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -73,11 +73,11 @@ class ImageAuthTests(APITestCase):
 
 class RenditionsTestCase(APITestCase):
     def setUp(self):
-        self.image_url = reverse('image-permissions')
+        self.image_url = reverse("image-permissions")
         self.Image = get_image_model()
         self.image = self.Image.objects.create(
-            title='Test Image', file=get_test_image_file(filename="test.png"))
-        self.rendition = self.image.get_rendition('width-400')
+            title="Test Image", file=get_test_image_file(filename="test.png"))
+        self.rendition = self.image.get_rendition("width-400")
 
     def tearDown(self):
         image = Path(settings.MEDIA_ROOT).joinpath(str(self.image.file))
