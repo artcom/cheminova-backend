@@ -13,4 +13,7 @@ class HomeViewSet(ReadOnlyModelViewSet):
     def list(self, request: Request, *args, **kwargs) -> Response:
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data[0])
+        if not serializer.data:
+            return Response(status=204)
+        else:
+            return Response(serializer.data[0])
