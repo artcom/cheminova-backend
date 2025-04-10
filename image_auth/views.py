@@ -60,7 +60,7 @@ def check_permissions(request: Request) -> Response:
                         status=404
                     )
 
-        if not db_image.hidden:
+        if db_image.public:
             return Response(
                 {"message": "OK"},
                 status=200

@@ -3,9 +3,9 @@ from wagtail.images.models import AbstractImage, AbstractRendition, Image
 
 
 class CustomImage(AbstractImage):
-    hidden = models.BooleanField(default=False)
+    public = models.BooleanField(default=False)
 
-    admin_form_fields = Image.admin_form_fields + ('hidden',)
+    admin_form_fields = Image.admin_form_fields + ('public',)
 
 
 class CustomRendition(AbstractRendition):
