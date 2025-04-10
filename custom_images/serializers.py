@@ -7,7 +7,7 @@ from .models import CustomImage
 
 class RenditionFileField(serializers.RelatedField):
     def to_representation(self, value):
-        return settings.WAGTAILADMIN_BASE_URL + str(value.file.url)
+        return settings.WAGTAILADMIN_BASE_URL + value.file.url
 
 
 class CustomImageModelSerializer(serializers.ModelSerializer):

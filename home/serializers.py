@@ -10,7 +10,7 @@ class HomeModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Home
-        fields = ['id', 'title', 'imageUrl']
+        fields = ["id", "title", "imageUrl"]
         depth = 1
 
     def get_imageUrl(self, obj: Home) -> str:
