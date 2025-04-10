@@ -11,13 +11,9 @@ class RenditionFileField(serializers.RelatedField):
 
 
 class CustomImageModelSerializer(serializers.ModelSerializer):
-    imageUrl = serializers.SerializerMethodField()
     renditions = RenditionFileField(many=True, read_only=True)
 
     class Meta:
         model = CustomImage
-        fields = ["id", "title", "imageUrl", "public", "renditions"]
+        fields = ["id", "title", "file", "public", "renditions"]
         depth = 1
-
-    def get_imageUrl(self, obj: CustomImage) -> str:
-        return settings.WAGTAILADMIN_BASE_URL + obj.file.url

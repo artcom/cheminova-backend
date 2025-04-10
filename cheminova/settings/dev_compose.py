@@ -32,6 +32,7 @@ DATABASES = {
 }
 
 USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_PORT = True
 
 BASE_PATH = os.environ.get("BASE_PATH", "/")
 if BASE_PATH != "/":
