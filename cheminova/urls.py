@@ -26,7 +26,7 @@ urlpatterns = [
 
 urlpatterns = urlpatterns + router.urls
 
-if settings.DEBUG:
+if settings.DEBUG and settings.SERVE_STATIC:
     from django.conf.urls.static import static
     from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 

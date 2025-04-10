@@ -2,6 +2,7 @@ from .base import *  # noqa F403
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+SERVE_STATIC = True
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-rm=3^hc4v)26#@55+7gqkp6wc=3jo88t7sj$4u-)8c=5excl1r"

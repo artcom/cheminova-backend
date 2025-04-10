@@ -4,6 +4,7 @@ from .base import *  # noqa F403
 from .base import BASE_DIR
 
 DEBUG = False
+SERVE_STATIC = False
 WAGTAILADMIN_BASE_URL = "https://***REMOVED***"
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "***REMOVED***"]
 SECRET_KEY = os.environ.get("SECRET_KEY")
