@@ -19,7 +19,6 @@ def upload_image_view(request: Request) -> Response:
     data = {
         "file": file,
         "title": title,
-        "public": False,
     }
     serializer = ImageModelSerializer(data=data)
 

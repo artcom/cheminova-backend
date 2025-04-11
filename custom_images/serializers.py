@@ -16,7 +16,7 @@ class CustomImageModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomImage
-        fields = ["id", "title", "file", "public", "renditions", "live"]
+        fields = ["id", "title", "file", "renditions", "live"]
         depth = 1
 
     def get_live(self, obj: CustomImage) -> bool:

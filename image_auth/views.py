@@ -60,7 +60,7 @@ def check_permissions(request: Request) -> Response:
                         status=404
                     )
 
-        if db_image.public:
+        if len(db_image.get_referenced_live_pages()) > 0:
             return Response(
                 {"message": "OK"},
                 status=200
