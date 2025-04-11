@@ -13,6 +13,12 @@ from .serializers import ImageModelSerializer
 @permission_classes([AllowAny])
 def upload_image_view(request: Request) -> Response:
     file = request.data.get("image")
+    if not file or not file.name:
+        return Response(
+            data={"message": "Bad Request"},
+            status=400
+        )
+
     title = file.name
     file_path = PurePath(file.name)
     file.name = file_path.stem + f"-{uuid.uuid4()}" + file_path.suffix
