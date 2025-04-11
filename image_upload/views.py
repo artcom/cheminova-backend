@@ -1,5 +1,5 @@
 import uuid
-from pathlib import Path
+from pathlib import PurePath
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
@@ -14,7 +14,7 @@ from .serializers import ImageModelSerializer
 def upload_image_view(request: Request) -> Response:
     file = request.data.get("image")
     title = file.name
-    file_path = Path(file.name)
+    file_path = PurePath(file.name)
     file.name = file_path.stem + f"-{uuid.uuid4()}" + file_path.suffix
     data = {
         "file": file,
