@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "custom_images",
     "home",
     "image_upload",
+    "image_auth",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
     "wagtail.embeds",
