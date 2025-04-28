@@ -90,6 +90,9 @@ services:
       - source: wagtail-db-data
         target: /var/lib/postgresql/data
         type: volume
+      - source: wagtail-db-backup
+        target: /var/lib/postgresql/backup
+        type: volume
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       start_interval: 5s
@@ -100,5 +103,6 @@ services:
 
 volumes:
   wagtail-db-data:
+  wagtail-db-backup:
   wagtail-static:
   wagtail-media:

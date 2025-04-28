@@ -75,7 +75,7 @@ By default this creates & manages a .venv directory. ￼
 
 `uv run python manage.py collectstatic --noinput`
 
-## Local Development
+## Local Development (Python)
 
 Start the development server (with auto-reload):
 
@@ -88,7 +88,7 @@ Start the development server (with auto-reload):
 
 `uv run python manage.py test`
 
-## Docker Compose
+## Local Development (Docker Compose)
 
 Bring up the full stack (Postgres, Wagtail, Nginx):
 
@@ -110,3 +110,31 @@ Bring up the full stack (Postgres, Wagtail, Nginx):
    • Secure proxy headers
    • CSRF trusted origins
    • Wagtail admin base URL
+
+## Dump Database
+
+```bash
+docker compose exec database /bin/bash -c 'pg_dump -U cheminova -Fc cheminova > /var/lib/postgresql/backup/cheminova.dump'
+```
+
+## Backup Database
+
+1. Set up a DigitalOcean Spaces bucket and configure the `s3cmd` tool with your credentials. You can do that by using s3cmd command line tool as described [here](https://docs.digitalocean.com/products/spaces/reference/s3cmd/):
+
+```bash
+mkdir -p s3cmd
+docker run --rm -it \
+  -v $PWD/.s3cfg-2:/root/.s3cfg \
+  d3fk/s3cmd:latest \
+  --configure
+```
+
+2. To back up the database to a DigitalOcean Spaces bucket using the d3fk/s3cmd image, use the following command:
+
+```bash
+docker run --rm \
+  -v backend_wagtail-db-backup:/cheminova-backup \
+  -v $PWD/s3cmd/.s3cfg:/root/.s3cfg \
+  d3fk/s3cmd:latest \
+  put /cheminova-backup/cheminova.dump s3://cheminova/db-dump/cheminova-$(date +"%Y-%m-%d_%H-%M-%S").dump
+```
