@@ -52,7 +52,10 @@ cd cheminova-backend`
 
 2. Create a virtual environment
 
-`uv venv`
+```bash
+uv python install 3.13
+uv venv --python 3.13
+```
 
 By default this creates & manages a .venv directory. ￼
 
