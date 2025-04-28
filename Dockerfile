@@ -59,6 +59,6 @@ RUN mkdir /app/media
 # Runtime command that executes when "docker run" is called, it starts the
 # application server.
 
-HEALTHCHECK --interval=30s --timeout=30s --start-interval=5s --start-period=10s --retries=3 CMD [ "curl", "--head", "--fail", "http://localhost:8000/health" ]
+HEALTHCHECK --interval=30s --timeout=30s --start-interval=5s --start-period=10s --retries=3 CMD ["curl", "--head", "--fail", "http://localhost:8000/health"]
 
-CMD gunicorn cheminova.wsgi:application
+CMD ["gunicorn", "cheminova.wsgi:application"]
