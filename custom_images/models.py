@@ -1,9 +1,11 @@
 from django.db import models
-from wagtail.images.models import AbstractImage, AbstractRendition
+from wagtail.images.models import AbstractImage, AbstractRendition, Image
 from wagtail.models import Page
 
 
 class CustomImage(AbstractImage):
+    admin_form_fields = Image.admin_form_fields
+
     def get_referenced_live_pages(self) -> list[Page]:
         """
         Get all referenced live pages that are using this image.
