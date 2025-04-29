@@ -32,7 +32,7 @@ services:
       dockerfile: Dockerfile
       args:
         DJANGO_SETTINGS_MODULE: "cheminova.settings.dev_compose"
-    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    command: ["uv", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]
     ports:
       - target: 8000
         published: 8000

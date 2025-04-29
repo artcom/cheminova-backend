@@ -2,7 +2,7 @@
 FROM python:3.13-slim-bookworm
 
 # Add user that will be used in the container.
-RUN useradd wagtail
+RUN useradd -m wagtail
 
 # Port used by this container to serve HTTP.
 EXPOSE 8000
@@ -16,25 +16,23 @@ ENV PYTHONUNBUFFERED=1 \
 
 ARG DJANGO_SETTINGS_MODULE="cheminova.settings.production"
 ENV DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
+ENV UV_UNMANAGED_INSTALL="/usr/local/bin"
 
 # Install system packages required by Wagtail and Django.
 RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-recommends \
-    build-essential \
-    libpq-dev \
-    libmariadb-dev \
-    libjpeg62-turbo-dev \
-    zlib1g-dev \
-    libwebp-dev \
-    ffmpeg \
+    #     build-essential \
+    #     libpq-dev \
+    #     libmariadb-dev \
+    #     libjpeg62-turbo-dev \
+    #     zlib1g-dev \
+    #     libwebp-dev \
+    #     ffmpeg \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install the application server.
-# RUN pip install "gunicorn==20.0.4"
+# Install uv
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# Install the project requirements.
-COPY requirements.txt /
-RUN pip install -r /requirements.txt
 
 # Use /app folder as a directory where the source code is stored.
 WORKDIR /app
@@ -50,8 +48,9 @@ COPY --chown=wagtail:wagtail . .
 # Use user "wagtail" to run the build commands below and the server itself.
 USER wagtail
 
+RUN uv --version
 # Collect static files.
-RUN python manage.py collectstatic --noinput --clear
+RUN uv run python manage.py collectstatic --noinput --clear
 
 # Create media directory owned by the "wagtail" user.
 RUN mkdir /app/media
@@ -61,4 +60,4 @@ RUN mkdir /app/media
 
 HEALTHCHECK --interval=30s --timeout=30s --start-interval=5s --start-period=10s --retries=3 CMD ["curl", "--head", "--fail", "http://localhost:8000/health"]
 
-CMD ["gunicorn", "cheminova.wsgi:application"]
+CMD ["uv", "run", "gunicorn", "cheminova.wsgi:application"]
