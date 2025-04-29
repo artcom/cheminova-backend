@@ -99,14 +99,14 @@ Bring up the full stack (Postgres, Wagtail, Nginx):
 
 ## Deployment
 
-1. Build and push Docker images in GitLab CI (see .gitlab-ci.yml).
+1. Build and push Docker images in GitLab CI (see [.gitlab-ci.yml](.gitlab-ci.yml)).
 
 2. In production, ensure the following env vars are set:
    • SECRET_KEY
    • POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_HOST
    • (Optional) BASE_PATH if serving under a subpath
 
-3. The production.py settings module will configure:
+3. The [production.py](cheminova/settings/production.py) settings module will configure:
    • Secure proxy headers
    • CSRF trusted origins
    • Wagtail admin base URL
@@ -137,4 +137,22 @@ docker run --rm \
   -v $PWD/s3cmd/.s3cfg:/root/.s3cfg \
   d3fk/s3cmd:latest \
   put /cheminova-backup/cheminova.dump s3://cheminova/db-dump/cheminova-$(date +"%Y-%m-%d_%H-%M-%S").dump
+```
+
+## Restore Database
+
+To restore the database from a dump file, you can use the following command:
+
+```bash
+docker run --rm \
+  -v backend_wagtail-db-backup:/cheminova-backup \
+  -v $PWD/s3cmd/.s3cfg:/root/.s3cfg \
+  d3fk/s3cmd:latest \
+  get s3://cheminova/db-dump/cheminova-2025-04-28_16-05-06.dump /cheminova-backup/cheminova.dump
+```
+
+Then, restore the database using the following command:
+
+```bash
+docker compose exec database /bin/bash -c 'pg_restore -U cheminova -d cheminova /var/lib/postgresql/backup/cheminova.dump'
 ```
