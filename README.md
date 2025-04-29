@@ -61,7 +61,7 @@ By default this creates & manages a .venv directory. ￼
 
 3. Install Python dependencies
 
-`uv pip install -r requirements.txt`
+`uv sync`
 
 4. Apply database migrations
 
