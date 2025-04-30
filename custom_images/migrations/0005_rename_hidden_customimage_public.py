@@ -4,15 +4,14 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('custom_images', '0004_rename_api_upload_customimage_hidden'),
+        ("custom_images", "0004_rename_api_upload_customimage_hidden"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='customimage',
-            old_name='hidden',
-            new_name='public',
+            model_name="customimage",
+            old_name="hidden",
+            new_name="public",
         ),
     ]

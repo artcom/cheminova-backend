@@ -9,8 +9,11 @@ WAGTAILADMIN_BASE_URL = "https://***REMOVED***"
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "***REMOVED***"]
 SECRET_KEY = os.environ.get("SECRET_KEY")
 CSRF_TRUSTED_ORIGINS = [
-    "http://127.0.0.1", "http://127.0.0.1:8080", "http://localhost", "http://localhost:8080",
-    "https://***REMOVED***"
+    "http://127.0.0.1",
+    "http://127.0.0.1:8080",
+    "http://localhost",
+    "http://localhost:8080",
+    "https://***REMOVED***",
 ]
 DATABASES = {
     "default": {
@@ -19,7 +22,7 @@ DATABASES = {
         "USER": os.environ.get("POSTGRES_USER"),
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
         "HOST": os.environ.get("POSTGRES_HOST"),
-        "PORT": "5432"
+        "PORT": "5432",
     }
 }
 

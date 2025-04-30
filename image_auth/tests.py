@@ -25,18 +25,23 @@ class ImageAuthTests(APITestCase):
         self.image_auth_url = reverse("image-permissions")
         Image = get_image_model()
         self.published_image = Image.objects.create(
-            title="Test Image", file=get_test_image_file(filename="test.png"))
+            title="Test Image", file=get_test_image_file(filename="test.png")
+        )
         self.unpublished_image = Image.objects.create(
-            title="Test Image Not Live", file=get_test_image_file(filename="test-not-live.png"))
+            title="Test Image Not Live",
+            file=get_test_image_file(filename="test-not-live.png"),
+        )
         root_page = Page.objects.get(slug="root")
         self.home = Home(
-            title="Test Home", slug="test-home", image=self.published_image)
+            title="Test Home", slug="test-home", image=self.published_image
+        )
         root_page.add_child(instance=self.home)
         revision = self.home.save_revision()
         self.home.publish(revision)
         ReferenceIndex.create_or_update_for_object(self.home)
         self.user = User.objects.create_user(
-            username="testuser", password="testpassword")
+            username="testuser", password="testpassword"
+        )
 
     def tearDown(self):
         images = [self.published_image, self.unpublished_image]
@@ -57,27 +62,39 @@ class ImageAuthTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_check_permissions_anonymous_with_invalid_file_type(self):
-        response = self.client.get(self.image_auth_url, headers={
-            "X-Original-Uri": f"{settings.MEDIA_URL}invalid/non_existent_file.jpg"
-        })
+        response = self.client.get(
+            self.image_auth_url,
+            headers={
+                "X-Original-Uri": f"{settings.MEDIA_URL}invalid/non_existent_file.jpg"
+            },
+        )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_check_permissions_anonymous_with_nonexistent_file(self):
-        response = self.client.get(self.image_auth_url, headers={
-            "X-Original-Uri": f"{settings.MEDIA_URL}original_images/non_existent_file.jpg"
-        })
+        response = self.client.get(
+            self.image_auth_url,
+            headers={
+                "X-Original-Uri": f"{settings.MEDIA_URL}original_images/non_existent_file.jpg"
+            },
+        )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_check_permissions_anonymous_with_published_file(self):
-        response = self.client.get(self.image_auth_url, headers={
-            "X-Original-Uri": f"{settings.MEDIA_URL}{str(self.published_image.file)}"
-        })
+        response = self.client.get(
+            self.image_auth_url,
+            headers={
+                "X-Original-Uri": f"{settings.MEDIA_URL}{str(self.published_image.file)}"
+            },
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_check_permissions_anonymous_with_unpublished_file(self):
-        response = self.client.get(self.image_auth_url, headers={
-            "X-Original-Uri": f"{settings.MEDIA_URL}{str(self.unpublished_image.file)}"
-        })
+        response = self.client.get(
+            self.image_auth_url,
+            headers={
+                "X-Original-Uri": f"{settings.MEDIA_URL}{str(self.unpublished_image.file)}"
+            },
+        )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
@@ -86,12 +103,16 @@ class RenditionsTestCase(APITestCase):
         self.image_auth_url = reverse("image-permissions")
         Image = get_image_model()
         self.published_image = Image.objects.create(
-            title="Test Image", file=get_test_image_file(filename="test.png"))
+            title="Test Image", file=get_test_image_file(filename="test.png")
+        )
         self.unpublished_image = Image.objects.create(
-            title="Test Image Not Live", file=get_test_image_file(filename="test-not-live.png"))
+            title="Test Image Not Live",
+            file=get_test_image_file(filename="test-not-live.png"),
+        )
         root_page = Page.objects.get(slug="root")
         self.home = Home(
-            title="Test Home", slug="test-home", image=self.published_image)
+            title="Test Home", slug="test-home", image=self.published_image
+        )
         root_page.add_child(instance=self.home)
         revision = self.home.save_revision()
         self.home.publish(revision)
@@ -100,8 +121,12 @@ class RenditionsTestCase(APITestCase):
         self.unpublished_rendition = self.unpublished_image.get_rendition("width-400")
 
     def tearDown(self):
-        images = [self.published_image, self.unpublished_image,
-                  self.published_rendition, self.unpublished_rendition]
+        images = [
+            self.published_image,
+            self.unpublished_image,
+            self.published_rendition,
+            self.unpublished_rendition,
+        ]
         self.home.delete()
         for image in images:
             path = Path(settings.MEDIA_ROOT).joinpath(str(image.file))
@@ -110,19 +135,28 @@ class RenditionsTestCase(APITestCase):
             image.delete()
 
     def test_check_permissions_anonymous_with_nonexistent_rendition(self):
-        response = self.client.get(self.image_auth_url, headers={
-            "X-Original-Uri": f"{settings.MEDIA_URL}images/non_existent_file.width-400.jpg"
-        })
+        response = self.client.get(
+            self.image_auth_url,
+            headers={
+                "X-Original-Uri": f"{settings.MEDIA_URL}images/non_existent_file.width-400.jpg"
+            },
+        )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_check_permissions_anonymous_with_rendition_from_published_file(self):
-        response = self.client.get(self.image_auth_url, headers={
-            "X-Original-Uri": f"{settings.MEDIA_URL}{str(self.published_rendition.file)}"
-        })
+        response = self.client.get(
+            self.image_auth_url,
+            headers={
+                "X-Original-Uri": f"{settings.MEDIA_URL}{str(self.published_rendition.file)}"
+            },
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_check_permissions_anonymous_with_rendition_from_unpublished_file(self):
-        response = self.client.get(self.image_auth_url, headers={
-            "X-Original-Uri": f"{settings.MEDIA_URL}{str(self.unpublished_rendition.file)}"
-        })
+        response = self.client.get(
+            self.image_auth_url,
+            headers={
+                "X-Original-Uri": f"{settings.MEDIA_URL}{str(self.unpublished_rendition.file)}"
+            },
+        )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

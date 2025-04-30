@@ -11,16 +11,16 @@ class CustomImage(AbstractImage):
         Get all referenced live pages that are using this image.
         """
         return [
-            reference_index[0] for reference_index in self.get_usage()
-            if isinstance(reference_index[0], Page)
-            and reference_index[0].live
+            reference_index[0]
+            for reference_index in self.get_usage()
+            if isinstance(reference_index[0], Page) and reference_index[0].live
         ]
 
 
 class CustomRendition(AbstractRendition):
-    image = models.ForeignKey(CustomImage, on_delete=models.CASCADE, related_name="renditions")
+    image = models.ForeignKey(
+        CustomImage, on_delete=models.CASCADE, related_name="renditions"
+    )
 
     class Meta:
-        unique_together = (
-            ("image", "filter_spec", "focal_point_key"),
-        )
+        unique_together = (("image", "filter_spec", "focal_point_key"),)

@@ -13,8 +13,11 @@ SECRET_KEY = "django-insecure-rm=3^hc4v)26#@55+7gqkp6wc=3jo88t7sj$4u-)8c=5excl1r
 # SECURITY WARNING: define the correct hosts in production!
 ALLOWED_HOSTS = ["*"]
 CSRF_TRUSTED_ORIGINS = [
-    "http://127.0.0.1", "http://127.0.0.1:8080", "http://localhost", "http://localhost:8080",
-    "https://***REMOVED***"
+    "http://127.0.0.1",
+    "http://127.0.0.1:8080",
+    "http://localhost",
+    "http://localhost:8080",
+    "https://***REMOVED***",
 ]
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
@@ -27,7 +30,7 @@ DATABASES = {
         "USER": os.environ.get("POSTGRES_USER"),
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
         "HOST": os.environ.get("POSTGRES_HOST"),
-        "PORT": "5432"
+        "PORT": "5432",
     }
 }
 

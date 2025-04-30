@@ -4,3 +4,4 @@ media/
 .env
 static
 .s3cfg
+.ruff_cache

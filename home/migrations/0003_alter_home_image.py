@@ -5,16 +5,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('custom_images', '0001_initial'),
-        ('home', '0002_remove_home_description'),
+        ("custom_images", "0001_initial"),
+        ("home", "0002_remove_home_description"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='home',
-            name='image',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='custom_images.customimage'),
+            model_name="home",
+            name="image",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="+",
+                to="custom_images.customimage",
+            ),
         ),
     ]

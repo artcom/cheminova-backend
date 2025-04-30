@@ -14,10 +14,7 @@ from .serializers import ImageModelSerializer
 def upload_image_view(request: Request) -> Response:
     file = request.data.get("image")
     if not file or not file.name:
-        return Response(
-            data={"message": "Bad Request"},
-            status=400
-        )
+        return Response(data={"message": "Bad Request"}, status=400)
 
     title = file.name
     file_path = PurePath(file.name)
@@ -33,11 +30,8 @@ def upload_image_view(request: Request) -> Response:
         return Response(
             data=serializer.data,
             status=201,
-            headers={"Location": serializer.data["file"]}
+            headers={"Location": serializer.data["file"]},
         )
 
     else:
-        return Response(
-            data=serializer.errors,
-            status=400
-        )
+        return Response(data=serializer.errors, status=400)

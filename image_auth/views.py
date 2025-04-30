@@ -17,26 +17,17 @@ def check_permissions(request: Request) -> Response:
     hidden flag set to True.
     """
     if request.user.is_authenticated:
-        return Response(
-            data={"message": "OK"},
-            status=200
-        )
+        return Response(data={"message": "OK"}, status=200)
 
     else:
         if not request.headers.get("X-Original-Uri"):
-            return Response(
-                data={"message": "Bad Request"},
-                status=400
-            )
+            return Response(data={"message": "Bad Request"}, status=400)
 
         requested_image = get_image_file(request.headers.get("X-Original-Uri"))
         image_type = get_image_type(requested_image)
 
         if not image_type:
-            return Response(
-                data={"message": "Bad Request"},
-                status=400
-            )
+            return Response(data={"message": "Bad Request"}, status=400)
 
         Image = get_image_model()
 
@@ -46,30 +37,18 @@ def check_permissions(request: Request) -> Response:
                 try:
                     db_image = RenditionsModel.objects.get(file=requested_image).image
                 except RenditionsModel.DoesNotExist:
-                    return Response(
-                        data={"message": "Not found"},
-                        status=404
-                    )
+                    return Response(data={"message": "Not found"}, status=404)
 
             case "original":
                 try:
                     db_image = Image.objects.get(file=requested_image)
                 except Image.DoesNotExist:
-                    return Response(
-                        data={"message": "Not found"},
-                        status=404
-                    )
+                    return Response(data={"message": "Not found"}, status=404)
 
         if len(db_image.get_referenced_live_pages()) > 0:
-            return Response(
-                {"message": "OK"},
-                status=200
-            )
+            return Response({"message": "OK"}, status=200)
 
-        return Response(
-            data={"message": "Unauthorized"},
-            status=401
-        )
+        return Response(data={"message": "Unauthorized"}, status=401)
 
 
 def get_image_file(image_url: str) -> str:
