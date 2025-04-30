@@ -50,49 +50,40 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 `git clone ***REMOVED***
 cd cheminova-backend`
 
-2. Create a virtual environment
-
-```bash
-uv python install 3.13
-uv venv --python 3.13
-```
-
-By default this creates & manages a .venv directory. ￼
-
 3. Install Python dependencies
 
-`uv sync`
+`uv sync --locked`
 
 4. Apply database migrations
 
-`uv run python manage.py migrate`
+`uv run manage.py migrate`
 
 5. Create a superuser
 
-`uv run python manage.py createsuperuser`
+`uv run manage.py createsuperuser`
 
 6. Collect static files
 
-`uv run python manage.py collectstatic --noinput`
+`uv run manage.py collectstatic --noinput`
 
 ## Local Development (Python)
 
 Start the development server (with auto-reload):
 
-`uv run python manage.py runserver 0.0.0.0:8000`
+`uv run manage.py runserver 0.0.0.0:8000`
 
     •	Admin UI: http://localhost:8000/admin/
     •	Wagtail pages: http://localhost:8000/
 
 ## Running Tests
 
-`uv run python manage.py test`
+`uv run manage.py test`
 
 ## Local Development (Docker Compose)
 
 Bring up the full stack (Postgres, Wagtail, Nginx):
 
-`docker compose up --build`
+`docker compose up --watch`
 
     •	Wagtail runs at http://localhost:8000/
     •	Nginx proxy at http://localhost:8080/

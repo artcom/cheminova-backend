@@ -1,6 +1,10 @@
 services:
   nginx:
     image: nginx:latest
+    develop:
+      watch:
+        - action: restart
+          path: ./nginx/nginx.conf
     ports:
       - target: 8080
         published: 8080
@@ -32,7 +36,18 @@ services:
       dockerfile: Dockerfile
       args:
         DJANGO_SETTINGS_MODULE: "cheminova.settings.dev_compose"
-    command: ["uv", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app
+          ignore:
+            - .venv/
+        - action: rebuild
+          path: ./pyproject.toml
+        - action: rebuild
+          path: ./uv.lock
+    command: ["uv", "run", "manage.py", "runserver", "0.0.0.0:8000"]
     ports:
       - target: 8000
         published: 8000
