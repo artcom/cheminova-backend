@@ -1,0 +1,12 @@
+{
+  "version": "10",
+  "aliases": {
+    "s3": {
+      "url": "http://s3:9000",
+      "accessKey": "minio",
+      "secretKey": "minio123",
+      "api": "s3v4",
+      "path": "auto"
+    }
+  }
+}
