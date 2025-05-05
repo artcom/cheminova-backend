@@ -9,7 +9,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from wagtail.images import get_image_model
-from home.models import Home
+from experience.models import Home
 from wagtail.models import Page, ReferenceIndex
 
 

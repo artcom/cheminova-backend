@@ -8,11 +8,14 @@ from rest_framework import urls as rest_framework_urls
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
-from home.views import HomeViewSet
+from experience.views import WelcomeViewSet, CharacterOverviewViewSet
 from custom_images.views import CustomImageViewSet
 
 router = DefaultRouter()
-router.register(r"api/home", HomeViewSet, basename="home")
+router.register(r"api/welcome", WelcomeViewSet, basename="welcome")
+router.register(
+    r"api/character-overview", CharacterOverviewViewSet, basename="character-overview"
+)
 router.register(r"api/images", CustomImageViewSet, basename="images")
 
 urlpatterns = [

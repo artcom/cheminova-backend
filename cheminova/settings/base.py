@@ -25,7 +25,7 @@ BASE_DIR = os.path.dirname(PROJECT_DIR)
 
 INSTALLED_APPS = [
     "custom_images",
-    "home",
+    "experience",
     "image_upload",
     "image_auth",
     "wagtail.contrib.forms",
