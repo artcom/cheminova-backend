@@ -9,7 +9,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from wagtail.images import get_image_model
-from experience.models import Home
+from experience.models import Welcome
 from wagtail.models import Page, ReferenceIndex
 
 
@@ -32,20 +32,20 @@ class ImageAuthTests(APITestCase):
             file=get_test_image_file(filename="test-not-live.png"),
         )
         root_page = Page.objects.get(slug="root")
-        self.home = Home(
-            title="Test Home", slug="test-home", image=self.published_image
+        self.welcome = Welcome(
+            title="Welcome", slug="welcome", background_image=self.published_image
         )
-        root_page.add_child(instance=self.home)
-        revision = self.home.save_revision()
-        self.home.publish(revision)
-        ReferenceIndex.create_or_update_for_object(self.home)
+        root_page.add_child(instance=self.welcome)
+        revision = self.welcome.save_revision()
+        self.welcome.publish(revision)
+        ReferenceIndex.create_or_update_for_object(self.welcome)
         self.user = User.objects.create_user(
             username="testuser", password="testpassword"
         )
 
     def tearDown(self):
         images = [self.published_image, self.unpublished_image]
-        self.home.delete()
+        self.welcome.delete()
         for image in images:
             path = Path(settings.MEDIA_ROOT).joinpath(str(image.file))
             if path.exists():
@@ -110,13 +110,13 @@ class RenditionsTestCase(APITestCase):
             file=get_test_image_file(filename="test-not-live.png"),
         )
         root_page = Page.objects.get(slug="root")
-        self.home = Home(
-            title="Test Home", slug="test-home", image=self.published_image
+        self.welcome = Welcome(
+            title="Welcome", slug="welcome", background_image=self.published_image
         )
-        root_page.add_child(instance=self.home)
-        revision = self.home.save_revision()
-        self.home.publish(revision)
-        ReferenceIndex.create_or_update_for_object(self.home)
+        root_page.add_child(instance=self.welcome)
+        revision = self.welcome.save_revision()
+        self.welcome.publish(revision)
+        ReferenceIndex.create_or_update_for_object(self.welcome)
         self.published_rendition = self.published_image.get_rendition("width-400")
         self.unpublished_rendition = self.unpublished_image.get_rendition("width-400")
 
@@ -127,7 +127,7 @@ class RenditionsTestCase(APITestCase):
             self.published_rendition,
             self.unpublished_rendition,
         ]
-        self.home.delete()
+        self.welcome.delete()
         for image in images:
             path = Path(settings.MEDIA_ROOT).joinpath(str(image.file))
             if path.exists():
