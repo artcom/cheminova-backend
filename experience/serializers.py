@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import models  # noqa
 from rest_framework import serializers
 
-from .models import Welcome, CharacterOverview
+from .models import Welcome, CharacterOverview, ChooseCharacter
 
 
 class WelcomeModelSerializer(serializers.ModelSerializer):
@@ -46,3 +46,46 @@ class CharacterOverviewModelSerializer(serializers.ModelSerializer):
 
     def get_backgroundImageUrl(self, obj: CharacterOverview) -> str:
         return Welcome.objects.get(id=obj.get_parent().id).background_image.file.url
+
+
+class ChooseCharacterModelSerializer(serializers.ModelSerializer):
+    characterType = serializers.SerializerMethodField()
+    characterImageUrl = serializers.SerializerMethodField()
+    backgroundImageUrl = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ChooseCharacter
+        fields = [
+            "id",
+            "title",
+            "characterType",
+            "name",
+            "characterImageUrl",
+            "backgroundImageUrl",
+        ]
+        depth = 1
+
+    def get_characterType(self, obj: ChooseCharacter) -> str:
+        return obj.character_type if obj.character_type else ""
+
+    def get_characterImageUrl(self, obj: ChooseCharacter) -> str:
+        return (
+            settings.WAGTAILADMIN_BASE_URL + obj.character_image.file.url
+            if obj.character_image
+            else ""
+        )
+
+    def get_backgroundImageUrl(self, obj: ChooseCharacter) -> str:
+        welcome_ancestor = next(
+            (
+                ancestor
+                for ancestor in obj.get_ancestors()
+                if ancestor.get_content_type().model == "welcome"
+            ),
+            None,
+        )
+        return (
+            Welcome.objects.get(id=welcome_ancestor.id).background_image.file.url
+            if welcome_ancestor
+            else ""
+        )
