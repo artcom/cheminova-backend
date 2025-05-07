@@ -39,11 +39,3 @@ class CharacterOverviewViewSet(ReadOnlyModelViewSet):
 class ChooseCharacterViewSet(ReadOnlyModelViewSet):
     serializer_class = ChooseCharacterModelSerializer
     queryset = ChooseCharacter.objects.all()
-
-    def list(self, request: Request, *args, **kwargs) -> Response:
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        if not serializer.data:
-            return Response(status=204)
-        else:
-            return Response(serializer.data)
