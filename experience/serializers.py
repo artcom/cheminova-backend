@@ -2,7 +2,14 @@ from django.conf import settings
 from django.db import models  # noqa
 from rest_framework import serializers
 
-from .models import CharacterOverview, ChooseCharacter, Welcome
+from .models import (
+    CharacterOverview,
+    ChooseCharacter,
+    IntroSearchAndCollect,
+    Welcome,
+    PhotographyScreen,
+    YourCollection,
+)
 
 
 class WelcomeModelSerializer(serializers.ModelSerializer):
@@ -33,7 +40,8 @@ class WelcomeModelSerializer(serializers.ModelSerializer):
     def get_children(self, obj: Welcome) -> list:
         children = obj.get_children().live().specific()
         serializer = CharacterOverviewModelSerializer(children, many=True)
-        return serializer.data if serializer.data else []
+        children_urls = [data.get("selfUrl") for data in serializer.data]
+        return children_urls if serializer.data else []
 
     def get_selfUrl(self, obj: Welcome) -> str:
         return (
@@ -56,6 +64,7 @@ class CharacterOverviewModelSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "title",
+            "heading",
             "siteName",
             "backgroundImageUrl",
             "charactersImageUrl",
@@ -80,7 +89,8 @@ class CharacterOverviewModelSerializer(serializers.ModelSerializer):
     def get_children(self, obj: CharacterOverview) -> list:
         children = obj.get_children().live().specific()
         serializer = ChooseCharacterModelSerializer(children, many=True)
-        return serializer.data if serializer.data else []
+        children_urls = [data.get("selfUrl") for data in serializer.data]
+        return children_urls if serializer.data else []
 
     def get_selfUrl(self, obj: CharacterOverview) -> str:
         return (
@@ -95,6 +105,7 @@ class ChooseCharacterModelSerializer(serializers.ModelSerializer):
     characterType = serializers.SerializerMethodField()
     characterImageUrl = serializers.SerializerMethodField()
     backgroundImageUrl = serializers.SerializerMethodField()
+    children = serializers.SerializerMethodField()
     selfUrl = serializers.SerializerMethodField()
 
     class Meta:
@@ -106,6 +117,7 @@ class ChooseCharacterModelSerializer(serializers.ModelSerializer):
             "name",
             "characterImageUrl",
             "backgroundImageUrl",
+            "children",
             "selfUrl",
         ]
         depth = 1
@@ -136,10 +148,115 @@ class ChooseCharacterModelSerializer(serializers.ModelSerializer):
             else ""
         )
 
+    def get_children(self, obj: ChooseCharacter) -> list:
+        children = obj.get_children().live().specific()
+        serializer = IntroSearchAndCollectModelSerializer(children, many=True)
+        children_urls = [data.get("selfUrl") for data in serializer.data]
+        return children_urls if serializer.data else []
+
     def get_selfUrl(self, obj: ChooseCharacter) -> str:
         return (
             settings.WAGTAILADMIN_BASE_URL
             + settings.API_BASE_URL
             + "/choose-character/"
+            + str(obj.id)
+        )
+
+
+class IntroSearchAndCollectModelSerializer(serializers.ModelSerializer):
+    imageUrl = serializers.SerializerMethodField()
+    children = serializers.SerializerMethodField()
+    selfUrl = serializers.SerializerMethodField()
+
+    class Meta:
+        model = IntroSearchAndCollect
+        fields = [
+            "id",
+            "title",
+            "heading",
+            "description",
+            "imageUrl",
+            "children",
+            "selfUrl",
+        ]
+        depth = 1
+
+    def get_imageUrl(self, obj: IntroSearchAndCollect) -> str:
+        return settings.WAGTAILADMIN_BASE_URL + obj.image.file.url if obj.image else ""
+
+    def get_children(self, obj: IntroSearchAndCollect) -> list:
+        children = obj.get_children().live().specific()
+        serializer = PhotographyScreenModelSerializer(children, many=True)
+        children_urls = [data.get("selfUrl") for data in serializer.data]
+        return children_urls if serializer.data else []
+
+    def get_selfUrl(self, obj: IntroSearchAndCollect) -> str:
+        return (
+            settings.WAGTAILADMIN_BASE_URL
+            + settings.API_BASE_URL
+            + "/intro-search-and-collect/"
+            + str(obj.id)
+        )
+
+
+class PhotographyScreenModelSerializer(serializers.ModelSerializer):
+    children = serializers.SerializerMethodField()
+    selfUrl = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PhotographyScreen
+        fields = [
+            "id",
+            "title",
+            "heading",
+            "description",
+            "children",
+            "selfUrl",
+        ]
+        depth = 1
+
+    def get_children(self, obj: PhotographyScreen) -> list:
+        children = obj.get_children().live().specific()
+        serializer = YourCollectionModelSerializer(children, many=True)
+        children_urls = [data.get("selfUrl") for data in serializer.data]
+        return children_urls if serializer.data else []
+
+    def get_selfUrl(self, obj: PhotographyScreen) -> str:
+        return (
+            settings.WAGTAILADMIN_BASE_URL
+            + settings.API_BASE_URL
+            + "/photography-screen/"
+            + str(obj.id)
+        )
+
+
+class YourCollectionModelSerializer(serializers.ModelSerializer):
+    imageDescriptions = serializers.SerializerMethodField()
+    selfUrl = serializers.SerializerMethodField()
+
+    class Meta:
+        model = YourCollection
+        fields = [
+            "id",
+            "title",
+            "heading",
+            "imageDescriptions",
+            "selfUrl",
+        ]
+        depth = 1
+
+    def get_imageDescriptions(self, obj: YourCollection) -> list:
+        return [
+            image_description
+            for image_description in [
+                getattr(obj, f"image_description_{i}") for i in range(1, 4)
+            ]
+        ]
+
+    def get_selfUrl(self, obj: YourCollection) -> str:
+        return (
+            settings.WAGTAILADMIN_BASE_URL
+            + settings.API_BASE_URL
+            + "/your-collection/"
             + str(obj.id)
         )

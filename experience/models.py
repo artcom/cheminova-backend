@@ -30,6 +30,7 @@ class Welcome(Page):
 
 
 class CharacterOverview(Page):
+    heading = models.CharField(max_length=255, blank=True, null=True)
     onboarding = RichTextField()
     characters_image = models.ForeignKey(
         get_image_model_string(),
@@ -40,6 +41,7 @@ class CharacterOverview(Page):
     )
     search_fields = Page.search_fields
     content_panels = Page.content_panels + [
+        FieldPanel("heading"),
         FieldPanel("onboarding"),
         FieldPanel("characters_image"),
     ]
@@ -70,4 +72,55 @@ class ChooseCharacter(Page):
         FieldPanel("character_image"),
     ]
     parent_page_types = ["CharacterOverview"]
+    subpage_types = ["IntroSearchAndCollect"]
     max_count = 3
+
+
+class IntroSearchAndCollect(Page):
+    heading = models.CharField(max_length=255, blank=True, null=True)
+    description = RichTextField(null=True, blank=True)
+    image = models.ForeignKey(
+        get_image_model_string(),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    search_fields = Page.search_fields
+    content_panels = Page.content_panels + [
+        FieldPanel("heading"),
+        FieldPanel("description"),
+        FieldPanel("image"),
+    ]
+    parent_page_types = ["ChooseCharacter"]
+    subpage_types = ["PhotographyScreen"]
+    max_count = 1
+
+
+class PhotographyScreen(Page):
+    heading = models.CharField(max_length=255, blank=True, null=True)
+    description = RichTextField()
+    search_fields = Page.search_fields
+    content_panels = Page.content_panels + [
+        FieldPanel("heading"),
+        FieldPanel("description"),
+    ]
+    parent_page_types = ["IntroSearchAndCollect"]
+    subpage_types = ["YourCollection"]
+    max_count = 1
+
+
+class YourCollection(Page):
+    heading = models.CharField(max_length=255, blank=True, null=True)
+    image_description_1 = models.CharField(max_length=255, blank=True, null=True)
+    image_description_2 = models.CharField(max_length=255, blank=True, null=True)
+    image_description_3 = models.CharField(max_length=255, blank=True, null=True)
+    search_fields = Page.search_fields
+    content_panels = Page.content_panels + [
+        FieldPanel("heading"),
+        FieldPanel("image_description_1"),
+        FieldPanel("image_description_2"),
+        FieldPanel("image_description_3"),
+    ]
+    parent_page_types = ["PhotographyScreen"]
+    max_count = 1

@@ -2,11 +2,21 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
-from .models import Welcome, CharacterOverview, ChooseCharacter
+from .models import (
+    CharacterOverview,
+    ChooseCharacter,
+    IntroSearchAndCollect,
+    PhotographyScreen,
+    Welcome,
+    YourCollection,
+)
 from .serializers import (
-    WelcomeModelSerializer,
     CharacterOverviewModelSerializer,
     ChooseCharacterModelSerializer,
+    IntroSearchAndCollectModelSerializer,
+    PhotographyScreenModelSerializer,
+    WelcomeModelSerializer,
+    YourCollectionModelSerializer,
 )
 
 
@@ -39,3 +49,18 @@ class CharacterOverviewViewSet(ReadOnlyModelViewSet):
 class ChooseCharacterViewSet(ReadOnlyModelViewSet):
     serializer_class = ChooseCharacterModelSerializer
     queryset = ChooseCharacter.objects.all()
+
+
+class IntroSearchAndCollectViewSet(ReadOnlyModelViewSet):
+    serializer_class = IntroSearchAndCollectModelSerializer
+    queryset = IntroSearchAndCollect.objects.all()
+
+
+class PhotographyScreenViewSet(ReadOnlyModelViewSet):
+    serializer_class = PhotographyScreenModelSerializer
+    queryset = PhotographyScreen.objects.all()
+
+
+class YourCollectionViewSet(ReadOnlyModelViewSet):
+    serializer_class = YourCollectionModelSerializer
+    queryset = YourCollection.objects.all()

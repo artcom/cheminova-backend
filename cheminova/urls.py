@@ -10,7 +10,10 @@ from custom_images.views import CustomImageViewSet
 from experience.views import (
     CharacterOverviewViewSet,
     ChooseCharacterViewSet,
+    IntroSearchAndCollectViewSet,
+    PhotographyScreenViewSet,
     WelcomeViewSet,
+    YourCollectionViewSet,
 )
 from image_auth import urls as image_auth_urls
 from image_upload import urls as image_upload_urls
@@ -23,6 +26,15 @@ router.register(
 router.register(
     r"choose-character", ChooseCharacterViewSet, basename="choose-character"
 )
+router.register(
+    r"intro-search-and-collect",
+    IntroSearchAndCollectViewSet,
+    basename="intro-search-and-collect",
+)
+router.register(
+    r"photography-screen", PhotographyScreenViewSet, basename="photography-screen"
+)
+router.register(r"your-collection", YourCollectionViewSet, basename="your-collection")
 router.register(r"images", CustomImageViewSet, basename="images")
 
 urlpatterns = [
