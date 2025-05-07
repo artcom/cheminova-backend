@@ -5,8 +5,7 @@ from rest_framework import urls as rest_framework_urls
 from rest_framework.routers import DefaultRouter
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
-
-from custom_images.views import CustomImageViewSet
+from .endpoints import endpoints
 from experience.views import (
     CharacterOverviewViewSet,
     ChooseCharacterViewSet,
@@ -19,23 +18,20 @@ from image_auth import urls as image_auth_urls
 from image_upload import urls as image_upload_urls
 
 router = DefaultRouter()
-router.register(r"welcome", WelcomeViewSet, basename="welcome")
-router.register(
-    r"character-overview", CharacterOverviewViewSet, basename="character-overview"
-)
-router.register(
-    r"choose-character", ChooseCharacterViewSet, basename="choose-character"
-)
-router.register(
-    r"intro-search-and-collect",
+for viewset in [
+    WelcomeViewSet,
+    CharacterOverviewViewSet,
+    ChooseCharacterViewSet,
     IntroSearchAndCollectViewSet,
-    basename="intro-search-and-collect",
-)
-router.register(
-    r"photography-screen", PhotographyScreenViewSet, basename="photography-screen"
-)
-router.register(r"your-collection", YourCollectionViewSet, basename="your-collection")
-router.register(r"images", CustomImageViewSet, basename="images")
+    PhotographyScreenViewSet,
+    YourCollectionViewSet,
+]:
+    endpoint = endpoints[viewset.serializer_class.Meta.model.__name__.lower()]
+    router.register(
+        endpoint,
+        viewset,
+        endpoint,
+    )
 
 urlpatterns = [
     path("django-admin/", admin.site.urls),

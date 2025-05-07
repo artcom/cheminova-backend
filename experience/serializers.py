@@ -1,14 +1,18 @@
+import inspect
+import sys
+
 from django.conf import settings
 from django.db import models  # noqa
 from rest_framework import serializers
-import sys
-import inspect
+
+from cheminova.endpoints import endpoints
+
 from .models import (
     CharacterOverview,
     ChooseCharacter,
     IntroSearchAndCollect,
-    Welcome,
     PhotographyScreen,
+    Welcome,
     YourCollection,
 )
 
@@ -18,15 +22,7 @@ class PageModelSerializer(serializers.ModelSerializer):
     children = serializers.SerializerMethodField()
 
     def endpoint(self, obj: models.Model) -> str:
-        endpoints = dict(
-            welcome="/welcome",
-            characteroverview="/character-overview",
-            choosecharacter="/choose-character",
-            introsearchandcollect="/intro-search-and-collect",
-            photographyscreen="/photography-screen",
-            yourcollection="/your-collection",
-        )
-        return endpoints.get(obj.get_content_type().model)
+        return "/" + endpoints.get(obj.get_content_type().model)
 
     def serialize(self, obj: models.Model) -> serializers.ModelSerializer:
         serializer = next(
