@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.db import models  # noqa
 from rest_framework import serializers
-
+import sys
+import inspect
 from .models import (
     CharacterOverview,
     ChooseCharacter,
@@ -12,11 +13,58 @@ from .models import (
 )
 
 
-class WelcomeModelSerializer(serializers.ModelSerializer):
+class PageModelSerializer(serializers.ModelSerializer):
+    selfUrl = serializers.SerializerMethodField()
+    children = serializers.SerializerMethodField()
+
+    def endpoint(self, obj: models.Model) -> str:
+        endpoints = dict(
+            welcome="/welcome",
+            characteroverview="/character-overview",
+            choosecharacter="/choose-character",
+            introsearchandcollect="/intro-search-and-collect",
+            photographyscreen="/photography-screen",
+            yourcollection="/your-collection",
+        )
+        return endpoints.get(obj.get_content_type().model)
+
+    def serialize(self, obj: models.Model) -> serializers.ModelSerializer:
+        serializer = next(
+            (
+                serializer[1]
+                for serializer in inspect.getmembers(
+                    sys.modules[__name__], inspect.isclass
+                )
+                if issubclass(serializer[1], PageModelSerializer)
+                and hasattr(serializer[1], "Meta")
+                and serializer[1].Meta.model.__name__.lower()
+                == obj.get_content_type().model
+            ),
+            None,
+        )
+        return serializer(obj)
+
+    @staticmethod
+    def absolute_url(relative_url: str) -> str:
+        return settings.WAGTAILADMIN_BASE_URL + relative_url
+
+    def get_selfUrl(self, obj: models.Model) -> str:
+        return self.absolute_url(
+            settings.API_BASE_URL + self.endpoint(obj) + f"/{obj.id}"
+        )
+
+    def get_children(self, obj: models.Model) -> list:
+        children = obj.get_children().live().specific()
+        children_urls = [
+            data.get("selfUrl")
+            for data in [self.serialize(child).data for child in children]
+        ]
+        return children_urls
+
+
+class WelcomeModelSerializer(PageModelSerializer):
     backgroundImageUrl = serializers.SerializerMethodField()
     siteName = serializers.SerializerMethodField()
-    children = serializers.SerializerMethodField()
-    selfUrl = serializers.SerializerMethodField()
 
     class Meta:
         model = Welcome
@@ -32,32 +80,16 @@ class WelcomeModelSerializer(serializers.ModelSerializer):
         depth = 1
 
     def get_backgroundImageUrl(self, obj: Welcome) -> str:
-        return settings.WAGTAILADMIN_BASE_URL + obj.background_image.file.url
+        return self.absolute_url(obj.background_image.file.url)
 
     def get_siteName(self, obj: Welcome) -> str:
         return obj.site_name if obj.site_name else ""
 
-    def get_children(self, obj: Welcome) -> list:
-        children = obj.get_children().live().specific()
-        serializer = CharacterOverviewModelSerializer(children, many=True)
-        children_urls = [data.get("selfUrl") for data in serializer.data]
-        return children_urls if serializer.data else []
 
-    def get_selfUrl(self, obj: Welcome) -> str:
-        return (
-            settings.WAGTAILADMIN_BASE_URL
-            + settings.API_BASE_URL
-            + "/welcome/"
-            + str(obj.id)
-        )
-
-
-class CharacterOverviewModelSerializer(serializers.ModelSerializer):
+class CharacterOverviewModelSerializer(PageModelSerializer):
     charactersImageUrl = serializers.SerializerMethodField()
     backgroundImageUrl = serializers.SerializerMethodField()
     siteName = serializers.SerializerMethodField()
-    children = serializers.SerializerMethodField()
-    selfUrl = serializers.SerializerMethodField()
 
     class Meta:
         model = CharacterOverview
@@ -81,32 +113,15 @@ class CharacterOverviewModelSerializer(serializers.ModelSerializer):
         return Welcome.objects.get(id=obj.get_parent().id).site_name
 
     def get_backgroundImageUrl(self, obj: CharacterOverview) -> str:
-        return (
-            settings.WAGTAILADMIN_BASE_URL
-            + Welcome.objects.get(id=obj.get_parent().id).background_image.file.url
-        )
-
-    def get_children(self, obj: CharacterOverview) -> list:
-        children = obj.get_children().live().specific()
-        serializer = ChooseCharacterModelSerializer(children, many=True)
-        children_urls = [data.get("selfUrl") for data in serializer.data]
-        return children_urls if serializer.data else []
-
-    def get_selfUrl(self, obj: CharacterOverview) -> str:
-        return (
-            settings.WAGTAILADMIN_BASE_URL
-            + settings.API_BASE_URL
-            + "/character-overview/"
-            + str(obj.id)
+        return self.absolute_url(
+            Welcome.objects.get(id=obj.get_parent().id).background_image.file.url
         )
 
 
-class ChooseCharacterModelSerializer(serializers.ModelSerializer):
+class ChooseCharacterModelSerializer(PageModelSerializer):
     characterType = serializers.SerializerMethodField()
     characterImageUrl = serializers.SerializerMethodField()
     backgroundImageUrl = serializers.SerializerMethodField()
-    children = serializers.SerializerMethodField()
-    selfUrl = serializers.SerializerMethodField()
 
     class Meta:
         model = ChooseCharacter
@@ -142,31 +157,16 @@ class ChooseCharacterModelSerializer(serializers.ModelSerializer):
             None,
         )
         return (
-            settings.WAGTAILADMIN_BASE_URL
-            + Welcome.objects.get(id=welcome_ancestor.id).background_image.file.url
+            self.absolute_url(
+                Welcome.objects.get(id=welcome_ancestor.id).background_image.file.url
+            )
             if welcome_ancestor
             else ""
         )
 
-    def get_children(self, obj: ChooseCharacter) -> list:
-        children = obj.get_children().live().specific()
-        serializer = IntroSearchAndCollectModelSerializer(children, many=True)
-        children_urls = [data.get("selfUrl") for data in serializer.data]
-        return children_urls if serializer.data else []
 
-    def get_selfUrl(self, obj: ChooseCharacter) -> str:
-        return (
-            settings.WAGTAILADMIN_BASE_URL
-            + settings.API_BASE_URL
-            + "/choose-character/"
-            + str(obj.id)
-        )
-
-
-class IntroSearchAndCollectModelSerializer(serializers.ModelSerializer):
+class IntroSearchAndCollectModelSerializer(PageModelSerializer):
     imageUrl = serializers.SerializerMethodField()
-    children = serializers.SerializerMethodField()
-    selfUrl = serializers.SerializerMethodField()
 
     class Meta:
         model = IntroSearchAndCollect
@@ -182,27 +182,10 @@ class IntroSearchAndCollectModelSerializer(serializers.ModelSerializer):
         depth = 1
 
     def get_imageUrl(self, obj: IntroSearchAndCollect) -> str:
-        return settings.WAGTAILADMIN_BASE_URL + obj.image.file.url if obj.image else ""
-
-    def get_children(self, obj: IntroSearchAndCollect) -> list:
-        children = obj.get_children().live().specific()
-        serializer = PhotographyScreenModelSerializer(children, many=True)
-        children_urls = [data.get("selfUrl") for data in serializer.data]
-        return children_urls if serializer.data else []
-
-    def get_selfUrl(self, obj: IntroSearchAndCollect) -> str:
-        return (
-            settings.WAGTAILADMIN_BASE_URL
-            + settings.API_BASE_URL
-            + "/intro-search-and-collect/"
-            + str(obj.id)
-        )
+        return self.absolute_url(obj.image.file.url) if obj.image else ""
 
 
-class PhotographyScreenModelSerializer(serializers.ModelSerializer):
-    children = serializers.SerializerMethodField()
-    selfUrl = serializers.SerializerMethodField()
-
+class PhotographyScreenModelSerializer(PageModelSerializer):
     class Meta:
         model = PhotographyScreen
         fields = [
@@ -215,24 +198,9 @@ class PhotographyScreenModelSerializer(serializers.ModelSerializer):
         ]
         depth = 1
 
-    def get_children(self, obj: PhotographyScreen) -> list:
-        children = obj.get_children().live().specific()
-        serializer = YourCollectionModelSerializer(children, many=True)
-        children_urls = [data.get("selfUrl") for data in serializer.data]
-        return children_urls if serializer.data else []
 
-    def get_selfUrl(self, obj: PhotographyScreen) -> str:
-        return (
-            settings.WAGTAILADMIN_BASE_URL
-            + settings.API_BASE_URL
-            + "/photography-screen/"
-            + str(obj.id)
-        )
-
-
-class YourCollectionModelSerializer(serializers.ModelSerializer):
+class YourCollectionModelSerializer(PageModelSerializer):
     imageDescriptions = serializers.SerializerMethodField()
-    selfUrl = serializers.SerializerMethodField()
 
     class Meta:
         model = YourCollection
@@ -252,11 +220,3 @@ class YourCollectionModelSerializer(serializers.ModelSerializer):
                 getattr(obj, f"image_description_{i}") for i in range(1, 4)
             ]
         ]
-
-    def get_selfUrl(self, obj: YourCollection) -> str:
-        return (
-            settings.WAGTAILADMIN_BASE_URL
-            + settings.API_BASE_URL
-            + "/your-collection/"
-            + str(obj.id)
-        )
