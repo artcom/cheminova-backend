@@ -1,6 +1,5 @@
 from django.db import models  # noqa F401
 from wagtail.admin.panels import FieldPanel
-from wagtail.api import APIField
 from wagtail.images import get_image_model_string
 from wagtail.models import Page
 from wagtail.search.index import SearchField
@@ -24,12 +23,6 @@ class Welcome(Page):
         FieldPanel("description"),
         FieldPanel("site_name"),
         FieldPanel("background_image"),
-    ]
-    api_fields = [
-        APIField("title"),
-        APIField("site_name"),
-        APIField("background_image"),
-        APIField("description"),
     ]
     parent_page_types = ["wagtailcore.Page"]
     subpage_types = ["CharacterOverview"]
