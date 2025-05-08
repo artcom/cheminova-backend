@@ -44,6 +44,16 @@ class PageModelSerializer(serializers.ModelSerializer):
     def absolute_url(relative_url: str) -> str:
         return settings.WAGTAILADMIN_BASE_URL + relative_url
 
+    def welcome_page(self, obj: models.Model) -> Welcome:
+        return next(
+            (
+                ancestor
+                for ancestor in obj.get_ancestors(inclusive=True).live().specific()
+                if ancestor.get_content_type().model == "welcome"
+            ),
+            None,
+        )
+
     def get_selfUrl(self, obj: models.Model) -> str:
         return self.absolute_url(
             settings.API_BASE_URL + self.endpoint(obj) + f"/{obj.id}"
@@ -76,7 +86,11 @@ class WelcomeModelSerializer(PageModelSerializer):
         depth = 1
 
     def get_backgroundImageUrl(self, obj: Welcome) -> str:
-        return self.absolute_url(obj.background_image.file.url)
+        return (
+            self.absolute_url(obj.background_image.file.url)
+            if obj.background_image
+            else ""
+        )
 
     def get_siteName(self, obj: Welcome) -> str:
         return obj.site_name if obj.site_name else ""
@@ -103,15 +117,19 @@ class CharacterOverviewModelSerializer(PageModelSerializer):
         depth = 1
 
     def get_charactersImageUrl(self, obj: CharacterOverview) -> str:
-        return settings.WAGTAILADMIN_BASE_URL + obj.characters_image.file.url
+        return (
+            self.absolute_url(obj.characters_image.file.url)
+            if obj.characters_image
+            else ""
+        )
 
     def get_siteName(self, obj: CharacterOverview) -> str:
-        return Welcome.objects.get(id=obj.get_parent().id).site_name
+        welcome = self.welcome_page(obj)
+        return self.serialize(welcome).get_siteName(welcome)
 
     def get_backgroundImageUrl(self, obj: CharacterOverview) -> str:
-        return self.absolute_url(
-            Welcome.objects.get(id=obj.get_parent().id).background_image.file.url
-        )
+        welcome = self.welcome_page(obj)
+        return self.serialize(welcome).get_backgroundImageUrl(welcome)
 
 
 class ChooseCharacterModelSerializer(PageModelSerializer):
@@ -138,27 +156,14 @@ class ChooseCharacterModelSerializer(PageModelSerializer):
 
     def get_characterImageUrl(self, obj: ChooseCharacter) -> str:
         return (
-            settings.WAGTAILADMIN_BASE_URL + obj.character_image.file.url
+            self.absolute_url(obj.character_image.file.url)
             if obj.character_image
             else ""
         )
 
     def get_backgroundImageUrl(self, obj: ChooseCharacter) -> str:
-        welcome_ancestor = next(
-            (
-                ancestor
-                for ancestor in obj.get_ancestors()
-                if ancestor.get_content_type().model == "welcome"
-            ),
-            None,
-        )
-        return (
-            self.absolute_url(
-                Welcome.objects.get(id=welcome_ancestor.id).background_image.file.url
-            )
-            if welcome_ancestor
-            else ""
-        )
+        welcome = self.welcome_page(obj)
+        return self.serialize(welcome).get_backgroundImageUrl(welcome)
 
 
 class IntroSearchAndCollectModelSerializer(PageModelSerializer):
