@@ -1,5 +1,5 @@
-from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from .models import CustomImage
 from .serializers import CustomImageModelSerializer

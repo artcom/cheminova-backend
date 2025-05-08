@@ -9,8 +9,9 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from wagtail.images import get_image_model
-from experience.models import Welcome
 from wagtail.models import Page, ReferenceIndex
+
+from experience.models import Welcome
 
 
 def get_test_image_file(filename="test.png", colour="white", size=(640, 480)):

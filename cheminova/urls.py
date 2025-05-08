@@ -5,7 +5,7 @@ from rest_framework import urls as rest_framework_urls
 from rest_framework.routers import DefaultRouter
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
-from .api_endpoints import endpoints
+
 from experience.views import (
     CharacterOverviewViewSet,
     ChooseCharacterViewSet,
@@ -16,6 +16,8 @@ from experience.views import (
 )
 from image_auth import urls as image_auth_urls
 from image_upload import urls as image_upload_urls
+
+from .api_endpoints import endpoints
 
 router = DefaultRouter()
 for viewset in [
