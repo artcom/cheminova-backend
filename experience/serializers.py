@@ -215,9 +215,4 @@ class YourCollectionModelSerializer(PageModelSerializer):
         depth = 1
 
     def get_imageDescriptions(self, obj: YourCollection) -> list:
-        return [
-            image_description
-            for image_description in [
-                getattr(obj, f"image_description_{i}") for i in range(1, 4)
-            ]
-        ]
+        return obj.image_descriptions.all().values_list("description", flat=True)

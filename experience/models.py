@@ -1,9 +1,10 @@
 from django.db import models  # noqa F401
-from wagtail.admin.panels import FieldPanel
+from wagtail.admin.panels import FieldPanel, InlinePanel
 from wagtail.images import get_image_model_string
-from wagtail.models import Page
+from wagtail.models import Page, Orderable
 from wagtail.search.index import SearchField
 from wagtail.fields import RichTextField
+from modelcluster.fields import ParentalKey
 
 
 class Welcome(Page):
@@ -112,15 +113,22 @@ class PhotographyScreen(Page):
 
 class YourCollection(Page):
     heading = models.CharField(max_length=255, blank=True, null=True)
-    image_description_1 = models.CharField(max_length=255, blank=True, null=True)
-    image_description_2 = models.CharField(max_length=255, blank=True, null=True)
-    image_description_3 = models.CharField(max_length=255, blank=True, null=True)
     search_fields = Page.search_fields
     content_panels = Page.content_panels + [
         FieldPanel("heading"),
-        FieldPanel("image_description_1"),
-        FieldPanel("image_description_2"),
-        FieldPanel("image_description_3"),
+        InlinePanel(
+            "image_descriptions", label="Image Descriptions", min_num=3, max_num=3
+        ),
     ]
     parent_page_types = ["PhotographyScreen"]
     max_count = 1
+
+
+class ImageDescription(Orderable):
+    page = ParentalKey(
+        YourCollection,
+        on_delete=models.CASCADE,
+        related_name="image_descriptions",
+    )
+    description = models.CharField(max_length=255, blank=True, null=True)
+    panels = [FieldPanel("description")]
