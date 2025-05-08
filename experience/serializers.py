@@ -5,7 +5,7 @@ from django.conf import settings
 from django.db import models  # noqa
 from rest_framework import serializers
 
-from cheminova.endpoints import endpoints
+from cheminova.api_endpoints import endpoints
 
 from .models import (
     CharacterOverview,
