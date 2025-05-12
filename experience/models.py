@@ -100,7 +100,7 @@ class IntroSearchAndCollect(Page):
 
 class PhotographyScreen(Page):
     heading = models.CharField(max_length=255, blank=True, null=True)
-    description = RichTextField()
+    description = RichTextField(null=True, blank=True)
     search_fields = Page.search_fields
     content_panels = Page.content_panels + [
         FieldPanel("heading"),
