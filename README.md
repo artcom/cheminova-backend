@@ -45,48 +45,31 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 
 ## Installation
 
-1. Clone the repo
+Clone the repo:
 
 `git clone ***REMOVED***
 cd cheminova-backend`
 
-3. Install Python dependencies
-
-`uv sync --locked`
-
-4. Apply database migrations
-
-`uv run manage.py migrate`
-
-5. Create a superuser
-
-`uv run manage.py createsuperuser`
-
-6. Collect static files
-
-`uv run manage.py collectstatic --noinput`
-
-## Local Development (Python)
-
-Start the development server (with auto-reload):
-
-`uv run manage.py runserver 0.0.0.0:8000`
-
-    •	Admin UI: http://localhost:8000/admin/
-    •	Wagtail pages: http://localhost:8000/
-
-## Running Tests
-
-`uv run manage.py test`
-
 ## Local Development (Docker Compose)
 
-Bring up the full stack (Postgres, Wagtail, Nginx):
+1. Bring up the full stack (Postgres, Wagtail, Nginx, Minio):
 
 `docker compose up --watch`
 
     •	Wagtail runs at http://localhost:8000/
     •	Nginx proxy at http://localhost:8080/
+
+4. Apply database migrations
+
+`docker compose exec wagtail uv run manage.py migrate`
+
+5. Create a superuser
+
+`docker compose exec wagtail uv run manage.py createsuperuser`
+
+## Running Tests
+
+`docker compose exec wagtail uv run manage.py test`
 
 ## Deployment
 

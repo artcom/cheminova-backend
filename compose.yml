@@ -35,18 +35,12 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        DJANGO_SETTINGS_MODULE: "cheminova.settings.dev_compose"
+        DJANGO_SETTINGS_MODULE: "cheminova.settings.dev"
     develop:
       watch:
         - action: sync
           path: .
           target: /app
-          ignore:
-            - .venv/
-        - action: rebuild
-          path: ./pyproject.toml
-        - action: rebuild
-          path: ./uv.lock
     command: ["uv", "run", "manage.py", "runserver", "0.0.0.0:8000"]
     ports:
       - target: 8000
