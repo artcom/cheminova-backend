@@ -95,7 +95,7 @@ class IntroSearchAndCollect(Page):
     ]
     parent_page_types = ["ChooseCharacter"]
     subpage_types = ["PhotographyScreen"]
-    max_count = 1
+    max_count_per_parent = 1
 
 
 class PhotographyScreen(Page):
@@ -108,7 +108,7 @@ class PhotographyScreen(Page):
     ]
     parent_page_types = ["IntroSearchAndCollect"]
     subpage_types = ["YourCollection"]
-    max_count = 1
+    max_count_per_parent = 1
 
 
 class YourCollection(Page):
@@ -121,7 +121,7 @@ class YourCollection(Page):
         ),
     ]
     parent_page_types = ["PhotographyScreen"]
-    max_count = 1
+    max_count_per_parent = 1
 
 
 class ImageDescription(Orderable):
