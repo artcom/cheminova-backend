@@ -59,11 +59,11 @@ cd cheminova-backend`
     •	Wagtail runs at http://localhost:8000/
     •	Nginx proxy at http://localhost:8080/
 
-4. Apply database migrations
+2. Apply database migrations
 
 `docker compose exec wagtail uv run manage.py migrate`
 
-5. Create a superuser
+3. Create a superuser
 
 `docker compose exec wagtail uv run manage.py createsuperuser`
 
