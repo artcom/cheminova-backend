@@ -17,32 +17,32 @@ from .models import (
 )
 
 
+def absolute_url(relative_url: str) -> str:
+    return settings.WAGTAILADMIN_BASE_URL + relative_url
+
+
+def serialize(obj: models.Model) -> serializers.ModelSerializer:
+    serializer = next(
+        (
+            serializer[1]
+            for serializer in inspect.getmembers(sys.modules[__name__], inspect.isclass)
+            if issubclass(serializer[1], PageModelSerializer)
+            and hasattr(serializer[1], "Meta")
+            and serializer[1].Meta.model.__name__.lower()
+            == obj.get_content_type().model
+        ),
+        None,
+    )
+    return serializer(obj)
+
+
 class PageModelSerializer(serializers.ModelSerializer):
     selfUrl = serializers.SerializerMethodField()
+    children_urls = serializers.SerializerMethodField()
     children = serializers.SerializerMethodField()
 
     def endpoint(self, obj: models.Model) -> str:
         return "/" + endpoints.get(obj.get_content_type().model)
-
-    def serialize(self, obj: models.Model) -> serializers.ModelSerializer:
-        serializer = next(
-            (
-                serializer[1]
-                for serializer in inspect.getmembers(
-                    sys.modules[__name__], inspect.isclass
-                )
-                if issubclass(serializer[1], PageModelSerializer)
-                and hasattr(serializer[1], "Meta")
-                and serializer[1].Meta.model.__name__.lower()
-                == obj.get_content_type().model
-            ),
-            None,
-        )
-        return serializer(obj)
-
-    @staticmethod
-    def absolute_url(relative_url: str) -> str:
-        return settings.WAGTAILADMIN_BASE_URL + relative_url
 
     def welcome_page(self, obj: models.Model) -> Welcome:
         return next(
@@ -55,17 +55,19 @@ class PageModelSerializer(serializers.ModelSerializer):
         )
 
     def get_selfUrl(self, obj: models.Model) -> str:
-        return self.absolute_url(
-            settings.API_BASE_URL + self.endpoint(obj) + f"/{obj.id}"
-        )
+        return absolute_url(settings.API_BASE_URL + self.endpoint(obj) + f"/{obj.id}")
 
-    def get_children(self, obj: models.Model) -> list:
+    def get_children_urls(self, obj: models.Model) -> list:
         children = obj.get_children().live().specific()
         children_urls = [
             data.get("selfUrl")
-            for data in [self.serialize(child).data for child in children]
+            for data in [serialize(child).data for child in children]
         ]
         return children_urls
+
+    def get_children(self, obj: models.Model) -> list:
+        children = obj.get_children().live().specific()
+        return [serialize(child).data for child in children]
 
 
 class WelcomeModelSerializer(PageModelSerializer):
@@ -80,16 +82,14 @@ class WelcomeModelSerializer(PageModelSerializer):
             "description",
             "siteName",
             "backgroundImageUrl",
-            "children",
+            "children_urls",
             "selfUrl",
         ]
         depth = 1
 
     def get_backgroundImageUrl(self, obj: Welcome) -> str:
         return (
-            self.absolute_url(obj.background_image.file.url)
-            if obj.background_image
-            else ""
+            absolute_url(obj.background_image.file.url) if obj.background_image else ""
         )
 
     def get_siteName(self, obj: Welcome) -> str:
@@ -111,6 +111,7 @@ class CharacterOverviewModelSerializer(PageModelSerializer):
             "backgroundImageUrl",
             "charactersImageUrl",
             "onboarding",
+            "children_urls",
             "children",
             "selfUrl",
         ]
@@ -118,18 +119,16 @@ class CharacterOverviewModelSerializer(PageModelSerializer):
 
     def get_charactersImageUrl(self, obj: CharacterOverview) -> str:
         return (
-            self.absolute_url(obj.characters_image.file.url)
-            if obj.characters_image
-            else ""
+            absolute_url(obj.characters_image.file.url) if obj.characters_image else ""
         )
 
     def get_siteName(self, obj: CharacterOverview) -> str:
         welcome = self.welcome_page(obj)
-        return self.serialize(welcome).get_siteName(welcome)
+        return serialize(welcome).get_siteName(welcome)
 
     def get_backgroundImageUrl(self, obj: CharacterOverview) -> str:
         welcome = self.welcome_page(obj)
-        return self.serialize(welcome).get_backgroundImageUrl(welcome)
+        return serialize(welcome).get_backgroundImageUrl(welcome)
 
 
 class ChooseCharacterModelSerializer(PageModelSerializer):
@@ -146,6 +145,7 @@ class ChooseCharacterModelSerializer(PageModelSerializer):
             "name",
             "characterImageUrl",
             "backgroundImageUrl",
+            "children_urls",
             "children",
             "selfUrl",
         ]
@@ -155,15 +155,11 @@ class ChooseCharacterModelSerializer(PageModelSerializer):
         return obj.character_type if obj.character_type else ""
 
     def get_characterImageUrl(self, obj: ChooseCharacter) -> str:
-        return (
-            self.absolute_url(obj.character_image.file.url)
-            if obj.character_image
-            else ""
-        )
+        return absolute_url(obj.character_image.file.url) if obj.character_image else ""
 
     def get_backgroundImageUrl(self, obj: ChooseCharacter) -> str:
         welcome = self.welcome_page(obj)
-        return self.serialize(welcome).get_backgroundImageUrl(welcome)
+        return serialize(welcome).get_backgroundImageUrl(welcome)
 
 
 class IntroSearchAndCollectModelSerializer(PageModelSerializer):
@@ -177,13 +173,14 @@ class IntroSearchAndCollectModelSerializer(PageModelSerializer):
             "heading",
             "description",
             "imageUrl",
+            "children_urls",
             "children",
             "selfUrl",
         ]
         depth = 1
 
     def get_imageUrl(self, obj: IntroSearchAndCollect) -> str:
-        return self.absolute_url(obj.image.file.url) if obj.image else ""
+        return absolute_url(obj.image.file.url) if obj.image else ""
 
 
 class PhotographyScreenModelSerializer(PageModelSerializer):
@@ -194,6 +191,7 @@ class PhotographyScreenModelSerializer(PageModelSerializer):
             "title",
             "heading",
             "description",
+            "children_urls",
             "children",
             "selfUrl",
         ]

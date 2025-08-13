@@ -25,6 +25,8 @@ class WelcomeViewSet(ReadOnlyModelViewSet):
     queryset = Welcome.objects.all()
 
     def list(self, request: Request, *args, **kwargs) -> Response:
+        if request.query_params.get("withChildren", "false").lower() == "true":
+            self.serializer_class.Meta.fields.append("children")
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         if not serializer.data:
