@@ -36,6 +36,12 @@ def serialize(obj: models.Model) -> serializers.ModelSerializer:
     return serializer(obj)
 
 
+def get_serialized_data(child):
+    serializer = serialize(child)
+    serializer.context.update(with_children=True)
+    return serializer.data
+
+
 class PageModelSerializer(serializers.ModelSerializer):
     selfUrl = serializers.SerializerMethodField()
     children_urls = serializers.SerializerMethodField()
@@ -66,8 +72,20 @@ class PageModelSerializer(serializers.ModelSerializer):
         return children_urls
 
     def get_children(self, obj: models.Model) -> list:
-        children = obj.get_children().live().specific()
-        return [serialize(child).data for child in children]
+        if (
+            self.context.get("request")
+            and self.context["request"]
+            .query_params.get("withChildren", "false")
+            .lower()
+            == "true"
+        ):
+            self.context.update(with_children=True)
+        with_children = self.context.get("with_children", False)
+        if not with_children:
+            return self.get_children_urls(obj)
+        else:
+            children = obj.get_children().live().specific()
+            return [get_serialized_data(child) for child in children]
 
 
 class WelcomeModelSerializer(PageModelSerializer):
@@ -82,7 +100,7 @@ class WelcomeModelSerializer(PageModelSerializer):
             "description",
             "siteName",
             "backgroundImageUrl",
-            "children_urls",
+            "children",
             "selfUrl",
         ]
         depth = 1
@@ -111,7 +129,6 @@ class CharacterOverviewModelSerializer(PageModelSerializer):
             "backgroundImageUrl",
             "charactersImageUrl",
             "onboarding",
-            "children_urls",
             "children",
             "selfUrl",
         ]
@@ -145,7 +162,6 @@ class ChooseCharacterModelSerializer(PageModelSerializer):
             "name",
             "characterImageUrl",
             "backgroundImageUrl",
-            "children_urls",
             "children",
             "selfUrl",
         ]
@@ -173,7 +189,6 @@ class IntroSearchAndCollectModelSerializer(PageModelSerializer):
             "heading",
             "description",
             "imageUrl",
-            "children_urls",
             "children",
             "selfUrl",
         ]
@@ -191,7 +206,6 @@ class PhotographyScreenModelSerializer(PageModelSerializer):
             "title",
             "heading",
             "description",
-            "children_urls",
             "children",
             "selfUrl",
         ]
