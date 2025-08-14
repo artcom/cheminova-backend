@@ -1,11 +1,6 @@
-import inspect
-import sys
-
 from django.conf import settings
 from django.db import models  # noqa
 from rest_framework import serializers
-
-from cheminova.api_endpoints import endpoints
 
 from .models import (
     CharacterOverview,
@@ -14,6 +9,7 @@ from .models import (
     PhotographyScreen,
     Welcome,
     YourCollection,
+    model_endpoints,
 )
 
 
@@ -22,18 +18,7 @@ def absolute_url(relative_url: str) -> str:
 
 
 def serialize(obj: models.Model) -> serializers.ModelSerializer:
-    serializer = next(
-        (
-            serializer[1]
-            for serializer in inspect.getmembers(sys.modules[__name__], inspect.isclass)
-            if issubclass(serializer[1], PageModelSerializer)
-            and hasattr(serializer[1], "Meta")
-            and serializer[1].Meta.model.__name__.lower()
-            == obj.get_content_type().model
-        ),
-        None,
-    )
-    return serializer(obj)
+    return globals()[f"{obj.__class__.__name__}ModelSerializer"](obj)
 
 
 def get_serialized_data(child):
@@ -48,7 +33,7 @@ class PageModelSerializer(serializers.ModelSerializer):
     children = serializers.SerializerMethodField()
 
     def endpoint(self, obj: models.Model) -> str:
-        return "/" + endpoints.get(obj.get_content_type().model)
+        return f"/{model_endpoints.get(obj.__class__.__name__)}"
 
     def welcome_page(self, obj: models.Model) -> Welcome:
         return next(
