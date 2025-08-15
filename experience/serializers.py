@@ -21,7 +21,7 @@ def serialize(obj: models.Model) -> serializers.ModelSerializer:
     return globals()[f"{obj.__class__.__name__}ModelSerializer"](obj)
 
 
-def get_serialized_data(child, context):
+def get_serialized_data(child: models.Model, context: dict) -> dict:
     serializer = serialize(child)
     serializer.context.update(context)
     return serializer.data
