@@ -59,10 +59,8 @@ class PageModelSerializer(serializers.ModelSerializer):
         return children_urls
 
     def get_children(self, obj: models.Model) -> list:
-        query_params = (
-            self.context["request"].query_params if self.context.get("request") else {}
-        )
-        if query_params.get("depth"):
+        query_params = self.context.get("query_params", {})
+        if query_params.get("depth") is not None:
             if not self.context.get("iteration"):
                 self.context.update(iteration=0)
             if self.context["iteration"] >= int(query_params.get("depth")):
@@ -216,3 +214,7 @@ class YourCollectionModelSerializer(PageModelSerializer):
 
     def get_imageDescriptions(self, obj: YourCollection) -> list:
         return obj.image_descriptions.all().values_list("description", flat=True)
+
+
+class QueryParamsSerializer(serializers.Serializer):
+    depth = serializers.IntegerField(required=False)
