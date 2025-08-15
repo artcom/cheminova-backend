@@ -27,26 +27,28 @@ def get_serialized_data(child, context):
     return serializer.data
 
 
+def endpoint(obj: models.Model) -> str:
+    return f"/{model_endpoints.get(obj.__class__.__name__)}"
+
+
+def welcome_page(self, obj: models.Model) -> Welcome:
+    return next(
+        (
+            ancestor
+            for ancestor in obj.get_ancestors(inclusive=True).live().specific()
+            if ancestor.get_content_type().model == "welcome"
+        ),
+        None,
+    )
+
+
 class PageModelSerializer(serializers.ModelSerializer):
     selfUrl = serializers.SerializerMethodField()
     children_urls = serializers.SerializerMethodField()
     children = serializers.SerializerMethodField()
 
-    def endpoint(self, obj: models.Model) -> str:
-        return f"/{model_endpoints.get(obj.__class__.__name__)}"
-
-    def welcome_page(self, obj: models.Model) -> Welcome:
-        return next(
-            (
-                ancestor
-                for ancestor in obj.get_ancestors(inclusive=True).live().specific()
-                if ancestor.get_content_type().model == "welcome"
-            ),
-            None,
-        )
-
     def get_selfUrl(self, obj: models.Model) -> str:
-        return absolute_url(settings.API_BASE_URL + self.endpoint(obj) + f"/{obj.id}")
+        return absolute_url(settings.API_BASE_URL + endpoint(obj) + f"/{obj.id}")
 
     def get_children_urls(self, obj: models.Model) -> list:
         children = obj.get_children().live().specific()
@@ -126,11 +128,11 @@ class CharacterOverviewModelSerializer(PageModelSerializer):
         )
 
     def get_siteName(self, obj: CharacterOverview) -> str:
-        welcome = self.welcome_page(obj)
+        welcome = welcome_page(obj)
         return serialize(welcome).get_siteName(welcome)
 
     def get_backgroundImageUrl(self, obj: CharacterOverview) -> str:
-        welcome = self.welcome_page(obj)
+        welcome = welcome_page(obj)
         return serialize(welcome).get_backgroundImageUrl(welcome)
 
 
@@ -160,7 +162,7 @@ class ChooseCharacterModelSerializer(PageModelSerializer):
         return absolute_url(obj.character_image.file.url) if obj.character_image else ""
 
     def get_backgroundImageUrl(self, obj: ChooseCharacter) -> str:
-        welcome = self.welcome_page(obj)
+        welcome = welcome_page(obj)
         return serialize(welcome).get_backgroundImageUrl(welcome)
 
 
