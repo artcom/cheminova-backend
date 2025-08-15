@@ -33,30 +33,26 @@ class QueryParametersMixin:
         return context
 
 
-class WelcomeViewSet(QueryParametersMixin, ReadOnlyModelViewSet):
+class SingletonMixin:
+    def list(self, request: Request, *args, **kwargs) -> Response:
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        if not serializer.data:
+            return Response(status=204)
+        else:
+            return Response(serializer.data[0])
+
+
+class WelcomeViewSet(QueryParametersMixin, SingletonMixin, ReadOnlyModelViewSet):
     serializer_class = WelcomeModelSerializer
     queryset = Welcome.objects.all()
 
-    def list(self, request: Request, *args, **kwargs) -> Response:
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        if not serializer.data:
-            return Response(status=204)
-        else:
-            return Response(serializer.data[0])
 
-
-class CharacterOverviewViewSet(QueryParametersMixin, ReadOnlyModelViewSet):
+class CharacterOverviewViewSet(
+    QueryParametersMixin, SingletonMixin, ReadOnlyModelViewSet
+):
     serializer_class = CharacterOverviewModelSerializer
     queryset = CharacterOverview.objects.all()
-
-    def list(self, request: Request, *args, **kwargs) -> Response:
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        if not serializer.data:
-            return Response(status=204)
-        else:
-            return Response(serializer.data[0])
 
 
 class ChooseCharacterViewSet(QueryParametersMixin, ReadOnlyModelViewSet):
