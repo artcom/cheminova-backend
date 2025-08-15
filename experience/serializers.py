@@ -56,7 +56,7 @@ class CamelCaseMixin:
 
 class PageModelSerializer(CamelCaseMixin, serializers.ModelSerializer):
     selfUrl = serializers.SerializerMethodField()
-    children_urls = serializers.SerializerMethodField()
+    # children_urls = serializers.SerializerMethodField()
     children = serializers.SerializerMethodField()
 
     def get_selfUrl(self, obj: models.Model) -> str:
@@ -86,20 +86,34 @@ class PageModelSerializer(CamelCaseMixin, serializers.ModelSerializer):
             return [get_serialized_data(child, self.context) for child in children]
 
 
-class WelcomeModelSerializer(PageModelSerializer):
-    background_image = ImageModelSerializer()
+def create_welcome_model_serializer():
+    page_model_serializer_extra_fields = [
+        "children",
+        "selfUrl",
+    ]
+    image_field_names = [
+        field.name
+        for field in Welcome._meta.get_fields()
+        if isinstance(field, models.fields.related.ForeignKey)
+        and field.related_model == get_image_model()
+    ]
+    image_fields = {name: ImageModelSerializer() for name in image_field_names}
 
     class Meta:
         model = Welcome
-        fields = [
-            "title",
-            "description",
-            "site_name",
-            "background_image",
-            "children",
-            "selfUrl",
-        ]
-        depth = 1
+        fields = Welcome.api_fields + page_model_serializer_extra_fields
+
+    return type(
+        "WelcomeModelSerializer",
+        (PageModelSerializer,),
+        {
+            **image_fields,
+            "Meta": Meta,
+        },
+    )
+
+
+WelcomeModelSerializer = create_welcome_model_serializer()
 
 
 class CharacterOverviewModelSerializer(PageModelSerializer):

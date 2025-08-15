@@ -34,6 +34,12 @@ class Welcome(Page):
         FieldPanel("site_name"),
         FieldPanel("background_image"),
     ]
+    api_fields = [
+        "title",
+        "description",
+        "site_name",
+        "background_image",
+    ]
     parent_page_types = ["wagtailcore.Page"]
     subpage_types = ["CharacterOverview"]
     max_count = 1
