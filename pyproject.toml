@@ -4,10 +4,17 @@ version = "1.6.4"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = ["gunicorn", "psycopg2-binary", "wagtail"]
+dependencies = [
+    "gunicorn>=23.0.0",
+    "psycopg2-binary>=2.9.10",
+    "wagtail>=7.1",
+]
 
 [dependency-groups]
-dev = ["ruff>=0.11.7", "django-cors-headers"]
+dev = [
+    "django-cors-headers>=4.7.0",
+    "ruff>=0.11.7",
+]
 
 [tool.ruff]
 exclude = [".venv", ".git", ".vscode", "__pycache__"]
