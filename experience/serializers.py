@@ -31,7 +31,7 @@ def endpoint(obj: models.Model) -> str:
     return f"/{model_endpoints.get(obj.__class__.__name__)}"
 
 
-def welcome_page(self, obj: models.Model) -> Welcome:
+def welcome_page(obj: models.Model) -> Welcome:
     return next(
         (
             ancestor
