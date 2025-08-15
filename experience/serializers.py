@@ -21,9 +21,9 @@ def serialize(obj: models.Model) -> serializers.ModelSerializer:
     return globals()[f"{obj.__class__.__name__}ModelSerializer"](obj)
 
 
-def get_serialized_data(child):
+def get_serialized_data(child, context):
     serializer = serialize(child)
-    serializer.context.update(with_children=True)
+    serializer.context.update(context)
     return serializer.data
 
 
@@ -57,20 +57,21 @@ class PageModelSerializer(serializers.ModelSerializer):
         return children_urls
 
     def get_children(self, obj: models.Model) -> list:
-        if (
-            self.context.get("request")
-            and self.context["request"]
-            .query_params.get("withChildren", "false")
-            .lower()
-            == "true"
-        ):
-            self.context.update(with_children=True)
-        with_children = self.context.get("with_children", False)
-        if not with_children:
-            return self.get_children_urls(obj)
+        query_params = (
+            self.context["request"].query_params if self.context.get("request") else {}
+        )
+        if query_params.get("depth"):
+            if not self.context.get("iteration"):
+                self.context.update(iteration=0)
+            if self.context["iteration"] >= int(query_params.get("depth")):
+                return self.get_children_urls(obj)
+            else:
+                children = obj.get_children().live().specific()
+                self.context.update(iteration=self.context.get("iteration", 0) + 1)
+                return [get_serialized_data(child, self.context) for child in children]
         else:
             children = obj.get_children().live().specific()
-            return [get_serialized_data(child) for child in children]
+            return [get_serialized_data(child, self.context) for child in children]
 
 
 class WelcomeModelSerializer(PageModelSerializer):
