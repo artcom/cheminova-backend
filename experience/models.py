@@ -41,8 +41,16 @@ class Welcome(Page):
 
 class CharacterOverview(Page):
     heading = models.CharField(max_length=255, blank=True, null=True)
+    site_name = models.CharField(max_length=255, blank=True, null=True)
     onboarding = RichTextField()
     characters_image = models.ForeignKey(
+        get_image_model_string(),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    background_image = models.ForeignKey(
         get_image_model_string(),
         null=True,
         blank=True,
@@ -65,6 +73,13 @@ class ChooseCharacter(Page):
     name = models.CharField(max_length=255, blank=True, null=True)
     description = models.CharField(max_length=255, blank=True, null=True)
     character_image = models.ForeignKey(
+        get_image_model_string(),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    background_image = models.ForeignKey(
         get_image_model_string(),
         null=True,
         blank=True,

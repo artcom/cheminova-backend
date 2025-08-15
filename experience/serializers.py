@@ -31,17 +31,6 @@ def endpoint(obj: models.Model) -> str:
     return f"/{to_kebab(obj.__class__.__name__)}"
 
 
-def welcome_page(obj: models.Model) -> Welcome:
-    return next(
-        (
-            ancestor
-            for ancestor in obj.get_ancestors(inclusive=True).live().specific()
-            if ancestor.get_content_type().model == "welcome"
-        ),
-        None,
-    )
-
-
 class PageModelSerializer(serializers.ModelSerializer):
     selfUrl = serializers.SerializerMethodField()
     children_urls = serializers.SerializerMethodField()
@@ -76,12 +65,11 @@ class PageModelSerializer(serializers.ModelSerializer):
 
 class WelcomeModelSerializer(PageModelSerializer):
     backgroundImageUrl = serializers.SerializerMethodField()
-    siteName = serializers.SerializerMethodField()
+    siteName = serializers.CharField(source="site_name")
 
     class Meta:
         model = Welcome
         fields = [
-            "id",
             "title",
             "description",
             "siteName",
@@ -89,26 +77,21 @@ class WelcomeModelSerializer(PageModelSerializer):
             "children",
             "selfUrl",
         ]
-        depth = 1
 
     def get_backgroundImageUrl(self, obj: Welcome) -> str:
         return (
             absolute_url(obj.background_image.file.url) if obj.background_image else ""
         )
 
-    def get_siteName(self, obj: Welcome) -> str:
-        return obj.site_name if obj.site_name else ""
-
 
 class CharacterOverviewModelSerializer(PageModelSerializer):
     charactersImageUrl = serializers.SerializerMethodField()
     backgroundImageUrl = serializers.SerializerMethodField()
-    siteName = serializers.SerializerMethodField()
+    siteName = serializers.CharField(source="site_name")
 
     class Meta:
         model = CharacterOverview
         fields = [
-            "id",
             "title",
             "heading",
             "siteName",
@@ -118,31 +101,26 @@ class CharacterOverviewModelSerializer(PageModelSerializer):
             "children",
             "selfUrl",
         ]
-        depth = 1
 
     def get_charactersImageUrl(self, obj: CharacterOverview) -> str:
         return (
             absolute_url(obj.characters_image.file.url) if obj.characters_image else ""
         )
 
-    def get_siteName(self, obj: CharacterOverview) -> str:
-        welcome = welcome_page(obj)
-        return serialize(welcome).get_siteName(welcome)
-
     def get_backgroundImageUrl(self, obj: CharacterOverview) -> str:
-        welcome = welcome_page(obj)
-        return serialize(welcome).get_backgroundImageUrl(welcome)
+        return (
+            absolute_url(obj.background_image.file.url) if obj.background_image else ""
+        )
 
 
 class ChooseCharacterModelSerializer(PageModelSerializer):
-    characterType = serializers.SerializerMethodField()
+    characterType = serializers.CharField(source="character_type")
     characterImageUrl = serializers.SerializerMethodField()
     backgroundImageUrl = serializers.SerializerMethodField()
 
     class Meta:
         model = ChooseCharacter
         fields = [
-            "id",
             "title",
             "characterType",
             "name",
@@ -151,17 +129,14 @@ class ChooseCharacterModelSerializer(PageModelSerializer):
             "children",
             "selfUrl",
         ]
-        depth = 1
-
-    def get_characterType(self, obj: ChooseCharacter) -> str:
-        return obj.character_type if obj.character_type else ""
 
     def get_characterImageUrl(self, obj: ChooseCharacter) -> str:
         return absolute_url(obj.character_image.file.url) if obj.character_image else ""
 
     def get_backgroundImageUrl(self, obj: ChooseCharacter) -> str:
-        welcome = welcome_page(obj)
-        return serialize(welcome).get_backgroundImageUrl(welcome)
+        return (
+            absolute_url(obj.background_image.file.url) if obj.background_image else ""
+        )
 
 
 class IntroSearchAndCollectModelSerializer(PageModelSerializer):
@@ -170,7 +145,6 @@ class IntroSearchAndCollectModelSerializer(PageModelSerializer):
     class Meta:
         model = IntroSearchAndCollect
         fields = [
-            "id",
             "title",
             "heading",
             "description",
@@ -178,7 +152,6 @@ class IntroSearchAndCollectModelSerializer(PageModelSerializer):
             "children",
             "selfUrl",
         ]
-        depth = 1
 
     def get_imageUrl(self, obj: IntroSearchAndCollect) -> str:
         return absolute_url(obj.image.file.url) if obj.image else ""
@@ -188,14 +161,12 @@ class PhotographyScreenModelSerializer(PageModelSerializer):
     class Meta:
         model = PhotographyScreen
         fields = [
-            "id",
             "title",
             "heading",
             "description",
             "children",
             "selfUrl",
         ]
-        depth = 1
 
 
 class YourCollectionModelSerializer(PageModelSerializer):
@@ -204,13 +175,11 @@ class YourCollectionModelSerializer(PageModelSerializer):
     class Meta:
         model = YourCollection
         fields = [
-            "id",
             "title",
             "heading",
             "imageDescriptions",
             "selfUrl",
         ]
-        depth = 1
 
     def get_imageDescriptions(self, obj: YourCollection) -> list:
         return obj.image_descriptions.all().values_list("description", flat=True)
