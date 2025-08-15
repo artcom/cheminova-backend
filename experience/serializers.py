@@ -2,6 +2,7 @@ from caseutil import to_camel, to_kebab, to_snake
 from django.conf import settings
 from django.db import models  # noqa
 from rest_framework import serializers
+from wagtail.images import get_image_model
 
 from .models import (
     CharacterOverview,
@@ -37,6 +38,12 @@ def to_camel_case_data(data: dict) -> dict:
 
 def to_snake_case_data(data: dict) -> dict:
     return {to_snake(key): value for key, value in data.items()}
+
+
+class ImageModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_image_model()
+        fields = ["file"]
 
 
 class CamelCaseMixin:
@@ -80,7 +87,7 @@ class PageModelSerializer(CamelCaseMixin, serializers.ModelSerializer):
 
 
 class WelcomeModelSerializer(PageModelSerializer):
-    backgroundImageUrl = serializers.SerializerMethodField()
+    background_image = ImageModelSerializer()
 
     class Meta:
         model = Welcome
@@ -88,20 +95,16 @@ class WelcomeModelSerializer(PageModelSerializer):
             "title",
             "description",
             "site_name",
-            "backgroundImageUrl",
+            "background_image",
             "children",
             "selfUrl",
         ]
-
-    def get_backgroundImageUrl(self, obj: Welcome) -> str:
-        return (
-            absolute_url(obj.background_image.file.url) if obj.background_image else ""
-        )
+        depth = 1
 
 
 class CharacterOverviewModelSerializer(PageModelSerializer):
-    charactersImageUrl = serializers.SerializerMethodField()
-    backgroundImageUrl = serializers.SerializerMethodField()
+    characters_image = ImageModelSerializer()
+    background_image = ImageModelSerializer()
 
     class Meta:
         model = CharacterOverview
@@ -109,27 +112,17 @@ class CharacterOverviewModelSerializer(PageModelSerializer):
             "title",
             "heading",
             "site_name",
-            "backgroundImageUrl",
-            "charactersImageUrl",
+            "background_image",
+            "characters_image",
             "onboarding",
             "children",
             "selfUrl",
         ]
 
-    def get_charactersImageUrl(self, obj: CharacterOverview) -> str:
-        return (
-            absolute_url(obj.characters_image.file.url) if obj.characters_image else ""
-        )
-
-    def get_backgroundImageUrl(self, obj: CharacterOverview) -> str:
-        return (
-            absolute_url(obj.background_image.file.url) if obj.background_image else ""
-        )
-
 
 class ChooseCharacterModelSerializer(PageModelSerializer):
-    characterImageUrl = serializers.SerializerMethodField()
-    backgroundImageUrl = serializers.SerializerMethodField()
+    character_image = ImageModelSerializer()
+    background_image = ImageModelSerializer()
 
     class Meta:
         model = ChooseCharacter
@@ -137,23 +130,15 @@ class ChooseCharacterModelSerializer(PageModelSerializer):
             "title",
             "character_type",
             "name",
-            "characterImageUrl",
-            "backgroundImageUrl",
+            "character_image",
+            "background_image",
             "children",
             "selfUrl",
         ]
 
-    def get_characterImageUrl(self, obj: ChooseCharacter) -> str:
-        return absolute_url(obj.character_image.file.url) if obj.character_image else ""
-
-    def get_backgroundImageUrl(self, obj: ChooseCharacter) -> str:
-        return (
-            absolute_url(obj.background_image.file.url) if obj.background_image else ""
-        )
-
 
 class IntroSearchAndCollectModelSerializer(PageModelSerializer):
-    imageUrl = serializers.SerializerMethodField()
+    image = ImageModelSerializer()
 
     class Meta:
         model = IntroSearchAndCollect
@@ -161,13 +146,10 @@ class IntroSearchAndCollectModelSerializer(PageModelSerializer):
             "title",
             "heading",
             "description",
-            "imageUrl",
+            "image",
             "children",
             "selfUrl",
         ]
-
-    def get_imageUrl(self, obj: IntroSearchAndCollect) -> str:
-        return absolute_url(obj.image.file.url) if obj.image else ""
 
 
 class PhotographyScreenModelSerializer(PageModelSerializer):
