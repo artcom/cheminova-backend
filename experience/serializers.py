@@ -1,4 +1,4 @@
-from caseutil import to_kebab
+from caseutil import to_camel, to_kebab, to_snake
 from django.conf import settings
 from django.db import models  # noqa
 from rest_framework import serializers
@@ -31,7 +31,23 @@ def endpoint(obj: models.Model) -> str:
     return f"/{to_kebab(obj.__class__.__name__)}"
 
 
-class PageModelSerializer(serializers.ModelSerializer):
+def to_camel_case_data(data: dict) -> dict:
+    return {to_camel(key): value for key, value in data.items()}
+
+
+def to_snake_case_data(data: dict) -> dict:
+    return {to_snake(key): value for key, value in data.items()}
+
+
+class CamelCaseMixin:
+    def to_representation(self, *args, **kwargs):
+        return to_camel_case_data(super().to_representation(*args, **kwargs))
+
+    def to_internal_value(self, data):
+        return super().to_internal_value(to_snake_case_data(data))
+
+
+class PageModelSerializer(CamelCaseMixin, serializers.ModelSerializer):
     selfUrl = serializers.SerializerMethodField()
     children_urls = serializers.SerializerMethodField()
     children = serializers.SerializerMethodField()
@@ -65,14 +81,13 @@ class PageModelSerializer(serializers.ModelSerializer):
 
 class WelcomeModelSerializer(PageModelSerializer):
     backgroundImageUrl = serializers.SerializerMethodField()
-    siteName = serializers.CharField(source="site_name")
 
     class Meta:
         model = Welcome
         fields = [
             "title",
             "description",
-            "siteName",
+            "site_name",
             "backgroundImageUrl",
             "children",
             "selfUrl",
@@ -87,14 +102,13 @@ class WelcomeModelSerializer(PageModelSerializer):
 class CharacterOverviewModelSerializer(PageModelSerializer):
     charactersImageUrl = serializers.SerializerMethodField()
     backgroundImageUrl = serializers.SerializerMethodField()
-    siteName = serializers.CharField(source="site_name")
 
     class Meta:
         model = CharacterOverview
         fields = [
             "title",
             "heading",
-            "siteName",
+            "site_name",
             "backgroundImageUrl",
             "charactersImageUrl",
             "onboarding",
@@ -114,7 +128,6 @@ class CharacterOverviewModelSerializer(PageModelSerializer):
 
 
 class ChooseCharacterModelSerializer(PageModelSerializer):
-    characterType = serializers.CharField(source="character_type")
     characterImageUrl = serializers.SerializerMethodField()
     backgroundImageUrl = serializers.SerializerMethodField()
 
@@ -122,7 +135,7 @@ class ChooseCharacterModelSerializer(PageModelSerializer):
         model = ChooseCharacter
         fields = [
             "title",
-            "characterType",
+            "character_type",
             "name",
             "characterImageUrl",
             "backgroundImageUrl",
