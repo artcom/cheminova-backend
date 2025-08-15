@@ -4,12 +4,9 @@ from django.db import models  # noqa
 from rest_framework import serializers
 from wagtail.images import get_image_model
 
+import experience.models as experience_models
+
 from .models import (
-    CharacterOverview,
-    ChooseCharacter,
-    IntroSearchAndCollect,
-    PhotographyScreen,
-    Welcome,
     YourCollection,
 )
 
@@ -56,7 +53,6 @@ class CamelCaseMixin:
 
 class PageModelSerializer(CamelCaseMixin, serializers.ModelSerializer):
     selfUrl = serializers.SerializerMethodField()
-    # children_urls = serializers.SerializerMethodField()
     children = serializers.SerializerMethodField()
 
     def get_selfUrl(self, obj: models.Model) -> str:
@@ -86,25 +82,26 @@ class PageModelSerializer(CamelCaseMixin, serializers.ModelSerializer):
             return [get_serialized_data(child, self.context) for child in children]
 
 
-def create_welcome_model_serializer():
+def create_model_serializer(model_name):
+    serializer_model = getattr(experience_models, model_name)
     page_model_serializer_extra_fields = [
         "children",
         "selfUrl",
     ]
     image_field_names = [
         field.name
-        for field in Welcome._meta.get_fields()
+        for field in serializer_model._meta.get_fields()
         if isinstance(field, models.fields.related.ForeignKey)
         and field.related_model == get_image_model()
     ]
     image_fields = {name: ImageModelSerializer() for name in image_field_names}
 
     class Meta:
-        model = Welcome
-        fields = Welcome.api_fields + page_model_serializer_extra_fields
+        model = serializer_model
+        fields = serializer_model.api_fields + page_model_serializer_extra_fields
 
     return type(
-        "WelcomeModelSerializer",
+        f"{model_name}ModelSerializer",
         (PageModelSerializer,),
         {
             **image_fields,
@@ -113,69 +110,14 @@ def create_welcome_model_serializer():
     )
 
 
-WelcomeModelSerializer = create_welcome_model_serializer()
-
-
-class CharacterOverviewModelSerializer(PageModelSerializer):
-    characters_image = ImageModelSerializer()
-    background_image = ImageModelSerializer()
-
-    class Meta:
-        model = CharacterOverview
-        fields = [
-            "title",
-            "heading",
-            "site_name",
-            "background_image",
-            "characters_image",
-            "onboarding",
-            "children",
-            "selfUrl",
-        ]
-
-
-class ChooseCharacterModelSerializer(PageModelSerializer):
-    character_image = ImageModelSerializer()
-    background_image = ImageModelSerializer()
-
-    class Meta:
-        model = ChooseCharacter
-        fields = [
-            "title",
-            "character_type",
-            "name",
-            "character_image",
-            "background_image",
-            "children",
-            "selfUrl",
-        ]
-
-
-class IntroSearchAndCollectModelSerializer(PageModelSerializer):
-    image = ImageModelSerializer()
-
-    class Meta:
-        model = IntroSearchAndCollect
-        fields = [
-            "title",
-            "heading",
-            "description",
-            "image",
-            "children",
-            "selfUrl",
-        ]
-
-
-class PhotographyScreenModelSerializer(PageModelSerializer):
-    class Meta:
-        model = PhotographyScreen
-        fields = [
-            "title",
-            "heading",
-            "description",
-            "children",
-            "selfUrl",
-        ]
+for model_name in [
+    "Welcome",
+    "CharacterOverview",
+    "ChooseCharacter",
+    "IntroSearchAndCollect",
+    "PhotographyScreen",
+]:
+    globals()[f"{model_name}ModelSerializer"] = create_model_serializer(model_name)
 
 
 class YourCollectionModelSerializer(PageModelSerializer):

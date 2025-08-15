@@ -66,8 +66,18 @@ class CharacterOverview(Page):
     search_fields = Page.search_fields
     content_panels = Page.content_panels + [
         FieldPanel("heading"),
+        FieldPanel("site_name"),
         FieldPanel("onboarding"),
         FieldPanel("characters_image"),
+        FieldPanel("background_image"),
+    ]
+    api_fields = [
+        "title",
+        "heading",
+        "site_name",
+        "onboarding",
+        "characters_image",
+        "background_image",
     ]
     parent_page_types = ["Welcome"]
     subpage_types = ["ChooseCharacter"]
@@ -101,6 +111,15 @@ class ChooseCharacter(Page):
         FieldPanel("name"),
         FieldPanel("description"),
         FieldPanel("character_image"),
+        FieldPanel("background_image"),
+    ]
+    api_fields = [
+        "title",
+        "character_type",
+        "name",
+        "description",
+        "character_image",
+        "background_image",
     ]
     parent_page_types = ["CharacterOverview"]
     subpage_types = ["IntroSearchAndCollect"]
@@ -123,6 +142,12 @@ class IntroSearchAndCollect(Page):
         FieldPanel("description"),
         FieldPanel("image"),
     ]
+    api_fields = [
+        "title",
+        "heading",
+        "description",
+        "image",
+    ]
     parent_page_types = ["ChooseCharacter"]
     subpage_types = ["PhotographyScreen"]
     max_count_per_parent = 1
@@ -135,6 +160,11 @@ class PhotographyScreen(Page):
     content_panels = Page.content_panels + [
         FieldPanel("heading"),
         FieldPanel("description"),
+    ]
+    api_fields = [
+        "title",
+        "heading",
+        "description",
     ]
     parent_page_types = ["IntroSearchAndCollect"]
     subpage_types = ["YourCollection"]
