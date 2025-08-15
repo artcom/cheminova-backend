@@ -6,6 +6,15 @@ from wagtail.search.index import SearchField
 from wagtail.fields import RichTextField
 from modelcluster.fields import ParentalKey
 
+__all__ = [
+    "Welcome",
+    "CharacterOverview",
+    "ChooseCharacter",
+    "IntroSearchAndCollect",
+    "PhotographyScreen",
+    "YourCollection",
+]
+
 
 class Welcome(Page):
     description = models.CharField(max_length=255, blank=True, null=True)
@@ -132,13 +141,3 @@ class ImageDescription(Orderable):
     )
     description = models.CharField(max_length=255, blank=True, null=True)
     panels = [FieldPanel("description")]
-
-
-model_endpoints = {
-    "Welcome": "welcome",
-    "CharacterOverview": "character-overview",
-    "ChooseCharacter": "choose-character",
-    "IntroSearchAndCollect": "intro-search-and-collect",
-    "PhotographyScreen": "photography-screen",
-    "YourCollection": "your-collection",
-}

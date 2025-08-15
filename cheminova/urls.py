@@ -1,3 +1,4 @@
+from caseutil import to_kebab
 from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
@@ -6,13 +7,14 @@ from rest_framework.routers import DefaultRouter
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
+import experience.models
 import experience.views
-from experience.models import model_endpoints
 from image_auth import urls as image_auth_urls
 from image_upload import urls as image_upload_urls
 
 router = DefaultRouter()
-for model, endpoint in model_endpoints.items():
+for model in experience.models.__all__:
+    endpoint = to_kebab(model)
     router.register(
         endpoint,
         getattr(experience.views, f"{model}ViewSet"),

@@ -1,3 +1,4 @@
+from caseutil import to_kebab
 from django.conf import settings
 from django.db import models  # noqa
 from rest_framework import serializers
@@ -9,7 +10,6 @@ from .models import (
     PhotographyScreen,
     Welcome,
     YourCollection,
-    model_endpoints,
 )
 
 
@@ -28,7 +28,7 @@ def get_serialized_data(child: models.Model, context: dict) -> dict:
 
 
 def endpoint(obj: models.Model) -> str:
-    return f"/{model_endpoints.get(obj.__class__.__name__)}"
+    return f"/{to_kebab(obj.__class__.__name__)}"
 
 
 def welcome_page(obj: models.Model) -> Welcome:
