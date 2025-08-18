@@ -2,23 +2,10 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
-from .models import (
-    CharacterOverview,
-    ChooseCharacter,
-    IntroSearchAndCollect,
-    PhotographyScreen,
-    Welcome,
-    YourCollection,
-)
-from .serializers import (
-    CharacterOverviewModelSerializer,
-    ChooseCharacterModelSerializer,
-    IntroSearchAndCollectModelSerializer,
-    PhotographyScreenModelSerializer,
-    QueryParamsSerializer,
-    WelcomeModelSerializer,
-    YourCollectionModelSerializer,
-)
+import experience.models as experience_models
+import experience.serializers as experience_serializers
+
+from .serializers import QueryParamsSerializer
 
 
 class QueryParametersMixin:
@@ -43,33 +30,25 @@ class SingletonMixin:
             return Response(serializer.data[0])
 
 
-class WelcomeViewSet(QueryParametersMixin, SingletonMixin, ReadOnlyModelViewSet):
-    serializer_class = WelcomeModelSerializer
-    queryset = Welcome.objects.all()
+def create_model_viewset(model_name):
+    serializer_class = getattr(experience_serializers, f"{model_name}ModelSerializer")
+    model = getattr(experience_models, model_name)
+    queryset = model.objects.all()
+
+    if model.max_count == 1:
+        mixins = (QueryParametersMixin, SingletonMixin)
+    else:
+        mixins = (QueryParametersMixin,)
+
+    return type(
+        f"{model_name}ViewSet",
+        (*mixins, ReadOnlyModelViewSet),
+        {
+            "serializer_class": serializer_class,
+            "queryset": queryset,
+        },
+    )
 
 
-class CharacterOverviewViewSet(
-    QueryParametersMixin, SingletonMixin, ReadOnlyModelViewSet
-):
-    serializer_class = CharacterOverviewModelSerializer
-    queryset = CharacterOverview.objects.all()
-
-
-class ChooseCharacterViewSet(QueryParametersMixin, ReadOnlyModelViewSet):
-    serializer_class = ChooseCharacterModelSerializer
-    queryset = ChooseCharacter.objects.all()
-
-
-class IntroSearchAndCollectViewSet(QueryParametersMixin, ReadOnlyModelViewSet):
-    serializer_class = IntroSearchAndCollectModelSerializer
-    queryset = IntroSearchAndCollect.objects.all()
-
-
-class PhotographyScreenViewSet(QueryParametersMixin, ReadOnlyModelViewSet):
-    serializer_class = PhotographyScreenModelSerializer
-    queryset = PhotographyScreen.objects.all()
-
-
-class YourCollectionViewSet(QueryParametersMixin, ReadOnlyModelViewSet):
-    serializer_class = YourCollectionModelSerializer
-    queryset = YourCollection.objects.all()
+for model_name in experience_models.__all__:
+    globals()[f"{model_name}ViewSet"] = create_model_viewset(model_name)
