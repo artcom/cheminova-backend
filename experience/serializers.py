@@ -1,14 +1,11 @@
 from caseutil import to_camel, to_kebab, to_snake
 from django.conf import settings
 from django.db import models  # noqa
+from modelcluster.models import get_all_child_relations
 from rest_framework import serializers
 from wagtail.images import get_image_model
 
 import experience.models as experience_models
-
-from .models import (
-    YourCollection,
-)
 
 
 def absolute_url(relative_url: str) -> str:
@@ -82,6 +79,23 @@ class PageModelSerializer(CamelCaseMixin, serializers.ModelSerializer):
             return [get_serialized_data(child, self.context) for child in children]
 
 
+def create_modelcluster_serializer(related_model):
+    class Meta:
+        model = related_model
+        fields = related_model.api_fields
+
+    return type(
+        f"{related_model.__name__}ModelClusterSerializer",
+        (
+            CamelCaseMixin,
+            serializers.ModelSerializer,
+        ),
+        {
+            "Meta": Meta,
+        },
+    )
+
+
 def create_model_serializer(model_name):
     serializer_model = getattr(experience_models, model_name)
     page_model_serializer_extra_fields = [
@@ -95,6 +109,18 @@ def create_model_serializer(model_name):
         and field.related_model == get_image_model()
     ]
     image_fields = {name: ImageModelSerializer() for name in image_field_names}
+    model_cluster_relations = [
+        (
+            relation.related_name,
+            relation.related_model,
+        )
+        for relation in get_all_child_relations(serializer_model)
+        if relation.model == serializer_model
+    ]
+    model_cluster_fields = {
+        related_name: create_modelcluster_serializer(related_model)(many=True)
+        for related_name, related_model in model_cluster_relations
+    }
 
     class Meta:
         model = serializer_model
@@ -105,35 +131,14 @@ def create_model_serializer(model_name):
         (PageModelSerializer,),
         {
             **image_fields,
+            **model_cluster_fields,
             "Meta": Meta,
         },
     )
 
 
-for model_name in [
-    "Welcome",
-    "CharacterOverview",
-    "ChooseCharacter",
-    "IntroSearchAndCollect",
-    "PhotographyScreen",
-]:
+for model_name in experience_models.__all__:
     globals()[f"{model_name}ModelSerializer"] = create_model_serializer(model_name)
-
-
-class YourCollectionModelSerializer(PageModelSerializer):
-    imageDescriptions = serializers.SerializerMethodField()
-
-    class Meta:
-        model = YourCollection
-        fields = [
-            "title",
-            "heading",
-            "imageDescriptions",
-            "selfUrl",
-        ]
-
-    def get_imageDescriptions(self, obj: YourCollection) -> list:
-        return obj.image_descriptions.all().values_list("description", flat=True)
 
 
 class QueryParamsSerializer(serializers.Serializer):

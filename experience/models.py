@@ -180,6 +180,7 @@ class YourCollection(Page):
             "image_descriptions", label="Image Descriptions", min_num=3, max_num=3
         ),
     ]
+    api_fields = ["title", "heading", "image_descriptions"]
     parent_page_types = ["PhotographyScreen"]
     max_count_per_parent = 1
 
@@ -191,4 +192,5 @@ class ImageDescription(Orderable):
         related_name="image_descriptions",
     )
     description = models.CharField(max_length=255, blank=True, null=True)
+    api_fields = ["description"]
     panels = [FieldPanel("description")]
