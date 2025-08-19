@@ -138,7 +138,8 @@ def create_model_serializer(model_name):
 
 
 for model_name in experience_models.__all__:
-    globals()[f"{model_name}ModelSerializer"] = create_model_serializer(model_name)
+    model = create_model_serializer(model_name)
+    globals()[model.__name__] = model
 
 
 class QueryParamsSerializer(serializers.Serializer):

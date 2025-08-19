@@ -51,4 +51,5 @@ def create_model_viewset(model_name):
 
 
 for model_name in experience_models.__all__:
-    globals()[f"{model_name}ViewSet"] = create_model_viewset(model_name)
+    viewset = create_model_viewset(model_name)
+    globals()[viewset.__name__] = viewset
