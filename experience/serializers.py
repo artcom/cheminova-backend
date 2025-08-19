@@ -49,6 +49,22 @@ class CamelCaseMixin:
 
 
 class PageModelSerializer(CamelCaseMixin, serializers.ModelSerializer):
+    """
+    Base serializer for Wagtail Page models with hierarchical structure support.
+
+    This serializer extends Django REST framework's ModelSerializer with camelCase
+    conversion and adds functionality for handling page hierarchies. It provides
+    self-referencing URLs and nested children serialization with configurable depth.
+
+    Attributes:
+        selfUrl (SerializerMethodField): Generates the API endpoint URL for the page
+        children (SerializerMethodField): Serializes child pages with depth control
+
+    Query Parameters:
+        depth (int, optional): Limits the depth of children serialization.
+                              When specified, children beyond this depth return URLs only.
+    """
+
     selfUrl = serializers.SerializerMethodField()
     children = serializers.SerializerMethodField()
 
@@ -79,7 +95,38 @@ class PageModelSerializer(CamelCaseMixin, serializers.ModelSerializer):
             return [get_serialized_data(child, self.context) for child in children]
 
 
-def create_modelcluster_serializer(related_model):
+def create_model_cluster_serializer(related_model: models.Model):
+    """
+    Factory function that creates serializers for model cluster relationship models.
+
+    This function generates specialized serializers for models that are related to
+    Page models through ParentalKey relationships (model clusters). These are typically
+    used for inline content like ordered lists, repeatable content blocks, or
+    related data that belongs to a specific page.
+
+    Args:
+        related_model (Model): The Django model class that has a ParentalKey relationship
+                              to a Page model (must have api_fields attribute)
+
+    Returns:
+        type: A dynamically created serializer class with the following features:
+              - Inherits from CamelCaseMixin and ModelSerializer
+              - CamelCase field name conversion
+              - Meta class configured with the model's api_fields
+              - Named as "{ModelName}ModelClusterSerializer"
+
+    Example:
+        # The resulting serializer class is equivalent to:
+        class ImageDescriptionModelClusterSerializer(CamelCaseMixin, serializers.ModelSerializer):
+            class Meta:
+                model = ImageDescription
+                fields = ["description"]  # From ImageDescription.api_fields
+
+    Note:
+        This function is used internally by create_model_serializer to handle
+        nested relationships when a Page model has inline/related content.
+    """
+
     class Meta:
         model = related_model
         fields = related_model.api_fields
@@ -96,7 +143,49 @@ def create_modelcluster_serializer(related_model):
     )
 
 
-def create_model_serializer(model_name):
+def create_model_serializer(model_name: str):
+    """
+    Factory function that dynamically creates model serializers for Wagtail Page models.
+
+    This function generates specialized serializers for experience models by introspecting
+    the model structure and automatically configuring serialization for image fields and
+    model cluster relationships. The resulting serializers inherit from PageModelSerializer
+    and include proper handling for nested relationships.
+
+    Args:
+        model_name (str): The name of the model class from experience_models module
+                         (must be present in experience_models.__all__)
+
+    Returns:
+        type: A dynamically created serializer class that inherits from PageModelSerializer
+              with the following features:
+              - Image fields serialized using ImageModelSerializer
+              - Model cluster relationships serialized with many=True
+              - CamelCase field conversion
+              - Self-referencing URLs and children support
+              - Meta class configured with model's api_fields
+
+    Example:
+        # The resulting serializer class is equivalent to:
+        class WelcomeModelSerializer(PageModelSerializer):
+            background_image = ImageModelSerializer()  # Auto-detected image field
+
+            class Meta:
+                model = Welcome
+                fields = [
+                    "title", "description", "site_name", "background_image",  # From Welcome.api_fields
+                    "children", "selfUrl"  # Added by PageModelSerializer
+                ]
+
+        # For models with cluster relationships like YourCollection:
+        class YourCollectionModelSerializer(PageModelSerializer):
+            image_descriptions = ImageDescriptionModelClusterSerializer(many=True)
+
+            class Meta:
+                model = YourCollection
+                fields = ["title", "heading", "image_descriptions", "children", "selfUrl"]
+    """
+
     serializer_model = getattr(experience_models, model_name)
     page_model_serializer_extra_fields = [
         "children",
@@ -118,7 +207,7 @@ def create_model_serializer(model_name):
         if relation.model == serializer_model
     ]
     model_cluster_fields = {
-        related_name: create_modelcluster_serializer(related_model)(many=True)
+        related_name: create_model_cluster_serializer(related_model)(many=True)
         for related_name, related_model in model_cluster_relations
     }
 
@@ -137,6 +226,7 @@ def create_model_serializer(model_name):
     )
 
 
+# Dynamically create and register serializer classes for all experience models
 for model_name in experience_models.__all__:
     model = create_model_serializer(model_name)
     globals()[model.__name__] = model
