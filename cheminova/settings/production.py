@@ -5,7 +5,7 @@ from .base import BASE_DIR
 
 DEBUG = False
 SERVE_STATIC = False
-WAGTAILADMIN_BASE_URL = "https://***REMOVED***"
+WAGTAILADMIN_BASE_URL = "https://***REMOVED***/cms"
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "***REMOVED***"]
 SECRET_KEY = os.environ.get("SECRET_KEY")
 CSRF_TRUSTED_ORIGINS = [
