@@ -48,7 +48,7 @@ class Welcome(Page):
 class CharacterOverview(Page):
     heading = models.CharField(max_length=255, blank=True, null=True)
     site_name = models.CharField(max_length=255, blank=True, null=True)
-    onboarding = RichTextField()
+    onboarding = RichTextField(blank=True, null=True)
     characters_image = models.ForeignKey(
         get_image_model_string(),
         null=True,
