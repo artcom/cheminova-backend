@@ -1,3 +1,5 @@
+import urllib
+
 from caseutil import to_camel, to_kebab, to_snake
 from django.conf import settings
 from django.db import models  # noqa
@@ -10,6 +12,20 @@ import experience.models as experience_models
 
 def absolute_url(relative_url: str) -> str:
     return settings.WAGTAILADMIN_BASE_URL + relative_url
+
+
+def format_is_api(context: dict) -> bool:
+    return context.get("query_params", {}).get("format") == "api" or not context.get(
+        "query_params", {}
+    ).get("format")
+
+
+def query_params_string(context: dict) -> str:
+    return (
+        f"?{urllib.parse.urlencode(context.get('query_params'))}"
+        if format_is_api(context) and context.get("query_params")
+        else ""
+    )
 
 
 def serialize(obj: models.Model) -> serializers.ModelSerializer:
@@ -69,13 +85,13 @@ class PageModelSerializer(CamelCaseMixin, serializers.ModelSerializer):
     children = serializers.SerializerMethodField()
 
     def get_selfUrl(self, obj: models.Model) -> str:
-        return absolute_url(settings.API_BASE_URL + endpoint(obj) + f"/{obj.id}")
+        return f"{absolute_url(settings.API_BASE_URL + endpoint(obj) + f'/{obj.id}')}{query_params_string(self.context)}"
 
     def get_children_urls(self, obj: models.Model) -> list:
         children = obj.get_children().live().specific()
         children_urls = [
             data.get("selfUrl")
-            for data in [serialize(child).data for child in children]
+            for data in [get_serialized_data(child, self.context) for child in children]
         ]
         return children_urls
 
@@ -234,3 +250,4 @@ for model_name in experience_models.__all__:
 
 class QueryParamsSerializer(serializers.Serializer):
     depth = serializers.IntegerField(required=False)
+    format = serializers.CharField(required=False)
