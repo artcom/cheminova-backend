@@ -39,6 +39,7 @@ class Welcome(Page):
         "description",
         "site_name",
         "background_image",
+        "locale",
     ]
     parent_page_types = ["wagtailcore.Page"]
     subpage_types = ["CharacterOverview"]
@@ -73,6 +74,7 @@ class CharacterOverview(Page):
     ]
     api_fields = [
         "title",
+        "locale",
         "heading",
         "site_name",
         "onboarding",

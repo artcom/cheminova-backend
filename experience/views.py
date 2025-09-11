@@ -1,6 +1,7 @@
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
+from wagtail.models import Locale
 
 import experience.models as experience_models
 import experience.serializers as experience_serializers
@@ -46,6 +47,26 @@ class SingletonMixin:
             return Response(serializer.data[0])
 
 
+class FilterLocaleMixin:
+    """
+    Mixin that filters queryset by 'locale' query parameter if provided.
+
+    If 'locale' is specified in query parameters, the queryset is filtered to
+    include only objects matching that locale. Otherwise, the full queryset is returned.
+
+    Example: GET /api/choose-character/?locale=en returns only English characters.
+    """
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        locale = self.request.query_params.get("locale")
+        if locale:
+            locale_query = Locale.objects.filter(language_code=locale).first()
+            locale_id = locale_query.id if locale_query else None
+            queryset = queryset.filter(locale=locale_id) if locale_id else queryset
+        return queryset
+
+
 def create_model_viewset(model_name):
     """
     Factory function that dynamically creates ViewSet classes for experience models.
@@ -89,9 +110,9 @@ def create_model_viewset(model_name):
     queryset = model.objects.all()
 
     if model.max_count == 1:
-        mixins = (QueryParametersMixin, SingletonMixin)
+        mixins = (QueryParametersMixin, SingletonMixin, FilterLocaleMixin)
     else:
-        mixins = (QueryParametersMixin,)
+        mixins = (QueryParametersMixin, FilterLocaleMixin)
 
     return type(
         f"{model_name}ViewSet",

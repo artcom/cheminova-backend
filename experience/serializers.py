@@ -251,3 +251,4 @@ for model_name in experience_models.__all__:
 class QueryParamsSerializer(serializers.Serializer):
     depth = serializers.IntegerField(required=False)
     format = serializers.CharField(required=False)
+    locale = serializers.CharField(required=False)
