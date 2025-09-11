@@ -28,6 +28,8 @@ INSTALLED_APPS = [
     "experience",
     "image_upload",
     "image_auth",
+    "wagtail_localize",
+    "wagtail_localize.locales",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
     "wagtail.embeds",
