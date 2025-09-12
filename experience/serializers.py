@@ -83,6 +83,7 @@ class PageModelSerializer(CamelCaseMixin, serializers.ModelSerializer):
 
     selfUrl = serializers.SerializerMethodField()
     children = serializers.SerializerMethodField()
+    locale = serializers.CharField(source="locale.language_code", read_only=True)
 
     def get_selfUrl(self, obj: models.Model) -> str:
         return f"{absolute_url(settings.API_BASE_URL + endpoint(obj) + f'/{obj.id}')}{query_params_string(self.context)}"
@@ -204,6 +205,7 @@ def create_model_serializer(model_name: str):
 
     serializer_model = getattr(experience_models, model_name)
     page_model_serializer_extra_fields = [
+        "locale",
         "children",
         "selfUrl",
     ]
