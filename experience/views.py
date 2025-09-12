@@ -93,6 +93,11 @@ def create_model_viewset(model_name):
     )
 
 
+class AllModelViewSet(ReadOnlyModelViewSet):
+    serializer_class = experience_serializers.AllModelSerializer
+    queryset = experience_models.Welcome.objects.all()
+
+
 # Dynamically create and register ViewSet classes for all experience models
 for model_name in experience_models.__all__:
     viewset = create_model_viewset(model_name)

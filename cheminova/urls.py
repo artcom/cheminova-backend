@@ -13,6 +13,7 @@ from image_auth import urls as image_auth_urls
 from image_upload import urls as image_upload_urls
 
 router = DefaultRouter()
+router.register("all", experience.views.AllModelViewSet, basename="all")
 for model in experience.models.__all__:
     endpoint = to_kebab(model)
     router.register(

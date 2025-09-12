@@ -35,7 +35,12 @@ def serialize(obj: models.Model) -> serializers.ModelSerializer:
 def get_serialized_data(child: models.Model, context: dict) -> dict:
     serializer = serialize(child)
     serializer.context.update(context)
-    return serializer.data
+    if context.get("no_self_url"):
+        data = serializer.data
+        data.pop("selfUrl", None)
+        return data
+    else:
+        return serializer.data
 
 
 def endpoint(obj: models.Model) -> str:
@@ -81,9 +86,17 @@ class PageModelSerializer(CamelCaseMixin, serializers.ModelSerializer):
                               When specified, children beyond this depth return URLs only.
     """
 
-    selfUrl = serializers.SerializerMethodField()
     children = serializers.SerializerMethodField()
     locale = serializers.CharField(source="locale.language_code", read_only=True)
+
+    def get_children(self, obj: models.Model) -> list:
+        children = obj.get_children().live().specific()
+        self.context.update(no_self_url=True)
+        return [get_serialized_data(child, self.context) for child in children]
+
+
+class BrowsablePageModelSerializer(PageModelSerializer):
+    selfUrl = serializers.SerializerMethodField()
 
     def get_selfUrl(self, obj: models.Model) -> str:
         return f"{absolute_url(settings.API_BASE_URL + endpoint(obj) + f'/{obj.id}')}{query_params_string(self.context)}"
@@ -235,13 +248,28 @@ def create_model_serializer(model_name: str):
 
     return type(
         f"{model_name}ModelSerializer",
-        (PageModelSerializer,),
+        (BrowsablePageModelSerializer,),
         {
             **image_fields,
             **model_cluster_fields,
             "Meta": Meta,
         },
     )
+
+
+class AllModelSerializer(PageModelSerializer):
+    background_image = ImageModelSerializer()
+
+    class Meta:
+        model = experience_models.Welcome
+        fields = [
+            "title",
+            "description",
+            "site_name",
+            "background_image",
+            "locale",
+            "children",
+        ]
 
 
 # Dynamically create and register serializer classes for all experience models
