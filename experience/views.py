@@ -55,7 +55,7 @@ def create_model_viewset(model_name):
     This function generates specialized read-only ViewSets for experience models by
     introspecting the model structure and automatically configuring the appropriate
     mixins and serializers. The resulting ViewSets provide REST API endpoints with
-    query parameter support and singleton behavior for models with max_count=1.
+    query parameter support.
 
     Args:
         model_name (str): The name of the model class from experience_models module
@@ -74,16 +74,9 @@ def create_model_viewset(model_name):
             serializer_class = WelcomeModelSerializer
             queryset = Welcome.objects.all()
 
-            # GET /api/welcome/ returns single Welcome object (not a list)
+            # GET /api/welcome/ returns list of Welcome objects (not a single object)
             # GET /api/welcome/?depth=2 includes nested children up to depth 2
-
-        # For non-singleton models like ChooseCharacter:
-        class ChooseCharacterViewSet(QueryParametersMixin, ReadOnlyModelViewSet):
-            serializer_class = ChooseCharacterModelSerializer
-            queryset = ChooseCharacter.objects.all()
-
-            # GET /api/choose-character/ returns list of ChooseCharacter objects
-            # GET /api/choose-character/1/ returns specific ChooseCharacter object
+            # GET /api/welcome/?locale=en filters Welcome objects to English locale
     """
     serializer_class = getattr(experience_serializers, f"{model_name}ModelSerializer")
     model = getattr(experience_models, model_name)
