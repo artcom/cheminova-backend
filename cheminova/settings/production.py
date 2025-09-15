@@ -1,19 +1,25 @@
 import os
+from urllib.parse import urlparse
 
 from .base import *  # noqa F403
 from .base import BASE_DIR
 
 DEBUG = False
 SERVE_STATIC = False
-WAGTAILADMIN_BASE_URL = "https://***REMOVED***/cms"
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "***REMOVED***"]
+WAGTAILADMIN_BASE_URL = os.getenv(
+    "WAGTAILADMIN_BASE_URL", "https://***REMOVED***/cms"
+)
+
+parsed = urlparse(WAGTAILADMIN_BASE_URL)
+primary_host = parsed.netloc.split(":")[0]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", primary_host]
 SECRET_KEY = os.environ.get("SECRET_KEY")
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1",
     "http://127.0.0.1:8080",
     "http://localhost",
     "http://localhost:8080",
-    "https://***REMOVED***",
+    f"{parsed.scheme}://{parsed.netloc}",
 ]
 DATABASES = {
     "default": {
