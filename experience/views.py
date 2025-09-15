@@ -17,13 +17,14 @@ class QueryParametersMixin:
     Example: GET /api/welcome/?depth=2 limits children nesting to 2 levels.
     """
 
+    default_params = {"depth": 0, "browsable": "true"}
+
     def get_serializer_context(self):
         context = super().get_serializer_context()
+        query_params = self.default_params.copy()
         serialized_query_params = QueryParamsSerializer(data=self.request.query_params)
         if serialized_query_params.is_valid():
-            query_params = serialized_query_params.data
-        else:
-            query_params = {}
+            query_params.update(serialized_query_params.data)
         context.update(query_params=query_params)
         return context
 
@@ -93,15 +94,11 @@ def create_model_viewset(model_name):
     )
 
 
-class AllModelViewSet(ReadOnlyModelViewSet):
+class AllModelViewSet(QueryParametersMixin, FilterLocaleMixin, ReadOnlyModelViewSet):
     serializer_class = getattr(experience_serializers, "WelcomeModelSerializer")
     serializer_class.Meta.fields.remove("selfUrl")
     queryset = experience_models.Welcome.objects.all()
-
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context.update({"browsable": False})
-        return context
+    default_params = {"depth": None, "browsable": "false"}
 
 
 # Dynamically create and register ViewSet classes for all experience models

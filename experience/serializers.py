@@ -32,10 +32,18 @@ def serialize(obj: models.Model) -> serializers.ModelSerializer:
     return globals()[f"{obj.__class__.__name__}ModelSerializer"](obj)
 
 
+def is_browsable(query_params: dict) -> bool:
+    browsable = query_params.get("browsable")
+    if isinstance(browsable, str):
+        return browsable.lower() == "true"
+    return False
+
+
 def get_serialized_data(child: models.Model, context: dict) -> dict:
     serializer = serialize(child)
     serializer.context.update(context)
-    if not context.get("browsable", True):
+    query_params = context.get("query_params")
+    if not is_browsable(query_params):
         data = serializer.data
         data.pop("selfUrl", None)
         return data
@@ -243,3 +251,4 @@ class QueryParamsSerializer(serializers.Serializer):
     depth = serializers.IntegerField(required=False)
     format = serializers.CharField(required=False)
     locale = serializers.CharField(required=False)
+    browsable = serializers.CharField(required=False)
