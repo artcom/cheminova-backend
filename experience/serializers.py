@@ -35,7 +35,7 @@ def serialize(obj: models.Model) -> serializers.ModelSerializer:
 def get_serialized_data(child: models.Model, context: dict) -> dict:
     serializer = serialize(child)
     serializer.context.update(context)
-    if context.get("no_self_url"):
+    if not context.get("browsable", True):
         data = serializer.data
         data.pop("selfUrl", None)
         return data
@@ -69,33 +69,9 @@ class CamelCaseMixin:
         return super().to_internal_value(to_snake_case_data(data))
 
 
-class PageModelSerializer(CamelCaseMixin, serializers.ModelSerializer):
-    """
-    Base serializer for Wagtail Page models with hierarchical structure support.
-
-    This serializer extends Django REST framework's ModelSerializer with camelCase
-    conversion and adds functionality for handling page hierarchies. It provides
-    self-referencing URLs and nested children serialization with configurable depth.
-
-    Attributes:
-        selfUrl (SerializerMethodField): Generates the API endpoint URL for the page
-        children (SerializerMethodField): Serializes child pages with depth control
-
-    Query Parameters:
-        depth (int, optional): Limits the depth of children serialization.
-                              When specified, children beyond this depth return URLs only.
-    """
-
+class BrowsablePageModelSerializer(CamelCaseMixin, serializers.ModelSerializer):
     children = serializers.SerializerMethodField()
     locale = serializers.CharField(source="locale.language_code", read_only=True)
-
-    def get_children(self, obj: models.Model) -> list:
-        children = obj.get_children().live().specific()
-        self.context.update(no_self_url=True)
-        return [get_serialized_data(child, self.context) for child in children]
-
-
-class BrowsablePageModelSerializer(PageModelSerializer):
     selfUrl = serializers.SerializerMethodField()
 
     def get_selfUrl(self, obj: models.Model) -> str:
@@ -255,21 +231,6 @@ def create_model_serializer(model_name: str):
             "Meta": Meta,
         },
     )
-
-
-class AllModelSerializer(PageModelSerializer):
-    background_image = ImageModelSerializer()
-
-    class Meta:
-        model = experience_models.Welcome
-        fields = [
-            "title",
-            "description",
-            "site_name",
-            "background_image",
-            "locale",
-            "children",
-        ]
 
 
 # Dynamically create and register serializer classes for all experience models

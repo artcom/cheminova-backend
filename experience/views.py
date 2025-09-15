@@ -94,8 +94,14 @@ def create_model_viewset(model_name):
 
 
 class AllModelViewSet(ReadOnlyModelViewSet):
-    serializer_class = experience_serializers.AllModelSerializer
+    serializer_class = getattr(experience_serializers, "WelcomeModelSerializer")
+    serializer_class.Meta.fields.remove("selfUrl")
     queryset = experience_models.Welcome.objects.all()
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({"browsable": False})
+        return context
 
 
 # Dynamically create and register ViewSet classes for all experience models
