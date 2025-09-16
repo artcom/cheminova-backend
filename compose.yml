@@ -96,13 +96,13 @@ services:
       retries: 5
 
   media-backup:
-    image: bitnami/minio-client:2025.4.16
-    command: ["mc", "mirror", "--watch", "--remove", "/app/media", "s3/media"]
+    image: minio/mc:RELEASE.2025-08-13T08-35-41Z
+    command: ["mirror", "--watch", "--remove", "/app/media", "s3/media"]
     volumes_from:
       - wagtail
     volumes:
       - source: mc/config.json
-        target: /.mc/config.json
+        target: /root/.mc/config.json
         type: bind
     depends_on:
       s3:
