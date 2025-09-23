@@ -14,9 +14,7 @@ Wagtail CMS and API backend for the Cheminova site, providing:
 
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
-- [Local Development](#local-development)
 - [Running Tests](#running-tests)
-- [Docker Compose](#docker-compose)
 - [Deployment](#deployment)
 
 ---
@@ -52,20 +50,26 @@ cd cheminova-backend`
 
 ## Local Development (Docker Compose)
 
-1. Bring up the full stack (Postgres, Wagtail, Nginx, Minio):
+- Bring up the full stack (Postgres, Wagtail, Nginx, Minio)
 
-`docker compose up --watch`
+```bash
+docker compose up --watch
+```
 
-    •	Wagtail runs at http://localhost:8000/
-    •	Nginx proxy at http://localhost:8080/
+- Wagtail runs at <http://localhost:8000/>
+- Nginx proxy at <http://localhost:8080/>
 
-2. Apply database migrations
+- Apply database migrations
 
-`docker compose exec wagtail uv run manage.py migrate`
+```bash
+docker compose exec wagtail uv run manage.py migrate
+```
 
-3. Create a superuser
+- Create a superuser
 
-`docker compose exec wagtail uv run manage.py createsuperuser`
+```bash
+docker compose exec wagtail uv run manage.py createsuperuser
+```
 
 ## Running Tests
 
@@ -93,15 +97,15 @@ docker compose exec database /bin/bash -c 'pg_dump -U cheminova -Fc cheminova > 
 
 ## Backup Database
 
-1. Set up a DigitalOcean Spaces bucket and configure the `s3cmd` tool with your credentials. You can do that by using s3cmd command line tool as described [here](https://docs.digitalocean.com/products/spaces/reference/s3cmd/):
+1. Set up a DigitalOcean Spaces bucket and configure the `s3cmd` tool with your credentials. You can do that by using s3cmd command line tool as described [here (digital ocean documentation)](https://docs.digitalocean.com/products/spaces/reference/s3cmd/):
 
-```bash
-mkdir -p s3cmd
-docker run --rm -it \
-  -v $PWD/.s3cfg-2:/root/.s3cfg \
-  d3fk/s3cmd:latest \
-  --configure
-```
+   ```bash
+   mkdir -p s3cmd
+   docker run --rm -it \
+   -v $PWD/.s3cfg-2:/root/.s3cfg \
+   d3fk/s3cmd:latest \
+   --configure
+   ```
 
 2. To back up the database to a DigitalOcean Spaces bucket using the d3fk/s3cmd image, use the following command:
 
@@ -131,8 +135,7 @@ Then, restore the database using the following command:
 docker compose exec database /bin/bash -c 'pg_restore -U cheminova -d cheminova /var/lib/postgresql/backup/cheminova.dump'
 ```
 
-
-# Image Upload Flow
+## Image Upload Flow
 
 ```mermaid
 sequenceDiagram
@@ -171,7 +174,7 @@ sequenceDiagram
     end
 ```
 
-# Image Request Flow (with Authentication)
+## Image Request Flow (with Authentication)
 
 ```mermaid
 sequenceDiagram
@@ -198,7 +201,7 @@ sequenceDiagram
     else user not authenticated
         auth_view->>auth_view: get_image_file(X-Original-URI)
         auth_view->>auth_view: get_image_type(image_path)
-        
+
         alt image type is "rendition"
             auth_view->>model: RenditionModel.objects.get(file=path)
             model->>db: SELECT rendition
@@ -210,11 +213,11 @@ sequenceDiagram
             db->>model: image record
             model->>auth_view: image
         end
-        
+
         auth_view->>model: image.get_referenced_live_pages()
         model->>db: Query page references
         db->>model: live page references
-        
+
         alt image has live page references
             model->>auth_view: [live_pages]
             auth_view->>wagtail: Response(200, "OK")
@@ -231,7 +234,7 @@ sequenceDiagram
     end
 ```
 
-# Image API Request Flow (Metadata)
+## Image API Request Flow (Metadata)
 
 ```mermaid
 sequenceDiagram
@@ -253,7 +256,7 @@ sequenceDiagram
         api_view->>model: CustomImage.objects.all()
         model->>db: SELECT * FROM custom_images
         db->>model: image records
-        
+
         loop for each image
             model->>serializer: CustomImageModelSerializer(image)
             serializer->>model: get_referenced_live_pages()
@@ -263,7 +266,7 @@ sequenceDiagram
             serializer->>serializer: set 'live' field (len > 0)
             serializer->>api_view: serialized image data
         end
-        
+
         api_view->>wagtail: Response with image list
         wagtail->>nginx: HTTP 200 with JSON
         nginx->>Client: HTTP 200 with image metadata
