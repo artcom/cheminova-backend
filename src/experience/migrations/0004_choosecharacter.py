@@ -5,26 +5,50 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('custom_images', '0006_remove_customimage_public'),
-        ('experience', '0003_alter_welcome_description'),
-        ('wagtailcore', '0094_alter_page_locale'),
+        ("custom_images", "0006_remove_customimage_public"),
+        ("experience", "0003_alter_welcome_description"),
+        ("wagtailcore", "0094_alter_page_locale"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ChooseCharacter',
+            name="ChooseCharacter",
             fields=[
-                ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.page')),
-                ('character_type', models.CharField(blank=True, max_length=255, null=True)),
-                ('name', models.CharField(blank=True, max_length=255, null=True)),
-                ('description', models.CharField(blank=True, max_length=255, null=True)),
-                ('character_image', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='custom_images.customimage')),
+                (
+                    "page_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="wagtailcore.page",
+                    ),
+                ),
+                (
+                    "character_type",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                ("name", models.CharField(blank=True, max_length=255, null=True)),
+                (
+                    "description",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                (
+                    "character_image",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to="custom_images.customimage",
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
-            bases=('wagtailcore.page',),
+            bases=("wagtailcore.page",),
         ),
     ]

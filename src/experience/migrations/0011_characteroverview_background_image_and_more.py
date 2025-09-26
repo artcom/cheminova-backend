@@ -5,26 +5,37 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('custom_images', '0006_remove_customimage_public'),
-        ('experience', '0010_alter_photographyscreen_description'),
+        ("custom_images", "0006_remove_customimage_public"),
+        ("experience", "0010_alter_photographyscreen_description"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='characteroverview',
-            name='background_image',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='custom_images.customimage'),
+            model_name="characteroverview",
+            name="background_image",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="+",
+                to="custom_images.customimage",
+            ),
         ),
         migrations.AddField(
-            model_name='characteroverview',
-            name='site_name',
+            model_name="characteroverview",
+            name="site_name",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
         migrations.AddField(
-            model_name='choosecharacter',
-            name='background_image',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='custom_images.customimage'),
+            model_name="choosecharacter",
+            name="background_image",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="+",
+                to="custom_images.customimage",
+            ),
         ),
     ]

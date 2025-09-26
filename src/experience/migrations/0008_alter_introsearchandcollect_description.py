@@ -5,15 +5,14 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('experience', '0007_rename_header_introsearchandcollect_heading_and_more'),
+        ("experience", "0007_rename_header_introsearchandcollect_heading_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='introsearchandcollect',
-            name='description',
+            model_name="introsearchandcollect",
+            name="description",
             field=wagtail.fields.RichTextField(blank=True, null=True),
         ),
     ]

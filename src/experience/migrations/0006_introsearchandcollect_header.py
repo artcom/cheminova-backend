@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('experience', '0005_photographyscreen_yourcollection_and_more'),
+        ("experience", "0005_photographyscreen_yourcollection_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='introsearchandcollect',
-            name='header',
+            model_name="introsearchandcollect",
+            name="header",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
     ]

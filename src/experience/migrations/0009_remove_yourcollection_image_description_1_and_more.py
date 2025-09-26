@@ -6,35 +6,55 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('experience', '0008_alter_introsearchandcollect_description'),
+        ("experience", "0008_alter_introsearchandcollect_description"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='yourcollection',
-            name='image_description_1',
+            model_name="yourcollection",
+            name="image_description_1",
         ),
         migrations.RemoveField(
-            model_name='yourcollection',
-            name='image_description_2',
+            model_name="yourcollection",
+            name="image_description_2",
         ),
         migrations.RemoveField(
-            model_name='yourcollection',
-            name='image_description_3',
+            model_name="yourcollection",
+            name="image_description_3",
         ),
         migrations.CreateModel(
-            name='ImageDescription',
+            name="ImageDescription",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('sort_order', models.IntegerField(blank=True, editable=False, null=True)),
-                ('description', models.CharField(blank=True, max_length=255, null=True)),
-                ('page', modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='image_descriptions', to='experience.yourcollection')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "sort_order",
+                    models.IntegerField(blank=True, editable=False, null=True),
+                ),
+                (
+                    "description",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                (
+                    "page",
+                    modelcluster.fields.ParentalKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="image_descriptions",
+                        to="experience.yourcollection",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['sort_order'],
-                'abstract': False,
+                "ordering": ["sort_order"],
+                "abstract": False,
             },
         ),
     ]

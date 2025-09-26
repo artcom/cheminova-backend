@@ -4,30 +4,29 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('experience', '0006_introsearchandcollect_header'),
+        ("experience", "0006_introsearchandcollect_header"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='introsearchandcollect',
-            old_name='header',
-            new_name='heading',
+            model_name="introsearchandcollect",
+            old_name="header",
+            new_name="heading",
         ),
         migrations.AddField(
-            model_name='characteroverview',
-            name='heading',
+            model_name="characteroverview",
+            name="heading",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
         migrations.AddField(
-            model_name='photographyscreen',
-            name='heading',
+            model_name="photographyscreen",
+            name="heading",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
         migrations.AddField(
-            model_name='yourcollection',
-            name='heading',
+            model_name="yourcollection",
+            name="heading",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
     ]
