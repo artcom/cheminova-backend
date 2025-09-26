@@ -37,9 +37,21 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-￼
+### Running scripts with `uvx` and `invoke`
 
-⸻
+Scripts are defined in `tasks.py` and can be run with `uvx`:
+
+```bash
+uvx invoke <task-name>
+```
+
+List available tasks:
+
+```bash
+uvx invoke --list
+```
+
+---
 
 ## Installation
 
