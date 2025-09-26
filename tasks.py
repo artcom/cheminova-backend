@@ -22,3 +22,8 @@ def bump_version(c, part="patch"):
 def format(c):
     c.run("uv run ruff check --fix src")
     c.run("uv run ruff format src")
+
+
+@task
+def dev(c, build=False):
+    c.run(f"docker compose up {'--build' if build else ''} --watch", pty=True)
