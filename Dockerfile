@@ -1,4 +1,4 @@
-FROM python:3.13-slim-bookworm
+FROM debian:bookworm-slim
 
 ENV PYTHONUNBUFFERED=1
 ENV PORT=8000
@@ -20,8 +20,11 @@ WORKDIR /app
 RUN useradd -m wagtail
 RUN chown -R wagtail:wagtail /app
 USER wagtail
-COPY --chown=wagtail:wagtail . .
-RUN mkdir /app/media
+COPY --chown=wagtail:wagtail ./src .
+COPY --chown=wagtail:wagtail pyproject.toml .
+COPY --chown=wagtail:wagtail uv.lock .
+COPY --chown=wagtail:wagtail .python-version .
+RUN mkdir media
 RUN uv sync --locked --compile-bytecode
 RUN uv run manage.py collectstatic --noinput --clear
 

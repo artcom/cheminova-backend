@@ -10,7 +10,7 @@ services:
         published: 8080
         protocol: tcp
     volumes:
-      - source: nginx/nginx.conf
+      - source: config/nginx/nginx.conf
         target: /etc/nginx/nginx.conf
         type: bind
       - source: wagtail-static
@@ -101,7 +101,7 @@ services:
     volumes_from:
       - wagtail
     volumes:
-      - source: mc/config.json
+      - source: config/mc/config.json
         target: /root/.mc/config.json
         type: bind
     depends_on:
@@ -123,7 +123,7 @@ services:
     image: minio/mc:RELEASE.2025-08-13T08-35-41Z
     command: ["mb", "--ignore-existing", "s3/media"]
     volumes:
-      - source: mc/config.json
+      - source: config/mc/config.json
         target: /root/.mc/config.json
         type: bind
     depends_on:
