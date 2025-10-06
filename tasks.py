@@ -4,7 +4,7 @@ from invoke import task
 @task(
     help={"part": "Part of the version to bump: major, minor, patch (default: patch)"}
 )
-def bump_version(c, part="patch"):
+def bump(c, part="patch"):
     """Bump version using uv version and create a git tag."""
     result = c.run("git status --short", hide=True)
     if result.stdout != "":
