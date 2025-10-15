@@ -39,6 +39,7 @@ services:
     develop:
       watch:
         - action: sync
+          initial_sync: true
           path: src
           target: /app
     command: ["uv", "run", "manage.py", "runserver", "0.0.0.0:8000"]
