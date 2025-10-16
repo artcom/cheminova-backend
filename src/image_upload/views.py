@@ -1,37 +1,35 @@
-import uuid
-from pathlib import PurePath
-
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from .serializers import ImageModelSerializer
+from .serializers import ImageModelSerializer, ImageUploadRequestSerializer
 
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def upload_image_view(request: Request) -> Response:
-    file = request.data.get("image")
-    if not file or not file.name:
-        return Response(data={"message": "Bad Request"}, status=400)
+    request_serializer = ImageUploadRequestSerializer(data=request.data)
+    if not request_serializer.is_valid():
+        return Response(data=request_serializer.errors, status=400)
 
-    title = file.name
-    file_path = PurePath(file.name)
-    file.name = file_path.stem + f"-{uuid.uuid4()}" + file_path.suffix
+    image = request_serializer.validated_data["image"]
+    character = request_serializer.validated_data["character"]
+
     data = {
-        "file": file,
-        "title": title,
+        "file": image["file"],
+        "title": image["title"],
+        "collection": character["default_collection"],
     }
-    serializer = ImageModelSerializer(data=data)
+    image_serializer = ImageModelSerializer(data=data)
 
-    if serializer.is_valid():
-        serializer.save()
+    if image_serializer.is_valid():
+        image_serializer.save()
         return Response(
-            data=serializer.data,
+            data=image_serializer.data,
             status=201,
-            headers={"Location": serializer.data["file"]},
+            headers={"Location": image_serializer.data["file"]},
         )
 
     else:
-        return Response(data=serializer.errors, status=400)
+        return Response(data=image_serializer.errors, status=400)
