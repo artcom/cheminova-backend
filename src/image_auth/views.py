@@ -7,6 +7,8 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from wagtail.images import get_image_model
 
+from experience.models import Character
+
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
@@ -36,6 +38,15 @@ def check_permissions(request: Request) -> Response:
                 return Response(data={"message": "Not found"}, status=404)
 
             if len(db_image.get_referenced_live_pages()) > 0:
+                return Response({"message": "OK"}, status=200)
+
+            characters_approved_collections = (
+                Character.objects.all()
+                .values_list("approved_collection_id", flat=True)
+                .distinct()
+            )
+
+            if db_image.collection_id in list(characters_approved_collections):
                 return Response({"message": "OK"}, status=200)
 
             return Response(data={"message": "Unauthorized"}, status=401)
