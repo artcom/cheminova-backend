@@ -7,97 +7,180 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('custom_images', '0006_remove_customimage_public'),
-        ('experience', '0012_alter_characteroverview_onboarding'),
-        ('wagtailcore', '0095_groupsitepermission'),
+        ("custom_images", "0006_remove_customimage_public"),
+        ("experience", "0012_alter_characteroverview_onboarding"),
+        ("wagtailcore", "0095_groupsitepermission"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Conclusion',
+            name="Conclusion",
             fields=[
-                ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.page')),
-                ('heading', models.CharField(blank=True, max_length=255, null=True)),
-                ('description', wagtail.fields.RichTextField(blank=True, null=True)),
+                (
+                    "page_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="wagtailcore.page",
+                    ),
+                ),
+                ("heading", models.CharField(blank=True, max_length=255, null=True)),
+                ("description", wagtail.fields.RichTextField(blank=True, null=True)),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
-            bases=('wagtailcore.page',),
+            bases=("wagtailcore.page",),
         ),
         migrations.CreateModel(
-            name='Ending',
+            name="Ending",
             fields=[
-                ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.page')),
-                ('heading', models.CharField(blank=True, max_length=255, null=True)),
-                ('description', wagtail.fields.RichTextField(blank=True, null=True)),
+                (
+                    "page_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="wagtailcore.page",
+                    ),
+                ),
+                ("heading", models.CharField(blank=True, max_length=255, null=True)),
+                ("description", wagtail.fields.RichTextField(blank=True, null=True)),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
-            bases=('wagtailcore.page',),
+            bases=("wagtailcore.page",),
         ),
         migrations.CreateModel(
-            name='Gallery',
+            name="Gallery",
             fields=[
-                ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.page')),
-                ('heading', models.CharField(blank=True, max_length=255, null=True)),
-                ('exit_button_text', models.CharField(blank=True, max_length=10, null=True)),
-                ('close_button_text', models.CharField(blank=True, max_length=10, null=True)),
+                (
+                    "page_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="wagtailcore.page",
+                    ),
+                ),
+                ("heading", models.CharField(blank=True, max_length=255, null=True)),
+                (
+                    "exit_button_text",
+                    models.CharField(blank=True, max_length=10, null=True),
+                ),
+                (
+                    "close_button_text",
+                    models.CharField(blank=True, max_length=10, null=True),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
-            bases=('wagtailcore.page',),
+            bases=("wagtailcore.page",),
         ),
         migrations.CreateModel(
-            name='UploadPage',
+            name="UploadPage",
             fields=[
-                ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.page')),
-                ('description', wagtail.fields.RichTextField(blank=True, null=True)),
-                ('yes_button_text', models.CharField(blank=True, max_length=5, null=True)),
-                ('no_button_text', models.CharField(blank=True, max_length=5, null=True)),
+                (
+                    "page_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="wagtailcore.page",
+                    ),
+                ),
+                ("description", wagtail.fields.RichTextField(blank=True, null=True)),
+                (
+                    "yes_button_text",
+                    models.CharField(blank=True, max_length=5, null=True),
+                ),
+                (
+                    "no_button_text",
+                    models.CharField(blank=True, max_length=5, null=True),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
-            bases=('wagtailcore.page',),
+            bases=("wagtailcore.page",),
         ),
         migrations.AlterField(
-            model_name='imagedescription',
-            name='page',
-            field=modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='image_descriptions', to='experience.photographyscreen'),
+            model_name="imagedescription",
+            name="page",
+            field=modelcluster.fields.ParentalKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="image_descriptions",
+                to="experience.photographyscreen",
+            ),
         ),
         migrations.RemoveField(
-            model_name='characteroverview',
-            name='heading',
+            model_name="characteroverview",
+            name="heading",
         ),
         migrations.RemoveField(
-            model_name='photographyscreen',
-            name='description',
+            model_name="photographyscreen",
+            name="description",
         ),
         migrations.AddField(
-            model_name='choosecharacter',
-            name='select_button_text',
+            model_name="choosecharacter",
+            name="select_button_text",
             field=models.CharField(blank=True, max_length=10, null=True),
         ),
         migrations.CreateModel(
-            name='Exploration',
+            name="Exploration",
             fields=[
-                ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.page')),
-                ('heading', models.CharField(blank=True, max_length=255, null=True)),
-                ('description', wagtail.fields.RichTextField(blank=True, null=True)),
-                ('bottom_image', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='custom_images.customimage')),
-                ('top_image', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='custom_images.customimage')),
+                (
+                    "page_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="wagtailcore.page",
+                    ),
+                ),
+                ("heading", models.CharField(blank=True, max_length=255, null=True)),
+                ("description", wagtail.fields.RichTextField(blank=True, null=True)),
+                (
+                    "bottom_image",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to="custom_images.customimage",
+                    ),
+                ),
+                (
+                    "top_image",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to="custom_images.customimage",
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
-            bases=('wagtailcore.page',),
+            bases=("wagtailcore.page",),
         ),
         migrations.DeleteModel(
-            name='YourCollection',
+            name="YourCollection",
         ),
     ]

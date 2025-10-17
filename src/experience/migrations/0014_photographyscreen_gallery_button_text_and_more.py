@@ -4,25 +4,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('experience', '0013_conclusion_ending_gallery_uploadpage_and_more'),
+        ("experience", "0013_conclusion_ending_gallery_uploadpage_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='photographyscreen',
-            name='gallery_button_text',
+            model_name="photographyscreen",
+            name="gallery_button_text",
             field=models.CharField(blank=True, max_length=20, null=True),
         ),
         migrations.AddField(
-            model_name='photographyscreen',
-            name='retake_photo_button_text',
+            model_name="photographyscreen",
+            name="retake_photo_button_text",
             field=models.CharField(blank=True, max_length=20, null=True),
         ),
         migrations.AddField(
-            model_name='photographyscreen',
-            name='take_photo_button_text',
+            model_name="photographyscreen",
+            name="take_photo_button_text",
             field=models.CharField(blank=True, max_length=20, null=True),
         ),
     ]

@@ -7,6 +7,7 @@ from wagtail.fields import RichTextField
 from modelcluster.fields import ParentalKey
 
 __all__ = [
+    "Characters",
     "Welcome",
     "CharacterOverview",
     "ChooseCharacter",
@@ -18,6 +19,48 @@ __all__ = [
     "Gallery",
     "Ending",
 ]
+
+
+class Characters(Page):
+    search_fields = Page.search_fields
+    content_panels = Page.content_panels + [
+        InlinePanel("characters", label="Characters", min_num=3, max_num=3),
+    ]
+    api_fields = ["characters"]
+    parent_page_types = ["wagtailcore.Page"]
+    subpage_types = []
+    max_count = 1
+
+
+class Character(Orderable):
+    page = ParentalKey(
+        Characters,
+        on_delete=models.CASCADE,
+        related_name="characters",
+    )
+    name = models.CharField(max_length=255, blank=True, null=True)
+    approved_collection = models.ForeignKey(
+        "wagtailcore.Collection",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    not_approved_collection = models.ForeignKey(
+        "wagtailcore.Collection",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    slug = models.CharField(max_length=30, blank=True, null=True)
+    api_fields = ["name", "approved_collection", "not_approved_collection", "slug"]
+    panels = [
+        FieldPanel("name"),
+        FieldPanel("approved_collection"),
+        FieldPanel("not_approved_collection"),
+        FieldPanel("slug"),
+    ]
 
 
 class Welcome(Page):

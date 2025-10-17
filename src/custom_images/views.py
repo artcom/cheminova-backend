@@ -2,7 +2,8 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
-from wagtail.models.media import Collection
+
+from experience.models import Character
 
 from .models import CustomImage
 from .serializers import CustomImageModelSerializer
@@ -22,13 +23,14 @@ class ImageViewSet(ReadOnlyModelViewSet):
         character = self.kwargs.get(self.lookup_url_kwarg)
         if character is not None:
             try:
-                collection = Collection.objects.get(
-                    name__iexact=character.replace("-", " ")
-                )
+                character_instance = Character.objects.get(slug=character)
                 return self.queryset.filter(
-                    collection__in=collection.get_descendants(inclusive=True)
+                    collection__in=[
+                        character_instance.approved_collection,
+                        character_instance.not_approved_collection,
+                    ]
                 )
-            except Collection.DoesNotExist:
+            except Character.DoesNotExist:
                 return self.queryset.none()
         return self.queryset
 
@@ -39,12 +41,10 @@ class ImageViewSet(ReadOnlyModelViewSet):
         """
         character = self.kwargs.get("character")
         try:
-            parent_collection = Collection.objects.get(
-                name__iexact=character.replace("-", " ")
-            )
-            approved_collection = parent_collection.get_children().get(name="Approved")
+            character_instance = Character.objects.get(slug=character)
+            approved_collection = character_instance.approved_collection
             images = self.queryset.filter(collection=approved_collection)
             serializer = self.get_serializer(images, many=True)
             return Response(serializer.data)
-        except Collection.DoesNotExist:
+        except Character.DoesNotExist:
             return Response([])

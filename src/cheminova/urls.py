@@ -9,7 +9,7 @@ from wagtail.documents import urls as wagtaildocs_urls
 
 import experience.models
 import experience.views
-from custom_images import urls as custom_images_urls
+from custom_images.urls import urlpatterns as custom_images_urlpatterns
 from image_auth import urls as image_auth_urls
 from image_upload import urls as image_upload_urls
 
@@ -22,12 +22,11 @@ for model in experience.models.__all__:
         getattr(experience.views, f"{model}ViewSet"),
     )
 
-
 urlpatterns = [
     path("django-admin/", admin.site.urls),
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
-    path("api/", include(router.urls + custom_images_urls.urlpatterns)),
+    path("api/", include(router.urls + custom_images_urlpatterns)),
     path("api/image-auth/", include(image_auth_urls)),
     path("api/upload/", include(image_upload_urls)),
     path("api-auth/", include(rest_framework_urls, namespace="rest_framework")),
