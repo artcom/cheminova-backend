@@ -16,7 +16,7 @@ class RenditionFileField(serializers.RelatedField):
 class CustomImageModelSerializer(serializers.ModelSerializer):
     renditions = RenditionFileField(many=True, read_only=True)
     live = serializers.SerializerMethodField()
-    collection = serializers.CharField(source="collection.name")
+    collection = serializers.CharField(source="collection.name", read_only=True)
 
     class Meta:
         model = CustomImage
@@ -34,7 +34,7 @@ class CustomImageModelSerializer(serializers.ModelSerializer):
         return len(obj.get_referenced_live_pages()) > 0
 
 
-class ImageModelSerializer(serializers.ModelSerializer):
+class SaveImageModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomImage
         fields = ["file", "title", "collection"]

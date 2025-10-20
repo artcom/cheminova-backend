@@ -7,8 +7,8 @@ from experience.models import Character
 from .models import CustomImage
 from .serializers import (
     CustomImageModelSerializer,
-    ImageModelSerializer,
     ImageUploadRequestSerializer,
+    SaveImageModelSerializer,
 )
 
 
@@ -52,12 +52,12 @@ class ImageViewSet(ModelViewSet):
         return self.queryset
 
     def create(self, request, *args, **kwargs):
-        character = self.kwargs.get(self.lookup_url_kwarg)
-        if character is not None:
-            try:
-                character_instance = Character.objects.get(slug=character)
-            except Character.DoesNotExist:
-                return Response(data={"error": "Character not found"}, status=404)
+        character = kwargs.get(self.lookup_url_kwarg)
+        try:
+            character_instance = Character.objects.get(slug=character)
+        except Character.DoesNotExist:
+            return Response(data={"error": "Character not found"}, status=404)
+
         request_serializer = ImageUploadRequestSerializer(data=request.data)
 
         if not request_serializer.is_valid():
@@ -71,7 +71,7 @@ class ImageViewSet(ModelViewSet):
             "collection": character_instance.not_approved_collection.pk,
         }
 
-        image_serializer = ImageModelSerializer(data=data)
+        image_serializer = SaveImageModelSerializer(data=data)
 
         if image_serializer.is_valid():
             image_serializer.save()
