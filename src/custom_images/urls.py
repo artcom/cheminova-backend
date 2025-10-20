@@ -1,11 +1,11 @@
-from rest_framework.routers import DynamicRoute, Route, SimpleRouter
+from rest_framework.routers import Route, SimpleRouter
 
 from custom_images.views import ImageViewSet
 
 
-class CustomReadOnlyRouter(SimpleRouter):
+class CustomRouter(SimpleRouter):
     """
-    A router for read-only APIs, which doesn't use trailing slashes.
+    A router for read-only APIs.
     """
 
     routes = [
@@ -18,20 +18,14 @@ class CustomReadOnlyRouter(SimpleRouter):
         ),
         Route(
             url=r"^{prefix}/{lookup}{trailing_slash}$",
-            mapping={"get": "list"},
+            mapping={"get": "list", "post": "create"},
             name="{basename}-character",
             detail=False,
             initkwargs={"suffix": "Character"},
         ),
-        DynamicRoute(
-            url=r"^{prefix}/{lookup}/{url_path}{trailing_slash}$",
-            name="{basename}-{url_name}",
-            detail=False,
-            initkwargs={},
-        ),
     ]
 
 
-router = CustomReadOnlyRouter()
+router = CustomRouter()
 router.register("images", ImageViewSet)
 urlpatterns = router.urls

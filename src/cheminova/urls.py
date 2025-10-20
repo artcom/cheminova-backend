@@ -11,7 +11,6 @@ import experience.models
 import experience.views
 from custom_images.urls import urlpatterns as custom_images_urlpatterns
 from image_auth import urls as image_auth_urls
-from image_upload import urls as image_upload_urls
 
 router = DefaultRouter()
 router.register("all", experience.views.AllModelViewSet, basename="all")
@@ -28,7 +27,6 @@ urlpatterns = [
     path("documents/", include(wagtaildocs_urls)),
     path("api/", include(router.urls + custom_images_urlpatterns)),
     path("api/image-auth/", include(image_auth_urls)),
-    path("api/upload/", include(image_upload_urls)),
     path("api-auth/", include(rest_framework_urls, namespace="rest_framework")),
 ]
 
