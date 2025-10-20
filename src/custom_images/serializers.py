@@ -5,8 +5,6 @@ from django.conf import settings
 from django.db import models  # noqa
 from rest_framework import serializers
 
-from experience.models import Character
-
 from .models import CustomImage
 
 
@@ -18,7 +16,6 @@ class RenditionFileField(serializers.RelatedField):
 class CustomImageModelSerializer(serializers.ModelSerializer):
     renditions = RenditionFileField(many=True, read_only=True)
     live = serializers.SerializerMethodField()
-    character = serializers.SerializerMethodField()
     collection = serializers.CharField(source="collection.name")
 
     class Meta:
@@ -30,21 +27,11 @@ class CustomImageModelSerializer(serializers.ModelSerializer):
             "renditions",
             "live",
             "collection",
-            "character",
         ]
         depth = 0
 
     def get_live(self, obj: CustomImage) -> bool:
         return len(obj.get_referenced_live_pages()) > 0
-
-    def get_character(self, obj: CustomImage) -> str:
-        character_for_collection = Character.objects.filter(
-            models.Q(approved_collection=obj.collection)
-            | models.Q(not_approved_collection=obj.collection)
-        ).first()
-        if character_for_collection:
-            return character_for_collection.name
-        return None
 
 
 class ImageModelSerializer(serializers.ModelSerializer):
