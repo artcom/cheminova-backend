@@ -143,11 +143,15 @@ class ChooseCharacter(Page):
         SearchField("character_type"),
     ]
     content_panels = Page.content_panels + [
-        FieldPanel("character_type"),
+        FieldPanel(
+            "character_type", permission="experience.choose_character.edit_restricted"
+        ),
         FieldPanel("name"),
         FieldPanel("description"),
         FieldPanel("select_button_text"),
-        FieldPanel("character_image"),
+        FieldPanel(
+            "character_image", permission="experience.choose_character.edit_restricted"
+        ),
         FieldPanel("background_image"),
     ]
     api_fields = [
@@ -162,6 +166,14 @@ class ChooseCharacter(Page):
     parent_page_types = ["CharacterOverview"]
     subpage_types = ["IntroSearchAndCollect"]
     max_count = 3
+
+    class Meta:
+        permissions = [
+            (
+                "choose_character.edit_restricted",
+                "Can edit restricted fields - Choose Character page",
+            )
+        ]
 
 
 class IntroSearchAndCollect(Page):
@@ -258,7 +270,9 @@ class Exploration(Page):
     content_panels = Page.content_panels + [
         FieldPanel("heading"),
         FieldPanel("description"),
-        FieldPanel("character_image"),
+        FieldPanel(
+            "character_image", permission="experience.exploration.edit_restricted"
+        ),
         FieldPanel("top_image"),
         FieldPanel("bottom_image"),
     ]
@@ -273,6 +287,14 @@ class Exploration(Page):
     parent_page_types = ["PhotographyScreen"]
     subpage_types = ["Conclusion"]
     max_count_per_parent = 1
+
+    class Meta:
+        permissions = [
+            (
+                "exploration.edit_restricted",
+                "Can edit restricted fields - Exploration page",
+            )
+        ]
 
 
 class Conclusion(Page):
