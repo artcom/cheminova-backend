@@ -63,11 +63,8 @@ class ImageViewSet(ModelViewSet):
         if not request_serializer.is_valid():
             return Response(data=request_serializer.errors, status=400)
 
-        image = request_serializer.validated_data["image"]
-
         data = {
-            "file": image["file"],
-            "title": image["title"],
+            **request_serializer.validated_data,
             "collection": character_instance.not_approved_collection.pk,
         }
 
@@ -82,4 +79,7 @@ class ImageViewSet(ModelViewSet):
             )
 
         else:
-            return Response(data=image_serializer.errors, status=400)
+            return Response(
+                data={**image_serializer.errors, "error": "Image upload failed"},
+                status=400,
+            )

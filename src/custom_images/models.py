@@ -4,7 +4,20 @@ from wagtail.models import Page
 
 
 class CustomImage(AbstractImage):
-    admin_form_fields = Image.admin_form_fields
+    uploaded_text = models.CharField(
+        blank=True,
+        max_length=255,
+        default="",
+    )
+    uploaded_user_name = models.CharField(
+        blank=True,
+        max_length=150,
+        default="",
+    )
+    admin_form_fields = Image.admin_form_fields + (
+        "uploaded_text",
+        "uploaded_user_name",
+    )
 
     def get_referenced_live_pages(self) -> list[Page]:
         """

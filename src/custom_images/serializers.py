@@ -27,6 +27,9 @@ class CustomImageModelSerializer(serializers.ModelSerializer):
             "renditions",
             "live",
             "collection",
+            "uploaded_text",
+            "uploaded_user_name",
+            "created_at",
         ]
         depth = 0
 
@@ -37,7 +40,7 @@ class CustomImageModelSerializer(serializers.ModelSerializer):
 class SaveImageModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomImage
-        fields = ["file", "title", "collection"]
+        fields = ["file", "title", "collection", "uploaded_text", "uploaded_user_name"]
 
 
 class ImageFieldWithUniqueName(serializers.ImageField):
@@ -52,3 +55,14 @@ class ImageFieldWithUniqueName(serializers.ImageField):
 
 class ImageUploadRequestSerializer(serializers.Serializer):
     image = ImageFieldWithUniqueName(required=True)
+    text = serializers.CharField(required=False, allow_blank=True)
+    userName = serializers.CharField(required=False, allow_blank=True)
+
+    def to_internal_value(self, data):
+        ret = super().to_internal_value(data)
+        return {
+            "file": ret["image"]["file"],
+            "title": ret["image"]["title"],
+            "uploaded_text": ret.get("text", ""),
+            "uploaded_user_name": ret.get("userName", ""),
+        }
