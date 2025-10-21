@@ -95,13 +95,6 @@ class Welcome(Page):
 class CharacterOverview(Page):
     site_name = models.CharField(max_length=255, blank=True, null=True)
     onboarding = RichTextField(blank=True, null=True)
-    characters_image = models.ForeignKey(
-        get_image_model_string(),
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name="+",
-    )
     background_image = models.ForeignKey(
         get_image_model_string(),
         null=True,
@@ -113,14 +106,12 @@ class CharacterOverview(Page):
     content_panels = Page.content_panels + [
         FieldPanel("site_name"),
         FieldPanel("onboarding"),
-        FieldPanel("characters_image"),
         FieldPanel("background_image"),
     ]
     api_fields = [
         "title",
         "site_name",
         "onboarding",
-        "characters_image",
         "background_image",
     ]
     parent_page_types = ["Welcome"]
