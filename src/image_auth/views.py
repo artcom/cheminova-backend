@@ -15,8 +15,8 @@ from experience.models import Character
 def check_permissions(request: Request) -> Response:
     """
     A view to check if the user has permission to view images. All users are allowed to view images
-    that are referenced by a live page. Only authenticated users can view images not referenced by
-    a live page.
+    that are referenced by a live page or in approved collections. Only authenticated users can
+    view images not referenced by a live page or in approved collections.
     The requested image is passed in the "X-Original-Uri" header.
     """
     try:
