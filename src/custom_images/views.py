@@ -1,10 +1,12 @@
 from rest_framework.permissions import BasePermission, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from wagtail.images import get_image_model
+from wagtail.images.models import Image
+from wagtail.permission_policies.collections import CollectionPermissionPolicy
 
 from experience.models import Character
 
-from .models import CustomImage
 from .serializers import (
     CustomImageModelSerializer,
     ImageUploadRequestSerializer,
@@ -28,28 +30,36 @@ class ImageViewSet(ModelViewSet):
 
     permission_classes = [IsAuthenticated | AllowApproved]
     serializer_class = CustomImageModelSerializer
-    queryset = CustomImage.objects.all()
+    queryset = get_image_model().objects.all()
     lookup_url_kwarg = "character"
 
     def get_queryset(self):
         character = self.kwargs.get(self.lookup_url_kwarg)
+        allowed_collections = []
+        if self.request.user.is_authenticated:
+            permission_policy = CollectionPermissionPolicy(
+                get_image_model(), auth_model=Image
+            )
+            allowed_collections.extend(
+                list(
+                    permission_policy.collections_user_has_any_permission_for(
+                        self.request.user, ["change", "add", "delete", "choose"]
+                    )
+                )
+            )
+
         if character is not None:
             try:
                 character_instance = Character.objects.get(slug=character)
-                if self.request.user.is_authenticated:
-                    return self.queryset.filter(
-                        collection__in=[
-                            character_instance.approved_collection,
-                            character_instance.not_approved_collection,
-                        ]
-                    )
-                else:
-                    return self.queryset.filter(
-                        collection=character_instance.approved_collection
-                    )
+                collections = [character_instance.approved_collection]
+                if character_instance.not_approved_collection in allowed_collections:
+                    collections.append(character_instance.not_approved_collection)
+                return self.queryset.filter(collection__in=collections)
+
             except Character.DoesNotExist:
                 return self.queryset.none()
-        return self.queryset
+
+        return self.queryset.filter(collection__in=allowed_collections)
 
     def create(self, request, *args, **kwargs):
         character = kwargs.get(self.lookup_url_kwarg)
