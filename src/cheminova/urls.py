@@ -1,6 +1,5 @@
 from caseutil import to_kebab
 from django.conf import settings
-from django.contrib import admin
 from django.urls import include, path
 from rest_framework import urls as rest_framework_urls
 from rest_framework.routers import DefaultRouter
@@ -22,7 +21,6 @@ for model in experience.models.__all__:
     )
 
 urlpatterns = [
-    path("django-admin/", admin.site.urls),
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
     path("api/", include(router.urls + custom_images_urlpatterns)),
