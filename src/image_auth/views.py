@@ -6,6 +6,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 from wagtail.images import get_image_model
+from wagtail.images.models import Image
+from wagtail.permission_policies.collections import CollectionPermissionPolicy
 
 from experience.models import Character
 
@@ -20,23 +22,33 @@ def check_permissions(request: Request) -> Response:
     The requested image is passed in the "X-Original-Uri" header.
     """
     try:
+        if not request.headers.get("X-Original-Uri"):
+            return Response(data={"message": "Bad Request"}, status=400)
+
+        requested_image = get_image_file(request.headers.get("X-Original-Uri"))
+        image_type = get_image_type(requested_image)
+
+        if not image_type:
+            return Response(data={"message": "Bad Request"}, status=400)
+
+        db_image = get_db_image(requested_image, image_type)
+        if not db_image:
+            return Response(data={"message": "Not found"}, status=404)
+
         if request.user.is_authenticated:
-            return Response(data={"message": "OK"}, status=200)
+            permission_policy = CollectionPermissionPolicy(
+                get_image_model(), auth_model=Image
+            )
+            if permission_policy.user_has_any_permission_for_instance(
+                request.user,
+                ["change", "add", "delete", "choose"],
+                db_image,
+            ):
+                return Response(data={"message": "OK"}, status=200)
+            else:
+                return Response(data={"message": "Unauthorized"}, status=401)
 
         else:
-            if not request.headers.get("X-Original-Uri"):
-                return Response(data={"message": "Bad Request"}, status=400)
-
-            requested_image = get_image_file(request.headers.get("X-Original-Uri"))
-            image_type = get_image_type(requested_image)
-
-            if not image_type:
-                return Response(data={"message": "Bad Request"}, status=400)
-
-            db_image = get_db_image(requested_image, image_type)
-            if not db_image:
-                return Response(data={"message": "Not found"}, status=404)
-
             if len(db_image.get_referenced_live_pages()) > 0:
                 return Response({"message": "OK"}, status=200)
 
