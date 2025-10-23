@@ -34,4 +34,8 @@ class Migration(migrations.Migration):
                 ]
             },
         ),
+        migrations.RemoveField(
+            model_name="characteroverview",
+            name="characters_image",
+        ),
     ]
