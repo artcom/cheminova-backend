@@ -14,7 +14,7 @@ from .serializers import (
 )
 
 
-class AllowApproved(BasePermission):
+class AllowCharacterImages(BasePermission):
     """
     Custom permission to allow access to character images.
     """
@@ -28,7 +28,7 @@ class ImageViewSet(ModelViewSet):
     A viewset for listing and uploading custom images associated with characters.
     """
 
-    permission_classes = [IsAuthenticated | AllowApproved]
+    permission_classes = [IsAuthenticated | AllowCharacterImages]
     serializer_class = CustomImageModelSerializer
     queryset = get_image_model().objects.all()
     lookup_url_kwarg = "character"
