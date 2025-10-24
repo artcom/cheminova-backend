@@ -9,15 +9,16 @@ from modelcluster.fields import ParentalKey
 __all__ = [
     "Characters",
     "Welcome",
-    "CharacterOverview",
+    "WelcomeCharacter",
     "ChooseCharacter",
-    "IntroSearchAndCollect",
-    "PhotographyScreen",
-    "Exploration",
-    "Conclusion",
-    "UploadPage",
-    "Gallery",
-    "Ending",
+    "Introduction",
+    "Photo",
+    "Insight",
+    "ExperienceIntro",
+    "ExperienceGallery",
+    "ExperienceCreate",
+    "ExperienceRecord",
+    "Reflection",
 ]
 
 
@@ -66,6 +67,7 @@ class Character(Orderable):
 class Welcome(Page):
     description = models.CharField(max_length=255, blank=True, null=True)
     site_name = models.CharField(max_length=255, blank=True, null=True)
+    intro_text = RichTextField(blank=True, null=True)
     background_image = models.ForeignKey(
         get_image_model_string(),
         null=True,
@@ -79,20 +81,22 @@ class Welcome(Page):
     content_panels = Page.content_panels + [
         FieldPanel("description"),
         FieldPanel("site_name"),
+        FieldPanel("intro_text"),
         FieldPanel("background_image"),
     ]
     api_fields = [
         "title",
         "description",
         "site_name",
+        "intro_text",
         "background_image",
     ]
     parent_page_types = ["wagtailcore.Page"]
-    subpage_types = ["CharacterOverview"]
+    subpage_types = ["WelcomeCharacter"]
     max_count = 1
 
 
-class CharacterOverview(Page):
+class WelcomeCharacter(Page):
     site_name = models.CharField(max_length=255, blank=True, null=True)
     onboarding = RichTextField(blank=True, null=True)
     background_image = models.ForeignKey(
@@ -144,13 +148,13 @@ class ChooseCharacter(Page):
     ]
     content_panels = Page.content_panels + [
         FieldPanel(
-            "character_type", permission="experience.choose_character.edit_restricted"
+            "character_type", permission="experience.welcome_character.edit_restricted"
         ),
         FieldPanel("name"),
         FieldPanel("description"),
         FieldPanel("select_button_text"),
         FieldPanel(
-            "character_image", permission="experience.choose_character.edit_restricted"
+            "character_image", permission="experience.welcome_character.edit_restricted"
         ),
         FieldPanel("background_image"),
     ]
@@ -163,20 +167,20 @@ class ChooseCharacter(Page):
         "character_image",
         "background_image",
     ]
-    parent_page_types = ["CharacterOverview"]
-    subpage_types = ["IntroSearchAndCollect"]
+    parent_page_types = ["WelcomeCharacter"]
+    subpage_types = ["Introduction"]
     max_count = 3
 
     class Meta:
         permissions = [
             (
-                "choose_character.edit_restricted",
-                "Can edit restricted fields - Choose Character page",
+                "welcome_character.edit_restricted",
+                "Can edit restricted fields - Welcome Character page",
             )
         ]
 
 
-class IntroSearchAndCollect(Page):
+class Introduction(Page):
     heading = models.CharField(max_length=255, blank=True, null=True)
     description = RichTextField(null=True, blank=True)
     image = models.ForeignKey(
@@ -199,21 +203,15 @@ class IntroSearchAndCollect(Page):
         "image",
     ]
     parent_page_types = ["ChooseCharacter"]
-    subpage_types = ["PhotographyScreen"]
+    subpage_types = ["Photo"]
     max_count_per_parent = 1
 
 
-class PhotographyScreen(Page):
+class Photo(Page):
     heading = models.CharField(max_length=255, blank=True, null=True)
-    take_photo_button_text = models.CharField(max_length=20, blank=True, null=True)
-    retake_photo_button_text = models.CharField(max_length=20, blank=True, null=True)
-    gallery_button_text = models.CharField(max_length=20, blank=True, null=True)
     search_fields = Page.search_fields
     content_panels = Page.content_panels + [
         FieldPanel("heading"),
-        FieldPanel("take_photo_button_text"),
-        FieldPanel("retake_photo_button_text"),
-        FieldPanel("gallery_button_text"),
         InlinePanel(
             "image_descriptions", label="Image Descriptions", min_num=3, max_num=3
         ),
@@ -221,28 +219,26 @@ class PhotographyScreen(Page):
     api_fields = [
         "title",
         "heading",
-        "take_photo_button_text",
-        "retake_photo_button_text",
-        "gallery_button_text",
         "image_descriptions",
     ]
-    parent_page_types = ["IntroSearchAndCollect"]
-    subpage_types = ["Exploration"]
+    parent_page_types = ["Introduction"]
+    subpage_types = ["Insight"]
     max_count_per_parent = 1
 
 
 class ImageDescription(Orderable):
     page = ParentalKey(
-        PhotographyScreen,
+        Photo,
         on_delete=models.CASCADE,
         related_name="image_descriptions",
     )
+    short_description = models.CharField(max_length=255, blank=True, null=True)
     description = models.CharField(max_length=255, blank=True, null=True)
-    api_fields = ["description"]
-    panels = [FieldPanel("description")]
+    api_fields = ["short_description", "description"]
+    panels = [FieldPanel("short_description"), FieldPanel("description")]
 
 
-class Exploration(Page):
+class Insight(Page):
     heading = models.CharField(max_length=255, blank=True, null=True)
     description = RichTextField(null=True, blank=True)
     character_image = models.ForeignKey(
@@ -270,9 +266,7 @@ class Exploration(Page):
     content_panels = Page.content_panels + [
         FieldPanel("heading"),
         FieldPanel("description"),
-        FieldPanel(
-            "character_image", permission="experience.exploration.edit_restricted"
-        ),
+        FieldPanel("character_image", permission="experience.insight.edit_restricted"),
         FieldPanel("top_image"),
         FieldPanel("bottom_image"),
     ]
@@ -284,20 +278,20 @@ class Exploration(Page):
         "top_image",
         "bottom_image",
     ]
-    parent_page_types = ["PhotographyScreen"]
-    subpage_types = ["Conclusion"]
+    parent_page_types = ["Photo"]
+    subpage_types = ["ExperienceIntro"]
     max_count_per_parent = 1
 
     class Meta:
         permissions = [
             (
-                "exploration.edit_restricted",
-                "Can edit restricted fields - Exploration page",
+                "insight.edit_restricted",
+                "Can edit restricted fields - Insight page",
             )
         ]
 
 
-class Conclusion(Page):
+class ExperienceIntro(Page):
     heading = models.CharField(max_length=255, blank=True, null=True)
     description = RichTextField(null=True, blank=True)
     search_fields = Page.search_fields
@@ -310,12 +304,12 @@ class Conclusion(Page):
         "heading",
         "description",
     ]
-    parent_page_types = ["Exploration"]
-    subpage_types = ["UploadPage"]
+    parent_page_types = ["Insight"]
+    subpage_types = ["ExperienceGallery"]
     max_count_per_parent = 1
 
 
-class UploadPage(Page):
+class ExperienceGallery(Page):
     description = RichTextField(null=True, blank=True)
     yes_button_text = models.CharField(max_length=5, blank=True, null=True)
     no_button_text = models.CharField(max_length=5, blank=True, null=True)
@@ -331,12 +325,12 @@ class UploadPage(Page):
         "yes_button_text",
         "no_button_text",
     ]
-    parent_page_types = ["Conclusion"]
-    subpage_types = ["Gallery"]
+    parent_page_types = ["ExperienceIntro"]
+    subpage_types = ["ExperienceCreate"]
     max_count_per_parent = 1
 
 
-class Gallery(Page):
+class ExperienceCreate(Page):
     heading = models.CharField(max_length=255, blank=True, null=True)
     exit_button_text = models.CharField(max_length=20, blank=True, null=True)
     close_button_text = models.CharField(max_length=10, blank=True, null=True)
@@ -352,12 +346,33 @@ class Gallery(Page):
         "exit_button_text",
         "close_button_text",
     ]
-    parent_page_types = ["UploadPage"]
-    subpage_types = ["Ending"]
+    parent_page_types = ["ExperienceGallery"]
+    subpage_types = ["ExperienceRecord"]
     max_count_per_parent = 1
 
 
-class Ending(Page):
+class ExperienceRecord(Page):
+    heading = models.CharField(max_length=255, blank=True, null=True)
+    record_button_text = models.CharField(max_length=20, blank=True, null=True)
+    stop_button_text = models.CharField(max_length=10, blank=True, null=True)
+    search_fields = Page.search_fields
+    content_panels = Page.content_panels + [
+        FieldPanel("heading"),
+        FieldPanel("record_button_text"),
+        FieldPanel("stop_button_text"),
+    ]
+    api_fields = [
+        "title",
+        "heading",
+        "record_button_text",
+        "stop_button_text",
+    ]
+    parent_page_types = ["ExperienceCreate"]
+    subpage_types = ["Reflection"]
+    max_count_per_parent = 1
+
+
+class Reflection(Page):
     heading = models.CharField(max_length=255, blank=True, null=True)
     description = RichTextField(null=True, blank=True)
     search_fields = Page.search_fields
@@ -370,6 +385,6 @@ class Ending(Page):
         "heading",
         "description",
     ]
-    parent_page_types = ["Gallery"]
+    parent_page_types = ["ExperienceRecord"]
     subpage_types = []
     max_count_per_parent = 1
