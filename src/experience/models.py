@@ -126,7 +126,7 @@ class WelcomeCharacter(Page):
 class ChooseCharacter(Page):
     character_type = models.CharField(max_length=255, blank=True, null=True)
     name = models.CharField(max_length=255, blank=True, null=True)
-    description = models.CharField(max_length=255, blank=True, null=True)
+    description = RichTextField(blank=True, null=True)
     select_button_text = models.CharField(max_length=10, blank=True, null=True)
     character_image = models.ForeignKey(
         get_image_model_string(),
