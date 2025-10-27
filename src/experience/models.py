@@ -208,12 +208,16 @@ class Introduction(Page):
     )
     search_fields = Page.search_fields
     content_panels = Page.content_panels + [
+        FieldPanel("character_image"),
+        FieldPanel("background_image"),
         FieldPanel("heading"),
         FieldPanel("description"),
         FieldPanel("image"),
     ]
     api_fields = [
         "title",
+        "character_image",
+        "background_image",
         "heading",
         "description",
         "image",
