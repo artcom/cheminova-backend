@@ -373,17 +373,14 @@ class ExperienceRecord(Page):
 
 
 class Reflection(Page):
-    heading = models.CharField(max_length=255, blank=True, null=True)
-    description = RichTextField(null=True, blank=True)
+    reflection_text = RichTextField(null=True, blank=True)
     search_fields = Page.search_fields
     content_panels = Page.content_panels + [
-        FieldPanel("heading"),
-        FieldPanel("description"),
+        FieldPanel("reflection_text"),
     ]
     api_fields = [
         "title",
-        "heading",
-        "description",
+        "reflection_text",
     ]
     parent_page_types = ["ExperienceRecord"]
     subpage_types = []
