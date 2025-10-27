@@ -17,7 +17,9 @@ __all__ = [
     "ExperienceIntro",
     "ExperienceGallery",
     "ExperienceCreate",
-    "ExperienceRecord",
+    "Collage",
+    "LogbookRecord",
+    "Timeline",
     "Reflection",
 ]
 
@@ -326,6 +328,38 @@ class ExperienceGallery(Page):
         "no_button_text",
     ]
     parent_page_types = ["ExperienceIntro"]
+    subpage_types = ["ExperienceCreate", "Collage", "LogbookRecord"]
+    max_count_per_parent = 1
+
+
+class Collage(Page):
+    search_fields = Page.search_fields
+    content_panels = Page.content_panels
+    api_fields = [
+        "title",
+    ]
+    parent_page_types = ["ExperienceGallery"]
+    subpage_types = ["Reflection"]
+    max_count_per_parent = 1
+
+
+class LogbookRecord(Page):
+    heading = models.CharField(max_length=255, blank=True, null=True)
+    record_button_text = models.CharField(max_length=20, blank=True, null=True)
+    stop_button_text = models.CharField(max_length=10, blank=True, null=True)
+    search_fields = Page.search_fields
+    content_panels = Page.content_panels + [
+        FieldPanel("heading"),
+        FieldPanel("record_button_text"),
+        FieldPanel("stop_button_text"),
+    ]
+    api_fields = [
+        "title",
+        "heading",
+        "record_button_text",
+        "stop_button_text",
+    ]
+    parent_page_types = ["ExperienceGallery"]
     subpage_types = ["ExperienceCreate"]
     max_count_per_parent = 1
 
@@ -346,26 +380,16 @@ class ExperienceCreate(Page):
         "exit_button_text",
         "close_button_text",
     ]
-    parent_page_types = ["ExperienceGallery"]
-    subpage_types = ["ExperienceRecord"]
+    parent_page_types = ["ExperienceGallery", "LogbookRecord"]
+    subpage_types = ["Reflection"]
     max_count_per_parent = 1
 
 
-class ExperienceRecord(Page):
-    heading = models.CharField(max_length=255, blank=True, null=True)
-    record_button_text = models.CharField(max_length=20, blank=True, null=True)
-    stop_button_text = models.CharField(max_length=10, blank=True, null=True)
+class Timeline(Page):
     search_fields = Page.search_fields
-    content_panels = Page.content_panels + [
-        FieldPanel("heading"),
-        FieldPanel("record_button_text"),
-        FieldPanel("stop_button_text"),
-    ]
+    content_panels = Page.content_panels
     api_fields = [
         "title",
-        "heading",
-        "record_button_text",
-        "stop_button_text",
     ]
     parent_page_types = ["ExperienceCreate"]
     subpage_types = ["Reflection"]
@@ -382,6 +406,6 @@ class Reflection(Page):
         "title",
         "reflection_text",
     ]
-    parent_page_types = ["ExperienceRecord"]
+    parent_page_types = ["LogbookRecord", "Collage", "Timeline"]
     subpage_types = []
     max_count_per_parent = 1
