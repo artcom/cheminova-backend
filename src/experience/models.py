@@ -185,6 +185,20 @@ class ChooseCharacter(Page):
 class Introduction(Page):
     heading = models.CharField(max_length=255, blank=True, null=True)
     description = RichTextField(null=True, blank=True)
+    character_image = models.ForeignKey(
+        get_image_model_string(),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    background_image = models.ForeignKey(
+        get_image_model_string(),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
     image = models.ForeignKey(
         get_image_model_string(),
         null=True,
