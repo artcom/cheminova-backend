@@ -6,8 +6,8 @@ from wagtail import hooks
 def register_permissions():
     return Permission.objects.filter(
         codename__in=[
-            "exploration.edit_restricted",
             "choose_character.edit_restricted",
             "introduction.edit_restricted",
+            "insight.edit_restricted",
         ],
     )

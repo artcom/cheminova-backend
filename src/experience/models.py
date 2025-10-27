@@ -150,13 +150,13 @@ class ChooseCharacter(Page):
     ]
     content_panels = Page.content_panels + [
         FieldPanel(
-            "character_type", permission="experience.welcome_character.edit_restricted"
+            "character_type", permission="experience.choose_character.edit_restricted"
         ),
         FieldPanel("name"),
         FieldPanel("description"),
         FieldPanel("select_button_text"),
         FieldPanel(
-            "character_image", permission="experience.welcome_character.edit_restricted"
+            "character_image", permission="experience.choose_character.edit_restricted"
         ),
         FieldPanel("background_image"),
     ]
@@ -176,8 +176,8 @@ class ChooseCharacter(Page):
     class Meta:
         permissions = [
             (
-                "welcome_character.edit_restricted",
-                "Can edit restricted fields - Welcome Character page",
+                "choose_character.edit_restricted",
+                "Can edit restricted fields - Choose Character page",
             )
         ]
 
@@ -239,9 +239,11 @@ class Introduction(Page):
 
 class Photo(Page):
     heading = models.CharField(max_length=255, blank=True, null=True)
+    continue_button_text = models.CharField(max_length=10, blank=True, null=True)
     search_fields = Page.search_fields
     content_panels = Page.content_panels + [
         FieldPanel("heading"),
+        FieldPanel("continue_button_text"),
         InlinePanel(
             "image_descriptions", label="Image Descriptions", min_num=3, max_num=3
         ),
@@ -249,6 +251,7 @@ class Photo(Page):
     api_fields = [
         "title",
         "heading",
+        "continue_button_text",
         "image_descriptions",
     ]
     parent_page_types = ["Introduction"]
@@ -382,19 +385,16 @@ class Collage(Page):
 
 class LogbookRecord(Page):
     heading = models.CharField(max_length=255, blank=True, null=True)
-    record_button_text = models.CharField(max_length=20, blank=True, null=True)
-    stop_button_text = models.CharField(max_length=10, blank=True, null=True)
+    image_comment = RichTextField(null=True, blank=True)
     search_fields = Page.search_fields
     content_panels = Page.content_panels + [
         FieldPanel("heading"),
-        FieldPanel("record_button_text"),
-        FieldPanel("stop_button_text"),
+        FieldPanel("image_comment"),
     ]
     api_fields = [
         "title",
         "heading",
-        "record_button_text",
-        "stop_button_text",
+        "image_comment",
     ]
     parent_page_types = ["ExperienceGallery"]
     subpage_types = ["ExperienceCreate"]
@@ -403,19 +403,16 @@ class LogbookRecord(Page):
 
 class ExperienceCreate(Page):
     heading = models.CharField(max_length=255, blank=True, null=True)
-    exit_button_text = models.CharField(max_length=20, blank=True, null=True)
-    close_button_text = models.CharField(max_length=10, blank=True, null=True)
+    add_text_prompt = models.CharField(max_length=255, blank=True, null=True)
     search_fields = Page.search_fields
     content_panels = Page.content_panels + [
         FieldPanel("heading"),
-        FieldPanel("exit_button_text"),
-        FieldPanel("close_button_text"),
+        FieldPanel("add_text_prompt"),
     ]
     api_fields = [
         "title",
         "heading",
-        "exit_button_text",
-        "close_button_text",
+        "add_text_prompt",
     ]
     parent_page_types = ["ExperienceGallery", "LogbookRecord"]
     subpage_types = ["Reflection"]
@@ -435,13 +432,20 @@ class Timeline(Page):
 
 class Reflection(Page):
     reflection_text = RichTextField(null=True, blank=True)
+    return_to_monument_button_text = models.CharField(
+        max_length=30,
+        blank=True,
+        null=True,
+    )
     search_fields = Page.search_fields
     content_panels = Page.content_panels + [
         FieldPanel("reflection_text"),
+        FieldPanel("return_to_monument_button_text"),
     ]
     api_fields = [
         "title",
         "reflection_text",
+        "return_to_monument_button_text",
     ]
     parent_page_types = ["LogbookRecord", "Collage", "Timeline"]
     subpage_types = []
