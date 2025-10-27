@@ -233,7 +233,7 @@ class ImageDescription(Orderable):
         related_name="image_descriptions",
     )
     short_description = models.CharField(max_length=255, blank=True, null=True)
-    description = models.CharField(max_length=255, blank=True, null=True)
+    description = RichTextField(null=True, blank=True)
     api_fields = ["short_description", "description"]
     panels = [FieldPanel("short_description"), FieldPanel("description")]
 
