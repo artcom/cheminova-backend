@@ -296,15 +296,24 @@ class Insight(Page):
 class ExperienceIntro(Page):
     heading = models.CharField(max_length=255, blank=True, null=True)
     description = RichTextField(null=True, blank=True)
+    image = models.ForeignKey(
+        get_image_model_string(),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
     search_fields = Page.search_fields
     content_panels = Page.content_panels + [
         FieldPanel("heading"),
         FieldPanel("description"),
+        FieldPanel("image"),
     ]
     api_fields = [
         "title",
         "heading",
         "description",
+        "image",
     ]
     parent_page_types = ["Insight"]
     subpage_types = ["ExperienceGallery"]
