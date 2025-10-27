@@ -208,7 +208,9 @@ class Introduction(Page):
     )
     search_fields = Page.search_fields
     content_panels = Page.content_panels + [
-        FieldPanel("character_image"),
+        FieldPanel(
+            "character_image", permission="experience.introduction.edit_restricted"
+        ),
         FieldPanel("background_image"),
         FieldPanel("heading"),
         FieldPanel("description"),
@@ -225,6 +227,14 @@ class Introduction(Page):
     parent_page_types = ["ChooseCharacter"]
     subpage_types = ["Photo"]
     max_count_per_parent = 1
+
+    class Meta:
+        permissions = [
+            (
+                "introduction.edit_restricted",
+                "Can edit restricted fields - Introduction page",
+            )
+        ]
 
 
 class Photo(Page):

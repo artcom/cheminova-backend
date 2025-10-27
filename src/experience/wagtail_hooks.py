@@ -8,5 +8,6 @@ def register_permissions():
         codename__in=[
             "exploration.edit_restricted",
             "choose_character.edit_restricted",
+            "introduction.edit_restricted",
         ],
     )
