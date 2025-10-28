@@ -405,8 +405,8 @@ class ExperienceCreate(Page):
         "heading",
         "add_text_prompt",
     ]
-    parent_page_types = ["ExperienceGallery", "LogbookRecord", "Timeline"]
-    subpage_types = ["Reflection"]
+    parent_page_types = ["ExperienceGallery", "LogbookRecord"]
+    subpage_types = ["Timeline", "Reflection"]
     max_count_per_parent = 1
 
 
