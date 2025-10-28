@@ -22,7 +22,7 @@ wheels = [
 
 [[package]]
 name = "backend"
-version = "2.4.9"
+version = "2.4.10"
 source = { virtual = "." }
 dependencies = [
     { name = "caseutil" },
