@@ -379,16 +379,13 @@ class Collage(Page):
 
 class LogbookRecord(Page):
     heading = models.CharField(max_length=255, blank=True, null=True)
-    image_comment = RichTextField(null=True, blank=True)
     search_fields = Page.search_fields
     content_panels = Page.content_panels + [
         FieldPanel("heading"),
-        FieldPanel("image_comment"),
     ]
     api_fields = [
         "title",
         "heading",
-        "image_comment",
     ]
     parent_page_types = ["ExperienceGallery"]
     subpage_types = ["ExperienceCreate"]
@@ -441,6 +438,6 @@ class Reflection(Page):
         "reflection_text",
         "return_to_monument_button_text",
     ]
-    parent_page_types = ["LogbookRecord", "Collage", "Timeline"]
+    parent_page_types = ["LogbookCreate", "Collage", "Timeline"]
     subpage_types = []
     max_count_per_parent = 1
