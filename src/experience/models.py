@@ -353,19 +353,13 @@ class ExperienceIntro(Page):
 
 class ExperienceGallery(Page):
     description = RichTextField(null=True, blank=True)
-    yes_button_text = models.CharField(max_length=5, blank=True, null=True)
-    no_button_text = models.CharField(max_length=5, blank=True, null=True)
     search_fields = Page.search_fields
     content_panels = Page.content_panels + [
         FieldPanel("description"),
-        FieldPanel("yes_button_text"),
-        FieldPanel("no_button_text"),
     ]
     api_fields = [
         "title",
         "description",
-        "yes_button_text",
-        "no_button_text",
     ]
     parent_page_types = ["ExperienceIntro"]
     subpage_types = ["ExperienceCreate", "Collage", "LogbookRecord"]
