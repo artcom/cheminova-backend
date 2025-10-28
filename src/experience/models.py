@@ -438,6 +438,6 @@ class Reflection(Page):
         "reflection_text",
         "return_to_monument_button_text",
     ]
-    parent_page_types = ["LogbookCreate", "Collage", "Timeline"]
+    parent_page_types = ["ExperienceCreate", "Collage", "Timeline"]
     subpage_types = []
     max_count_per_parent = 1
