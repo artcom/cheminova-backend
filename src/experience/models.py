@@ -8,6 +8,8 @@ from modelcluster.fields import ParentalKey
 
 __all__ = [
     "Characters",
+    "WelcomeLanguage",
+    "WelcomeIntro",
     "Welcome",
     "WelcomeCharacter",
     "ChooseCharacter",
@@ -66,6 +68,89 @@ class Character(Orderable):
     ]
 
 
+class WelcomeLanguage(Page):
+    choose_language_text = models.CharField(max_length=255, blank=True, null=True)
+    content_panels = Page.content_panels + [
+        FieldPanel("choose_language_text"),
+        InlinePanel("languages", label="Languages", min_num=2, max_num=2),
+    ]
+    api_fields = ["title", "choose_language_text", "languages"]
+    parent_page_types = ["wagtailcore.Page"]
+    subpage_types = ["WelcomeIntro"]
+    max_count = 1
+
+
+class Language(Orderable):
+    page = ParentalKey(
+        WelcomeLanguage,
+        on_delete=models.CASCADE,
+        related_name="languages",
+    )
+    language_id = models.CharField(max_length=2, blank=True, null=True)
+    language = models.CharField(max_length=50, blank=True, null=True)
+    api_fields = ["language_id", "language"]
+    panels = [FieldPanel("language_id"), FieldPanel("language")]
+
+
+class WelcomeIntro(Page):
+    description = models.CharField(max_length=255, blank=True, null=True)
+    site_name = models.CharField(max_length=255, blank=True, null=True)
+    intro_text = RichTextField(blank=True, null=True)
+    background_image = models.ForeignKey(
+        get_image_model_string(),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    background_image_layer_1 = models.ForeignKey(
+        get_image_model_string(),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    background_image_layer_2 = models.ForeignKey(
+        get_image_model_string(),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    background_image_layer_3 = models.ForeignKey(
+        get_image_model_string(),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    search_fields = Page.search_fields + [
+        SearchField("site_name"),
+    ]
+    content_panels = Page.content_panels + [
+        FieldPanel("description"),
+        FieldPanel("site_name"),
+        FieldPanel("intro_text"),
+        FieldPanel("background_image"),
+        FieldPanel("background_image_layer_1"),
+        FieldPanel("background_image_layer_2"),
+        FieldPanel("background_image_layer_3"),
+    ]
+    api_fields = [
+        "title",
+        "description",
+        "site_name",
+        "intro_text",
+        "background_image",
+        "background_image_layer_1",
+        "background_image_layer_2",
+        "background_image_layer_3",
+    ]
+    parent_page_types = ["WelcomeLanguage"]
+    subpage_types = ["Welcome"]
+    max_count = 1
+
+
 class Welcome(Page):
     description = models.CharField(max_length=255, blank=True, null=True)
     site_name = models.CharField(max_length=255, blank=True, null=True)
@@ -93,7 +178,7 @@ class Welcome(Page):
         "intro_text",
         "background_image",
     ]
-    parent_page_types = ["wagtailcore.Page"]
+    parent_page_types = ["WelcomeIntro"]
     subpage_types = ["WelcomeCharacter"]
     max_count = 1
 

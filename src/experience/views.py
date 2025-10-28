@@ -95,9 +95,9 @@ def create_model_viewset(model_name):
 
 
 class AllModelViewSet(QueryParametersMixin, FilterLocaleMixin, ReadOnlyModelViewSet):
-    serializer_class = getattr(experience_serializers, "WelcomeModelSerializer")
+    serializer_class = getattr(experience_serializers, "WelcomeLanguageModelSerializer")
     serializer_class.Meta.fields.remove("selfUrl")
-    queryset = experience_models.Welcome.objects.all()
+    queryset = experience_models.WelcomeLanguage.objects.all()
     default_params = {"depth": None, "browsable": "false"}
 
 
