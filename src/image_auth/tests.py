@@ -171,7 +171,7 @@ class ImageAuthTests(APITestCase):
                 self.image_auth_url,
                 headers={"X-Original-Uri": f"{settings.MEDIA_URL}{str(file.file)}"},
             )
-            self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_check_permissions_editor_not_approved_file(self):
         for file in [self.not_approved_image, self.not_approved_image_rendition]:

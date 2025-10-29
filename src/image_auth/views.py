@@ -35,6 +35,18 @@ def check_permissions(request: Request) -> Response:
         if not db_image:
             return Response(data={"message": "Not found"}, status=404)
 
+        if len(db_image.get_referenced_live_pages()) > 0:
+            return Response({"message": "OK"}, status=200)
+
+        characters_approved_collections = (
+            Character.objects.all()
+            .values_list("approved_collection_id", flat=True)
+            .distinct()
+        )
+
+        if db_image.collection_id in list(characters_approved_collections):
+            return Response({"message": "OK"}, status=200)
+
         if request.user.is_authenticated:
             permission_policy = CollectionPermissionPolicy(
                 get_image_model(), auth_model=Image
@@ -48,20 +60,8 @@ def check_permissions(request: Request) -> Response:
             else:
                 return Response(data={"message": "Unauthorized"}, status=401)
 
-        else:
-            if len(db_image.get_referenced_live_pages()) > 0:
-                return Response({"message": "OK"}, status=200)
+        return Response(data={"message": "Unauthorized"}, status=401)
 
-            characters_approved_collections = (
-                Character.objects.all()
-                .values_list("approved_collection_id", flat=True)
-                .distinct()
-            )
-
-            if db_image.collection_id in list(characters_approved_collections):
-                return Response({"message": "OK"}, status=200)
-
-            return Response(data={"message": "Unauthorized"}, status=401)
     except Exception as e:
         return Response(data={"message": str(e)}, status=400)
 
