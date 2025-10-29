@@ -49,17 +49,25 @@ class ImageViewSet(ModelViewSet):
             )
 
         if character is not None:
-            try:
-                character_instance = Character.objects.get(slug=character)
-                collections = [character_instance.approved_collection]
-                if character_instance.not_approved_collection in allowed_collections:
-                    collections.append(character_instance.not_approved_collection)
-                return self.queryset.filter(collection__in=collections)
-
-            except Character.DoesNotExist:
-                return self.queryset.none()
+            character_instance = Character.objects.get(slug=character)
+            collections = [character_instance.approved_collection]
+            if character_instance.not_approved_collection in allowed_collections:
+                collections.append(character_instance.not_approved_collection)
+            return self.queryset.filter(collection__in=collections)
 
         return self.queryset.filter(collection__in=allowed_collections)
+
+    def list(self, request, *args, **kwargs):
+        character = kwargs.get(self.lookup_url_kwarg)
+        if character is not None:
+            try:
+                Character.objects.get(slug=character)
+                return super().list(request, *args, **kwargs)
+
+            except Character.DoesNotExist:
+                return Response(data={"error": "Character not found"}, status=404)
+
+        return super().list(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
         character = kwargs.get(self.lookup_url_kwarg)
