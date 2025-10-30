@@ -39,7 +39,6 @@ services:
     develop:
       watch:
         - action: sync
-          initial_sync: true
           path: src
           target: /app
     command: ["uv", "run", "manage.py", "runserver", "0.0.0.0:8000"]
@@ -83,7 +82,7 @@ services:
       POSTGRES_DB:
     volumes:
       - source: wagtail-db-data
-        target: /var/lib/postgresql/data
+        target: /var/lib/postgresql
         type: volume
       - source: wagtail-db-backup
         target: /var/lib/postgresql/backup
