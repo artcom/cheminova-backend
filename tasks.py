@@ -27,3 +27,31 @@ def format(c):
 @task
 def dev(c, build=False):
     c.run(f"docker compose up {'--build' if build else ''} --watch", pty=True)
+
+
+@task
+def import_dump(
+    c,
+    file_name="data_dump.json",
+    download_dir="/tmp/db-data",
+    bucket_path="django-dump",
+):
+    """Import dump from S3 and load it into the database."""
+    c.run(
+        f"docker compose exec wagtail uv run command.py import-dump -f {file_name} -d {download_dir} -b {bucket_path}"
+    )
+
+
+@task
+def export_dump(
+    c,
+    output_dir="/tmp/db-data",
+    file_name="data_dump.json",
+    bucket_path="django-dump",
+    local=False,
+    no_timestamp=False,
+):
+    """Dump database and export dump to S3."""
+    c.run(
+        f"docker compose exec wagtail uv run command.py export-dump -o {output_dir} -f {file_name} -b {bucket_path} {'-l' if local else ''} {'-n' if no_timestamp else ''}"
+    )

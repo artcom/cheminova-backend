@@ -25,6 +25,7 @@ COPY --chown=wagtail:wagtail pyproject.toml .
 COPY --chown=wagtail:wagtail uv.lock .
 COPY --chown=wagtail:wagtail .python-version .
 RUN mkdir media
+RUN mkdir cheminova/static
 RUN uv sync --locked --compile-bytecode
 RUN uv run manage.py collectstatic --noinput --clear
 
