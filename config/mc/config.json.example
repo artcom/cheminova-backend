@@ -1,0 +1,19 @@
+{
+  "version": "10",
+  "aliases": {
+    "default": {
+      "url": "http://s3:9000",
+      "accessKey": "minio",
+      "secretKey": "minio123",
+      "api": "s3v4",
+      "path": "auto"
+    },
+    "dev": {
+      "url": "https://fra1.digitaloceanspaces.com",
+      "accessKey": "bucket_access_key",
+      "secretKey": "bucket_secret_key",
+      "api": "s3v4",
+      "path": "auto"
+    }
+  }
+}
