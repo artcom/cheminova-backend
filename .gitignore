@@ -5,3 +5,4 @@ media/
 static
 .s3cfg
 .ruff_cache
+config/mc/config.json
