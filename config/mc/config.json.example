@@ -6,14 +6,16 @@
       "accessKey": "minio",
       "secretKey": "minio123",
       "api": "s3v4",
-      "path": "auto"
+      "path": "auto",
+      "secure": false
     },
     "dev-cheminova": {
       "url": "https://fra1.digitaloceanspaces.com",
       "accessKey": "bucket_access_key",
       "secretKey": "bucket_secret_key",
       "api": "s3v4",
-      "path": "auto"
+      "path": "auto",
+      "secure": true
     }
   }
 }

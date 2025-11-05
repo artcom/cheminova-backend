@@ -14,6 +14,7 @@ def upload(db_dump: Path, bucket_name: str, bucket_path: str, s3_alias: str) -> 
     access_key = config["aliases"][s3_alias]["accessKey"]
     secret_key = config["aliases"][s3_alias]["secretKey"]
     endpoint_url = config["aliases"][s3_alias]["url"]
+    secure = config["aliases"][s3_alias].get("secure", True)
 
     session = Session(
         aws_access_key_id=access_key,
@@ -25,7 +26,7 @@ def upload(db_dump: Path, bucket_name: str, bucket_path: str, s3_alias: str) -> 
         "s3",
         endpoint_url=endpoint_url,
         config=Config(signature_version="s3v4"),
-        verify=False,
+        verify=secure,
     )
 
     bucket = s3.Bucket(bucket_name)
