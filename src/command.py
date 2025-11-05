@@ -8,12 +8,14 @@ from management.import_dump import import_dump
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
+logger = logging.getLogger(__name__)
 
 bucket_alias = os.environ.get("BUCKET_ALIAS")
 bucket_name = os.environ.get("BUCKET_NAME")
 db_export_path = os.environ.get("DB_EXPORT_PATH")
 
 if __name__ == "__main__":
+    logger.info(f"Using bucket alias: {bucket_alias}")
     parser = argparse.ArgumentParser(description="Django management script.")
     subparsers = parser.add_subparsers(help="subcommands")
 
@@ -77,7 +79,7 @@ if __name__ == "__main__":
         "--s3-alias",
         type=str,
         default=bucket_alias,
-        required=True,
+        required=(bucket_alias is None),
         help="S3 alias to use for the database export.",
     )
     parser_export_dump.add_argument(
@@ -85,7 +87,7 @@ if __name__ == "__main__":
         "--bucket-name",
         type=str,
         default=bucket_name,
-        required=True,
+        required=(bucket_name is None),
         help="S3 bucket name for the database export.",
     )
     parser_export_dump.add_argument(
@@ -93,7 +95,7 @@ if __name__ == "__main__":
         "--bucket-path",
         type=str,
         default=db_export_path,
-        required=True,
+        required=(db_export_path is None),
         help="S3 bucket path for the database export.",
     )
     parser_export_dump.add_argument(
