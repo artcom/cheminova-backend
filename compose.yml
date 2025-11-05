@@ -55,6 +55,9 @@ services:
       SECRET_KEY:
       BASE_PATH: /
       MC_CONFIG_PATH: /home/wagtail/.mc/config.json
+      BUCKET_ALIAS: local-cheminova
+      BUCKET_NAME: local-cheminova
+      DB_EXPORT_PATH: db-export
     volumes:
       - source: config/mc/config.json
         target: /home/wagtail/.mc/config.json
