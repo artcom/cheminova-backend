@@ -34,11 +34,19 @@ def import_dump(
     c,
     file_name="data_dump.json",
     download_dir="/tmp/db-data",
-    bucket_path="django-dump",
+    bucket_path="db-export",
+    s3_alias="dev-cheminova",
+    bucket_name="dev-cheminova",
 ):
     """Import dump from S3 and load it into the database."""
     c.run(
-        f"docker compose exec wagtail uv run command.py import-dump -f {file_name} -d {download_dir} -b {bucket_path}"
+        f"docker compose exec wagtail uv run command.py import-dump "
+        f"-f {file_name} "
+        f"-d {download_dir} "
+        f"-b {bucket_path} "
+        f"-a {s3_alias} "
+        f"-n {bucket_name}",
+        pty=True,
     )
 
 
@@ -47,11 +55,35 @@ def export_dump(
     c,
     output_dir="/tmp/db-data",
     file_name="data_dump.json",
-    bucket_path="django-dump",
+    s3_alias="local-cheminova",
+    bucket_name="local-cheminova",
+    bucket_path="db-export",
     local=False,
-    no_timestamp=False,
 ):
     """Dump database and export dump to S3."""
     c.run(
-        f"docker compose exec wagtail uv run command.py export-dump -o {output_dir} -f {file_name} -b {bucket_path} {'-l' if local else ''} {'-n' if no_timestamp else ''}"
+        f"docker compose exec wagtail uv run command.py export-dump "
+        f"-o {output_dir} "
+        f"-f {file_name} "
+        f"-b {bucket_path} "
+        f"-a {s3_alias} "
+        f"-n {bucket_name} "
+        f"{'-l' if local else ''}",
+        pty=True,
+    )
+
+
+@task
+def sync_assets(
+    c, s3_alias="dev-cheminova", bucket_name="dev-cheminova", bucket_path="media"
+):
+    """Sync static and media assets from S3 to local storage."""
+    c.run(
+        f"docker run "
+        f"--rm "
+        f"-v $(pwd)/config/mc/config.json:/root/.mc/config.json "
+        f"-v $(pwd)/media:/media "
+        f"minio/mc "
+        f"mirror {s3_alias}/{bucket_name}/{bucket_path} /media",
+        pty=True,
     )

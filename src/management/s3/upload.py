@@ -1,3 +1,5 @@
+import json
+import os
 from logging import getLogger
 from pathlib import Path
 
@@ -7,20 +9,21 @@ from botocore.client import Config
 logger = getLogger(__name__)
 
 
-def upload(db_dump: Path, bucket_path: str) -> None:
-    ACCESS_KEY = "minio"
-    SECRET_KEY = "minio123"
-    bucket_name = "db-dump"
+def upload(db_dump: Path, bucket_name: str, bucket_path: str, s3_alias: str) -> None:
+    config = json.loads(Path(os.environ.get("MC_CONFIG_PATH")).read_text())
+    access_key = config["aliases"][s3_alias]["accessKey"]
+    secret_key = config["aliases"][s3_alias]["secretKey"]
+    endpoint_url = config["aliases"][s3_alias]["url"]
 
     session = Session(
-        aws_access_key_id=ACCESS_KEY,
-        aws_secret_access_key=SECRET_KEY,
+        aws_access_key_id=access_key,
+        aws_secret_access_key=secret_key,
         region_name="europe-west3",
     )
 
     s3 = session.resource(
         "s3",
-        endpoint_url="http://s3:9000",
+        endpoint_url=endpoint_url,
         config=Config(signature_version="s3v4"),
         verify=False,
     )

@@ -31,11 +31,25 @@ if __name__ == "__main__":
         help="Directory to download the database dump.",
     )
     parser_import_dump.add_argument(
+        "-n",
+        "--bucket-name",
+        type=str,
+        required=True,
+        help="S3 bucket name for the database import.",
+    )
+    parser_import_dump.add_argument(
         "-b",
         "--bucket-path",
         type=str,
-        default="django-dump",
+        default="db-export",
         help="S3 bucket path for the database import.",
+    )
+    parser_import_dump.add_argument(
+        "-a",
+        "--s3-alias",
+        type=str,
+        default="default",
+        help="S3 alias to use for the database import.",
     )
     parser_import_dump.set_defaults(func=import_dump)
 
@@ -55,6 +69,20 @@ if __name__ == "__main__":
         help="Output file for the database export.",
     )
     parser_export_dump.add_argument(
+        "-a",
+        "--s3-alias",
+        type=str,
+        default="default",
+        help="S3 alias to use for the database export.",
+    )
+    parser_export_dump.add_argument(
+        "-n",
+        "--bucket-name",
+        type=str,
+        default="dev-cheminova",
+        help="S3 bucket name for the database export.",
+    )
+    parser_export_dump.add_argument(
         "-b",
         "--bucket-path",
         type=str,
@@ -63,12 +91,6 @@ if __name__ == "__main__":
     )
     parser_export_dump.add_argument(
         "-l", "--local", action="store_true", help="Only store dump locally."
-    )
-    parser_export_dump.add_argument(
-        "-n",
-        "--no-timestamp",
-        action="store_true",
-        help="Do not add timestamp to the dump file name.",
     )
     parser_export_dump.set_defaults(func=export_dump)
 

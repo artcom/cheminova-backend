@@ -13,6 +13,6 @@ def export_dump(args: Namespace) -> None:
     file_name = args.file_name
     output_file = Path(output_dir).joinpath(file_name)
 
-    db_dump = dump_data(output_file, args.no_timestamp)
+    db_dump = dump_data(output_file)
     if not args.local:
-        upload(db_dump, args.bucket_path)
+        upload(db_dump, args.bucket_name, args.bucket_path, args.s3_alias)
