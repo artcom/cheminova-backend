@@ -1,36 +1,42 @@
 import datetime
+import subprocess
 from logging import getLogger
 from pathlib import Path
 
 import django
+from django.conf import settings
 
 logger = getLogger(__name__)
 
 
-def dump_data(output_file: Path) -> Path:
+def dump_data(dump_file: Path) -> Path:
     django.setup()
-    from django.core import management
-    from django.core.management.commands import dumpdata
 
-    output_file.parent.mkdir(parents=True, exist_ok=True)
+    dump_file.parent.mkdir(parents=True, exist_ok=True)
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    timestamped_name = f"{output_file.stem}_{timestamp}{output_file.suffix}"
-    output_file = Path(output_file.parent).joinpath(timestamped_name)
+    timestamped_name = f"{dump_file.stem}_{timestamp}{dump_file.suffix}"
+    dump_file = Path(dump_file.parent).joinpath(timestamped_name)
 
-    management.call_command(
-        dumpdata.Command(),
-        exclude=[
-            "auth.user",
-            "contenttypes.contenttype",
-            "wagtailcore.site",
-            "wagtailusers.userprofile",
-            "sessions.session",
+    logger.info(f"Dumping database to dump file: {dump_file}")
+
+    subprocess.run(
+        [
+            "pg_dump",
+            "--dbname",
+            settings.DATABASES["default"]["NAME"],
+            "--host",
+            settings.DATABASES["default"]["HOST"],
+            "--port",
+            str(settings.DATABASES["default"]["PORT"]),
+            "--username",
+            settings.DATABASES["default"]["USER"],
+            "--format",
+            "custom",
+            "--file",
+            str(dump_file),
         ],
-        format="json",
-        indent=2,
-        output=output_file,
+        env={"PGPASSWORD": settings.DATABASES["default"]["PASSWORD"]},
+        check=True,
     )
 
-    logger.info(f"Database dump saved to {output_file}")
-
-    return output_file
+    return dump_file

@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 bucket_alias = os.environ.get("BUCKET_ALIAS")
 bucket_name = os.environ.get("BUCKET_NAME")
-db_export_path = os.environ.get("DB_EXPORT_PATH")
+db_dump_path = os.environ.get("DB_DUMP_PATH")
 
 if __name__ == "__main__":
     logger.info(f"Using bucket alias: {bucket_alias}")
@@ -71,7 +71,7 @@ if __name__ == "__main__":
         "-f",
         "--file-name",
         type=str,
-        default="data_dump.json",
+        default="cheminova.dump",
         help="Output file for the database export.",
     )
     parser_export_dump.add_argument(
@@ -94,8 +94,8 @@ if __name__ == "__main__":
         "-b",
         "--bucket-path",
         type=str,
-        default=db_export_path,
-        required=(db_export_path is None),
+        default=db_dump_path,
+        required=(db_dump_path is None),
         help="S3 bucket path for the database export.",
     )
     parser_export_dump.add_argument(

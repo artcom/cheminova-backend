@@ -57,7 +57,7 @@ services:
       MC_CONFIG_PATH: /home/wagtail/.mc/config.json
       BUCKET_ALIAS: local-cheminova
       BUCKET_NAME: local-cheminova
-      DB_EXPORT_PATH: db-export
+      DB_DUMP_PATH: db-dump
     volumes:
       - source: config/mc/config.json
         target: /home/wagtail/.mc/config.json
@@ -141,7 +141,6 @@ services:
         "--ignore-existing",
         "local-cheminova/local-cheminova/media",
         "local-cheminova/local-cheminova/db-dump",
-        "local-cheminova/local-cheminova/db-export",
       ]
     volumes:
       - source: config/mc/config.json
