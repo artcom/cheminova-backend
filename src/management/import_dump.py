@@ -1,7 +1,7 @@
 from argparse import Namespace
 from pathlib import Path
 
-from management.db.load_data import load_data
+from management.db.restore_from_dump import restore_from_dump
 from management.s3.download import download
 
 
@@ -11,4 +11,4 @@ def import_dump(args: Namespace) -> None:
     download_dir.mkdir(parents=True, exist_ok=True)
     db_dump = download_dir.joinpath(file_name)
     download(db_dump, args.bucket_name, args.bucket_path, args.s3_alias)
-    load_data(db_dump)
+    restore_from_dump(db_dump)

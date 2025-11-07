@@ -13,6 +13,12 @@ RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-r
     libwebp-dev \
     ffmpeg \
     curl \
+    ca-certificates \
+    postgresql-common \
+    && rm -rf /var/lib/apt/lists/*
+RUN /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-recommends \
+    postgresql-client-18 \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=ghcr.io/astral-sh/uv:0.7.0 /uv /uvx /usr/local/bin/
 

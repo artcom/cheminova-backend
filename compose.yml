@@ -93,7 +93,7 @@ services:
         target: /var/lib/postgresql
         type: volume
       - source: wagtail-db-backup
-        target: /var/lib/postgresql/backup
+        target: /srv/database/backup
         type: volume
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]

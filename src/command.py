@@ -26,7 +26,7 @@ if __name__ == "__main__":
         "-f",
         "--file-name",
         type=str,
-        default="data_dump.json",
+        required=True,
         help="Input file for the database import.",
     )
     parser_import_dump.add_argument(
@@ -40,21 +40,21 @@ if __name__ == "__main__":
         "-n",
         "--bucket-name",
         type=str,
-        required=True,
+        default="dev-cheminova",
         help="S3 bucket name for the database import.",
     )
     parser_import_dump.add_argument(
         "-b",
         "--bucket-path",
         type=str,
-        default="db-export",
+        default="db-dump",
         help="S3 bucket path for the database import.",
     )
     parser_import_dump.add_argument(
         "-a",
         "--s3-alias",
         type=str,
-        default="default",
+        default="dev-cheminova",
         help="S3 alias to use for the database import.",
     )
     parser_import_dump.set_defaults(func=import_dump)
