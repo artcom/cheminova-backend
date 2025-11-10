@@ -1,3 +1,4 @@
+import os
 import subprocess
 from logging import getLogger
 from pathlib import Path
@@ -25,6 +26,9 @@ def restore_from_dump(dump_file: Path) -> None:
             settings.DATABASES["default"]["USER"],
             str(dump_file),
         ],
-        env={"PGPASSWORD": settings.DATABASES["default"]["PASSWORD"]},
+        env={
+            "PATH": os.getenv("PATH"),
+            "PGPASSWORD": settings.DATABASES["default"]["PASSWORD"],
+        },
         check=True,
     )

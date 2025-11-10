@@ -110,6 +110,7 @@ services:
         "mirror",
         "--watch",
         "--remove",
+        "--overwrite",
         "/media",
         "local-cheminova/local-cheminova/media",
       ]

@@ -4,6 +4,7 @@ import logging
 from management.constants import bucket_alias
 from management.parser.export_dump import export_dump_parser
 from management.parser.import_dump import import_dump_parser
+from management.parser.sync_assets import sync_assets_parser
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -17,6 +18,7 @@ if __name__ == "__main__":
 
     import_dump_parser(subparsers)
     export_dump_parser(subparsers)
+    sync_assets_parser(subparsers)
 
     args = parser.parse_args()
     args.func(args)

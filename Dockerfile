@@ -3,6 +3,7 @@ FROM debian:bookworm-slim
 ENV PYTHONUNBUFFERED=1
 ENV PORT=8000
 ARG DJANGO_SETTINGS_MODULE="cheminova.settings.production"
+ARG ARCH="amd64"
 ENV DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
 
 RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-recommends \
@@ -16,11 +17,15 @@ RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-r
     ca-certificates \
     postgresql-common \
     && rm -rf /var/lib/apt/lists/*
+
 RUN /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
 RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-recommends \
     postgresql-client-18 \
     && rm -rf /var/lib/apt/lists/*
+
 COPY --from=ghcr.io/astral-sh/uv:0.7.0 /uv /uvx /usr/local/bin/
+
+ADD --chmod=755 https://dl.min.io/client/mc/release/linux-${ARCH}/mc /usr/local/bin/mc
 
 WORKDIR /app
 RUN useradd -m wagtail
@@ -32,6 +37,7 @@ COPY --chown=wagtail:wagtail uv.lock .
 COPY --chown=wagtail:wagtail .python-version .
 RUN mkdir media
 RUN mkdir cheminova/static
+RUN mkdir /home/wagtail/.mc
 RUN uv sync --locked --compile-bytecode
 RUN uv run manage.py collectstatic --noinput --clear
 

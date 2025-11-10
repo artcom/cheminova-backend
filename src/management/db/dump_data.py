@@ -1,4 +1,5 @@
 import datetime
+import os
 import subprocess
 from logging import getLogger
 from pathlib import Path
@@ -35,7 +36,10 @@ def dump_data(dump_file: Path) -> Path:
             "--file",
             str(dump_file),
         ],
-        env={"PGPASSWORD": settings.DATABASES["default"]["PASSWORD"]},
+        env={
+            "PATH": os.getenv("PATH"),
+            "PGPASSWORD": settings.DATABASES["default"]["PASSWORD"],
+        },
         check=True,
     )
 
