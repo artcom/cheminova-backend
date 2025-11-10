@@ -32,16 +32,16 @@ def dev(c, build=False):
 @task
 def import_dump(
     c,
-    file_name="data_dump.json",
+    file_name,
     download_dir="/tmp/db-data",
-    bucket_path="db-export",
+    bucket_path="db-dump",
     s3_alias="dev-cheminova",
     bucket_name="dev-cheminova",
 ):
     """Import dump from S3 and load it into the database."""
     c.run(
-        f"docker compose exec wagtail uv run command.py import-dump "
-        f"-f {file_name} "
+        f"docker compose exec wagtail uv run manage.py import_dump "
+        f"{file_name} "
         f"-d {download_dir} "
         f"-b {bucket_path} "
         f"-a {s3_alias} "
@@ -62,7 +62,7 @@ def export_dump(
 ):
     """Dump database and export dump to S3."""
     c.run(
-        f"docker compose exec wagtail uv run command.py export-dump "
+        f"docker compose exec wagtail uv run manage.py export_dump "
         f"-o {output_dir} "
         f"-f {file_name} "
         f"-b {bucket_path} "
@@ -75,15 +75,22 @@ def export_dump(
 
 @task
 def sync_assets(
-    c, s3_alias="dev-cheminova", bucket_name="dev-cheminova", bucket_path="media"
+    c,
+    s3_alias="dev-cheminova",
+    bucket_name="dev-cheminova",
+    bucket_path="media",
+    media_path="/app/media",
+    remove=False,
+    overwrite=False,
 ):
     """Sync static and media assets from S3 to local storage."""
     c.run(
-        f"docker run "
-        f"--rm "
-        f"-v $(pwd)/config/mc/config.json:/root/.mc/config.json "
-        f"-v $(pwd)/media:/media "
-        f"minio/mc "
-        f"mirror {s3_alias}/{bucket_name}/{bucket_path} /media",
+        f"docker compose exec wagtail uv run manage.py sync_assets "
+        f"-a {s3_alias} "
+        f"-n {bucket_name} "
+        f"-b {bucket_path} "
+        f"-m {media_path} "
+        f"{'-r' if remove else ''} "
+        f"{'-o' if overwrite else ''}",
         pty=True,
     )

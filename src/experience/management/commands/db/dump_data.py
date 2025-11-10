@@ -1,21 +1,25 @@
+import datetime
 import os
 import subprocess
 from logging import getLogger
 from pathlib import Path
 
-import django
 from django.conf import settings
 
 logger = getLogger(__name__)
 
 
-def restore_from_dump(dump_file: Path) -> None:
-    django.setup()
-    logger.info(f"Restoring database from dump file: {dump_file}")
+def dump_data(dump_file: Path) -> Path:
+    dump_file.parent.mkdir(parents=True, exist_ok=True)
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamped_name = f"{dump_file.stem}_{timestamp}{dump_file.suffix}"
+    dump_file = Path(dump_file.parent).joinpath(timestamped_name)
+
+    logger.info(f"Dumping database to dump file: {dump_file}")
+
     subprocess.run(
         [
-            "pg_restore",
-            "--clean",
+            "pg_dump",
             "--dbname",
             settings.DATABASES["default"]["NAME"],
             "--host",
@@ -24,6 +28,9 @@ def restore_from_dump(dump_file: Path) -> None:
             str(settings.DATABASES["default"]["PORT"]),
             "--username",
             settings.DATABASES["default"]["USER"],
+            "--format",
+            "custom",
+            "--file",
             str(dump_file),
         ],
         env={
@@ -32,3 +39,5 @@ def restore_from_dump(dump_file: Path) -> None:
         },
         check=True,
     )
+
+    return dump_file
