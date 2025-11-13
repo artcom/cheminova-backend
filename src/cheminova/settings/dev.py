@@ -10,6 +10,9 @@ SERVE_STATIC = False
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-rm=3^hc4v)26#@55+7gqkp6wc=3jo88t7sj$4u-)8c=5excl1r"
 
+WAGTAILADMIN_BASE_URL = os.getenv("WAGTAILADMIN_BASE_URL", "http://localhost:8080")
+SITE_URL = os.getenv("SITE_URL", WAGTAILADMIN_BASE_URL)
+
 # SECURITY WARNING: define the correct hosts in production!
 ALLOWED_HOSTS = ["*"]
 

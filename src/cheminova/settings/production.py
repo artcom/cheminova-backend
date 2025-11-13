@@ -9,10 +9,10 @@ SERVE_STATIC = False
 WAGTAILADMIN_BASE_URL = os.getenv(
     "WAGTAILADMIN_BASE_URL", "https://***REMOVED***/cms"
 )
+SITE_URL = os.getenv("SITE_URL", WAGTAILADMIN_BASE_URL)
 
 parsed = urlparse(WAGTAILADMIN_BASE_URL)
-primary_host = parsed.netloc.split(":")[0]
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", primary_host]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", parsed.hostname]
 SECRET_KEY = os.environ.get("SECRET_KEY")
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1",
