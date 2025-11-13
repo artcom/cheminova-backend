@@ -101,7 +101,13 @@ docker compose exec wagtail uv run manage.py createsuperuser
 - Import site data from dev.***REMOVED*** (optional)
 
 ```bash
-uv run invoke import-dump dev-cheminova <latest-dump-filename>
+uv run invoke import-dump <latest-dump-filename>
+```
+
+- Sync media assets from S3 (optional)
+
+```bash
+uv run invoke sync-assets
 ```
 
 ## Running Tests
