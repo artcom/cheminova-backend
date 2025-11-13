@@ -30,6 +30,12 @@ def dev(c, build=False):
 
 
 @task
+def test(c):
+    """Run tests using django test framework."""
+    c.run("docker compose exec wagtail uv run manage.py test")
+
+
+@task
 def import_dump(
     c,
     file_name,
