@@ -15,7 +15,7 @@ def restore_users(users_file: Path):
     users_data = json.loads(users_file.read_text())
     for user_data in users_data:
         username = user_data["username"]
-        user, created = User.objects.get_or_create(
+        user, created = User.objects.update_or_create(
             username=username,
             defaults={
                 "email": user_data["email"],
