@@ -59,6 +59,22 @@ cd cheminova-backend`
 
 ## Local Development (Docker Compose)
 
+- Confugure environment variables
+
+```bash
+cp .env.example .env
+```
+
+and edit `.env` to set variables as needed.
+
+- Configure the Minio client
+
+```bash
+cp config/mc/config.json.example config/mc/config.json
+```
+
+and edit it to set access key and secret key for the different environments.
+
 - Bring up the full stack (Postgres, Wagtail, Nginx, Minio)
 
 ```bash
