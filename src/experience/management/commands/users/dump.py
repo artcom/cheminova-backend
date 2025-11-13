@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 logger = getLogger(__name__)
 
 
-def dump_users(output_dir: Path, file_name: str):
+def dump_users(output_file: Path):
     users = (
         User.objects.all()
         .prefetch_related("groups")
@@ -34,7 +34,6 @@ def dump_users(output_dir: Path, file_name: str):
         for user in users
     ]
 
-    output_dir.mkdir(parents=True, exist_ok=True)
-    users_file = output_dir.joinpath(file_name)
-    users_file.write_text(json.dumps(users_list, indent=4))
-    logger.info(f"Dumped {len(users_list)} users to {users_file}")
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    output_file.write_text(json.dumps(users_list, indent=4))
+    logger.info(f"Dumped {len(users_list)} users to {output_file}")

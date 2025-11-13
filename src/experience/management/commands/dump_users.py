@@ -32,6 +32,6 @@ class Command(BaseCommand):
         file_name = options["file_name"]
 
         try:
-            dump_users(output_dir, file_name)
+            dump_users(output_dir / file_name)
         except Exception as e:
             raise CommandError(f"Error dumping users: {e}")
