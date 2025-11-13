@@ -20,12 +20,14 @@ def bump(c, part="patch"):
 
 @task
 def format(c):
+    """Format code using ruff."""
     c.run("uv run ruff check --fix src")
     c.run("uv run ruff format src")
 
 
 @task
 def dev(c, build=False):
+    """Run the development server with docker compose."""
     c.run(f"docker compose up {'--build' if build else ''} --watch", pty=True)
 
 
