@@ -93,10 +93,14 @@ docker compose exec wagtail uv run manage.py migrate
 - Create a superuser
 
 ```bash
-docker compose exec wagtail uv run manage.py createsuperuser
+uv run invoke admin-user --password <admin-password>
 ```
 
 - Create a default site
+
+```bash
+uv run invoke init-site
+```
 
 - Import site data from dev.***REMOVED*** (optional)
 

@@ -32,6 +32,37 @@ def dev(c, build=False):
 
 
 @task
+def admin_user(
+    c,
+    username="admin",
+    password="",
+    email="",
+    first_name="",
+    last_name="",
+):
+    """Create or update an admin user."""
+    c.run(
+        f"docker compose exec wagtail uv run manage.py admin_user "
+        f"-u {username} "
+        f"-p {password}"
+        f"{f' -e {email} ' if email else ''}"
+        f"{f' -f {first_name} ' if first_name else ''}"
+        f"{f' -l {last_name} ' if last_name else ''}",
+        pty=True,
+    )
+
+
+@task
+def init_site(c, site_url=""):
+    """Initialize the default Wagtail site with the given URL."""
+    c.run(
+        f"docker compose exec wagtail uv run manage.py init_site"
+        f"{f' --site-url {site_url}' if site_url else ''}",
+        pty=True,
+    )
+
+
+@task
 def test(c):
     """Run tests using django test framework."""
     c.run("docker compose exec wagtail uv run manage.py test")
