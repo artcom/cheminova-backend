@@ -21,35 +21,32 @@ Wagtail CMS and API backend for the Cheminova site, providing:
 
 ## Prerequisites
 
-- **Python 3.13+**
-- **uv** (Python package manager)
+- **[uv](https://docs.astral.sh/uv/getting-started/installation/)**
 - **Docker & Docker Compose** (for containerized workflows)
 
-### Install `uv`
+### Running scripts with `uv` and `invoke`
 
-Install `uv` via the standalone installer:
-
-```bash
-# macOS & Linux
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Windows (PowerShell)
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-```
-
-### Running scripts with `uvx` and `invoke`
-
-Scripts are defined in `tasks.py` and can be run with `uvx`:
+Scripts are defined in `tasks.py` and can be run with `uv`:
 
 ```bash
-uvx invoke <task-name>
+uv run invoke <task-name>
 ```
 
 List available tasks:
 
 ```bash
-uvx invoke --list
+uv run invoke --list
 ```
+
+Available tasks:
+
+- bump: Bump version using uv version and create a git tag.
+- dev: Run the development server with docker compose.
+- export-dump: Dump database and export dump to S3.
+- format: Format code using ruff.
+- import-dump: Import dump from S3 and load it into the database.
+- sync-assets: Sync static and media assets from S3 to local storage.
+- test: Run tests using django test framework.
 
 ---
 
@@ -65,7 +62,7 @@ cd cheminova-backend`
 - Bring up the full stack (Postgres, Wagtail, Nginx, Minio)
 
 ```bash
-docker compose up --watch
+uv run invoke dev
 ```
 
 - Wagtail runs at <http://localhost:8000/>
@@ -83,9 +80,19 @@ docker compose exec wagtail uv run manage.py migrate
 docker compose exec wagtail uv run manage.py createsuperuser
 ```
 
+- Create a default site
+
+- Import site data from dev.***REMOVED*** (optional)
+
+```bash
+uv run invoke import-dump dev-cheminova <latest-dump-filename>
+```
+
 ## Running Tests
 
-`docker compose exec wagtail uv run manage.py test`
+```bash
+uv run invoke test
+```
 
 ## Deployment
 
@@ -101,51 +108,21 @@ docker compose exec wagtail uv run manage.py createsuperuser
    • CSRF trusted origins
    • Wagtail admin base URL
 
-## Dump Database
+## Dump Database and Backup to S3
 
 ```bash
-docker compose exec database /bin/bash -c 'pg_dump -U cheminova -Fc cheminova > /var/lib/postgresql/backup/cheminova.dump'
-```
-
-## Backup Database
-
-1. Set up a DigitalOcean Spaces bucket and configure the `s3cmd` tool with your credentials. You can do that by using s3cmd command line tool as described [here (digital ocean documentation)](https://docs.digitalocean.com/products/spaces/reference/s3cmd/):
-
-   ```bash
-   mkdir -p s3cmd
-   docker run --rm -it \
-   -v $PWD/.s3cfg-2:/root/.s3cfg \
-   d3fk/s3cmd:latest \
-   --configure
-   ```
-
-2. To back up the database to a DigitalOcean Spaces bucket using the d3fk/s3cmd image, use the following command:
-
-```bash
-docker run --rm \
-  -v backend_wagtail-db-backup:/cheminova-backup \
-  -v $PWD/s3cmd/.s3cfg:/root/.s3cfg \
-  d3fk/s3cmd:latest \
-  put /cheminova-backup/cheminova.dump s3://cheminova/db-dump/cheminova-$(date +"%Y-%m-%d_%H-%M-%S").dump
+docker compose exec wagtail uv run manage.py export_dump
 ```
 
 ## Restore Database
 
-To restore the database from a dump file, you can use the following command:
+Choose a dump file in the S3 bucket (e.g. [dev-cheminova/db-dump](https://***REMOVED***) for dumps from dev.***REMOVED***). To restore the database from a dump file, you can use the following command:
 
 ```bash
-docker run --rm \
-  -v backend_wagtail-db-backup:/cheminova-backup \
-  -v $PWD/s3cmd/.s3cfg:/root/.s3cfg \
-  d3fk/s3cmd:latest \
-  get s3://cheminova/db-dump/cheminova-2025-04-28_16-05-06.dump /cheminova-backup/cheminova.dump
+docker compose exec wagtail uv run manage.py import_dump $DUMP_FILENAME
 ```
 
-Then, restore the database using the following command:
-
-```bash
-docker compose exec database /bin/bash -c 'pg_restore -U cheminova -d cheminova /var/lib/postgresql/backup/cheminova.dump'
-```
+Users and site data will be restored from the local database unless the `--no-restore-local-data` flag is provided.
 
 ## Image Upload Flow
 
