@@ -11,6 +11,8 @@ logging.basicConfig(
 
 
 class Command(BaseCommand):
+    help = "Restores site configuration from a JSON file."
+
     def add_arguments(self, parser):
         parser.add_argument(
             "-f",

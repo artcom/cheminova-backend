@@ -13,6 +13,8 @@ logging.basicConfig(
 
 
 class Command(BaseCommand):
+    help = "Exports a database dump and uploads it to S3."
+
     def add_arguments(self, parser):
         parser.add_argument(
             "-o",

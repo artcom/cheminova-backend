@@ -16,7 +16,7 @@ logging.basicConfig(
 
 
 class Command(BaseCommand):
-    help = "Import dump from S3."
+    help = "Downloads a database dump from S3 and restores it, preserving local site and user data."
 
     def add_arguments(self, parser):
         parser.add_argument(

@@ -10,7 +10,7 @@ logging.basicConfig(
 
 
 class Command(BaseCommand):
-    help = "Import dump from S3."
+    help = "Syncs media assets from S3."
 
     def add_arguments(self, parser):
         parser.add_argument(

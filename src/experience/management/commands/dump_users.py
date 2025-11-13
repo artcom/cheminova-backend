@@ -11,6 +11,8 @@ logging.basicConfig(
 
 
 class Command(BaseCommand):
+    help = "Dumps users to a JSON file."
+
     def add_arguments(self, parser):
         parser.add_argument(
             "-o",
