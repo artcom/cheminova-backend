@@ -29,7 +29,7 @@ ADD --chmod=755 https://dl.min.io/client/mc/release/linux-${ARCH}/mc /usr/local/
 
 WORKDIR /app
 RUN useradd -m wagtail
-RUN mkdir /app/media
+RUN mkdir -p /app/media/images /app/media/original_images
 RUN chown -R wagtail:wagtail /app
 USER wagtail
 COPY --chown=wagtail:wagtail ./src .
