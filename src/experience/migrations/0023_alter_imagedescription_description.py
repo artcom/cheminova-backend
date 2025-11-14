@@ -5,15 +5,14 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('experience', '0022_alter_choosecharacter_description'),
+        ("experience", "0022_alter_choosecharacter_description"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='imagedescription',
-            name='description',
+            model_name="imagedescription",
+            name="description",
             field=wagtail.fields.RichTextField(blank=True, null=True),
         ),
     ]

@@ -6,70 +6,99 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('custom_images', '0008_customimage_uploaded_user_name'),
-        ('experience', '0019_alter_choosecharacter_options'),
-        ('wagtailcore', '0095_groupsitepermission'),
+        ("custom_images", "0008_customimage_uploaded_user_name"),
+        ("experience", "0019_alter_choosecharacter_options"),
+        ("wagtailcore", "0095_groupsitepermission"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ExperienceRecord',
+            name="ExperienceRecord",
             fields=[
-                ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.page')),
-                ('heading', models.CharField(blank=True, max_length=255, null=True)),
-                ('record_button_text', models.CharField(blank=True, max_length=20, null=True)),
-                ('stop_button_text', models.CharField(blank=True, max_length=10, null=True)),
+                (
+                    "page_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="wagtailcore.page",
+                    ),
+                ),
+                ("heading", models.CharField(blank=True, max_length=255, null=True)),
+                (
+                    "record_button_text",
+                    models.CharField(blank=True, max_length=20, null=True),
+                ),
+                (
+                    "stop_button_text",
+                    models.CharField(blank=True, max_length=10, null=True),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
-            bases=('wagtailcore.page',),
+            bases=("wagtailcore.page",),
         ),
         migrations.RenameModel(
-            old_name='Gallery',
-            new_name='ExperienceCreate',
+            old_name="Gallery",
+            new_name="ExperienceCreate",
         ),
         migrations.RenameModel(
-            old_name='UploadPage',
-            new_name='ExperienceGallery',
+            old_name="UploadPage",
+            new_name="ExperienceGallery",
         ),
         migrations.RenameModel(
-            old_name='Conclusion',
-            new_name='ExperienceIntro',
+            old_name="Conclusion",
+            new_name="ExperienceIntro",
         ),
         migrations.RenameModel(
-            old_name='Exploration',
-            new_name='Insight',
+            old_name="Exploration",
+            new_name="Insight",
         ),
         migrations.RenameModel(
-            old_name='IntroSearchAndCollect',
-            new_name='Introduction',
+            old_name="IntroSearchAndCollect",
+            new_name="Introduction",
         ),
         migrations.RenameModel(
-            old_name='PhotographyScreen',
-            new_name='Photo',
+            old_name="PhotographyScreen",
+            new_name="Photo",
         ),
         migrations.RenameModel(
-            old_name='Ending',
-            new_name='Reflection',
+            old_name="Ending",
+            new_name="Reflection",
         ),
         migrations.RenameModel(
-            old_name='CharacterOverview',
-            new_name='WelcomeCharacter',
+            old_name="CharacterOverview",
+            new_name="WelcomeCharacter",
         ),
         migrations.AlterModelOptions(
-            name='choosecharacter',
-            options={'permissions': [('welcome_character.edit_restricted', 'Can edit restricted fields - Welcome Character page')]},
+            name="choosecharacter",
+            options={
+                "permissions": [
+                    (
+                        "welcome_character.edit_restricted",
+                        "Can edit restricted fields - Welcome Character page",
+                    )
+                ]
+            },
         ),
         migrations.AlterModelOptions(
-            name='insight',
-            options={'permissions': [('insight.edit_restricted', 'Can edit restricted fields - Insight page')]},
+            name="insight",
+            options={
+                "permissions": [
+                    (
+                        "insight.edit_restricted",
+                        "Can edit restricted fields - Insight page",
+                    )
+                ]
+            },
         ),
         migrations.AddField(
-            model_name='welcome',
-            name='intro_text',
+            model_name="welcome",
+            name="intro_text",
             field=wagtail.fields.RichTextField(blank=True, null=True),
         ),
     ]

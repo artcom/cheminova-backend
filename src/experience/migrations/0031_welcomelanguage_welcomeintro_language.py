@@ -7,54 +7,133 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('custom_images', '0008_customimage_uploaded_user_name'),
-        ('experience', '0030_remove_logbookrecord_image_comment'),
-        ('wagtailcore', '0095_groupsitepermission'),
+        ("custom_images", "0008_customimage_uploaded_user_name"),
+        ("experience", "0030_remove_logbookrecord_image_comment"),
+        ("wagtailcore", "0095_groupsitepermission"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='WelcomeLanguage',
+            name="WelcomeLanguage",
             fields=[
-                ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.page')),
-                ('choose_language_text', models.CharField(blank=True, max_length=255, null=True)),
+                (
+                    "page_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="wagtailcore.page",
+                    ),
+                ),
+                (
+                    "choose_language_text",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
-            bases=('wagtailcore.page',),
+            bases=("wagtailcore.page",),
         ),
         migrations.CreateModel(
-            name='WelcomeIntro',
+            name="WelcomeIntro",
             fields=[
-                ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.page')),
-                ('description', models.CharField(blank=True, max_length=255, null=True)),
-                ('site_name', models.CharField(blank=True, max_length=255, null=True)),
-                ('intro_text', wagtail.fields.RichTextField(blank=True, null=True)),
-                ('background_image', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='custom_images.customimage')),
-                ('background_image_layer_1', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='custom_images.customimage')),
-                ('background_image_layer_2', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='custom_images.customimage')),
-                ('background_image_layer_3', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='custom_images.customimage')),
+                (
+                    "page_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="wagtailcore.page",
+                    ),
+                ),
+                (
+                    "description",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                ("site_name", models.CharField(blank=True, max_length=255, null=True)),
+                ("intro_text", wagtail.fields.RichTextField(blank=True, null=True)),
+                (
+                    "background_image",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to="custom_images.customimage",
+                    ),
+                ),
+                (
+                    "background_image_layer_1",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to="custom_images.customimage",
+                    ),
+                ),
+                (
+                    "background_image_layer_2",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to="custom_images.customimage",
+                    ),
+                ),
+                (
+                    "background_image_layer_3",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to="custom_images.customimage",
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
-            bases=('wagtailcore.page',),
+            bases=("wagtailcore.page",),
         ),
         migrations.CreateModel(
-            name='Language',
+            name="Language",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('sort_order', models.IntegerField(blank=True, editable=False, null=True)),
-                ('language_id', models.CharField(blank=True, max_length=2, null=True)),
-                ('language', models.CharField(blank=True, max_length=50, null=True)),
-                ('page', modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='languages', to='experience.welcomelanguage')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "sort_order",
+                    models.IntegerField(blank=True, editable=False, null=True),
+                ),
+                ("language_id", models.CharField(blank=True, max_length=2, null=True)),
+                ("language", models.CharField(blank=True, max_length=50, null=True)),
+                (
+                    "page",
+                    modelcluster.fields.ParentalKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="languages",
+                        to="experience.welcomelanguage",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['sort_order'],
-                'abstract': False,
+                "ordering": ["sort_order"],
+                "abstract": False,
             },
         ),
     ]

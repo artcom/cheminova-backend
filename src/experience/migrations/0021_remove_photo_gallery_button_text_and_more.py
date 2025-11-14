@@ -4,27 +4,29 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('experience', '0020_experiencerecord_rename_gallery_experiencecreate_and_more'),
+        (
+            "experience",
+            "0020_experiencerecord_rename_gallery_experiencecreate_and_more",
+        ),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='photo',
-            name='gallery_button_text',
+            model_name="photo",
+            name="gallery_button_text",
         ),
         migrations.RemoveField(
-            model_name='photo',
-            name='retake_photo_button_text',
+            model_name="photo",
+            name="retake_photo_button_text",
         ),
         migrations.RemoveField(
-            model_name='photo',
-            name='take_photo_button_text',
+            model_name="photo",
+            name="take_photo_button_text",
         ),
         migrations.AddField(
-            model_name='imagedescription',
-            name='short_description',
+            model_name="imagedescription",
+            name="short_description",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
     ]

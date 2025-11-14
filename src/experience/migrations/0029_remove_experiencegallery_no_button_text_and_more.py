@@ -4,18 +4,17 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('experience', '0028_alter_choosecharacter_options_and_more'),
+        ("experience", "0028_alter_choosecharacter_options_and_more"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='experiencegallery',
-            name='no_button_text',
+            model_name="experiencegallery",
+            name="no_button_text",
         ),
         migrations.RemoveField(
-            model_name='experiencegallery',
-            name='yes_button_text',
+            model_name="experiencegallery",
+            name="yes_button_text",
         ),
     ]

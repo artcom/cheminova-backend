@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('custom_images', '0006_remove_customimage_public'),
+        ("custom_images", "0006_remove_customimage_public"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='customimage',
-            name='uploaded_text',
-            field=models.CharField(blank=True, default='', max_length=255),
+            model_name="customimage",
+            name="uploaded_text",
+            field=models.CharField(blank=True, default="", max_length=255),
         ),
     ]

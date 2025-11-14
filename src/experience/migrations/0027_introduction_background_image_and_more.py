@@ -5,21 +5,32 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('custom_images', '0008_customimage_uploaded_user_name'),
-        ('experience', '0026_experienceintro_image'),
+        ("custom_images", "0008_customimage_uploaded_user_name"),
+        ("experience", "0026_experienceintro_image"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='introduction',
-            name='background_image',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='custom_images.customimage'),
+            model_name="introduction",
+            name="background_image",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="+",
+                to="custom_images.customimage",
+            ),
         ),
         migrations.AddField(
-            model_name='introduction',
-            name='character_image',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='custom_images.customimage'),
+            model_name="introduction",
+            name="character_image",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="+",
+                to="custom_images.customimage",
+            ),
         ),
     ]

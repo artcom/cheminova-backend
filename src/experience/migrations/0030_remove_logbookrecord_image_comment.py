@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('experience', '0029_remove_experiencegallery_no_button_text_and_more'),
+        ("experience", "0029_remove_experiencegallery_no_button_text_and_more"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='logbookrecord',
-            name='image_comment',
+            model_name="logbookrecord",
+            name="image_comment",
         ),
     ]
