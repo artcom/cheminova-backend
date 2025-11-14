@@ -62,71 +62,79 @@ Available tasks:
 
 Clone the repo:
 
-`git clone ***REMOVED***
-cd cheminova-backend`
+```bash
+git clone ***REMOVED***
+cd cheminova-backend
+```
 
 ## Local Development (Docker Compose)
 
 - Confugure environment variables
 
-```bash
-cp .env.example .env
-```
+  ```bash
+  cp .env.example .env
+  ```
 
-and edit `.env` to set variables as needed.
+  and edit `.env` to set variables as needed.
 
 - Configure the Minio client
 
-```bash
-cp config/mc/config.json.example config/mc/config.json
-```
+  ```bash
+  cp config/mc/config.json.example config/mc/config.json
+  ```
 
-and edit it to set access key and secret key for the different environments.
+  and edit it to set access key and secret key for the different environments.
 
 - Bring up the full stack (Postgres, Wagtail, Nginx, Minio)
 
-```bash
-uv run invoke dev
-```
+  ```bash
+  uv run invoke dev
+  ```
 
 - Wagtail runs at <http://localhost:8000/>
 - Nginx proxy at <http://localhost:8080/>
+- Wagtail CMS admin at <http://localhost:8080/admin/>
+- Backend API at <http://localhost:8080/api/>
+- Minio web UI at <http://localhost:9001/>
 
 - Apply database migrations
 
-```bash
-docker compose exec wagtail uv run manage.py migrate
-```
+  ```bash
+  docker compose exec wagtail uv run manage.py migrate
+  ```
 
 - Create a superuser
 
-```bash
-uv run invoke admin-user --password $ADMIN_PASSWORD
-```
+  ```bash
+  uv run invoke admin-user --password $ADMIN_PASSWORD
+  ```
 
 - Create a default site
 
-```bash
-uv run invoke init-site
-```
+  ```bash
+  uv run invoke init-site
+  ```
 
 - Import site data from dev.***REMOVED*** (optional)
 
-```bash
-uv run invoke import-dump $LATEST_DUMP_FILENAME
-```
+  Get the latest dump filename from the S3 bucket:
+  [dev-cheminova/db-dump](https://***REMOVED***) for dumps from dev.***REMOVED***
+
+  ```bash
+  uv run invoke import-dump $LATEST_DUMP_FILENAME
+  ```
 
 - Sync media assets from S3 (optional)
 
-```bash
-uv run invoke sync-assets
-```
+  ```bash
+  uv run invoke sync-assets
+  ```
 
 ## Running Tests
 
-```bash
-uv run invoke test
-```
+    ```bash
+    uv run invoke test
+    ```
 
 ## Deployment
 
