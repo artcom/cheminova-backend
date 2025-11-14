@@ -91,12 +91,6 @@ cd cheminova-backend
   uv run invoke dev
   ```
 
-- Wagtail runs at <http://localhost:8000/>
-- Nginx proxy at <http://localhost:8080/>
-- Wagtail CMS admin at <http://localhost:8080/admin/>
-- Backend API at <http://localhost:8080/api/>
-- Minio web UI at <http://localhost:9001/>
-
 - Apply database migrations
 
   ```bash
@@ -129,6 +123,12 @@ cd cheminova-backend
   ```bash
   uv run invoke sync-assets
   ```
+
+- Wagtail runs at <http://localhost:8000/>
+- Nginx proxy at <http://localhost:8080/>
+- Wagtail CMS admin at <http://localhost:8080/admin/>
+- Backend API at <http://localhost:8080/api/>
+- Minio web UI at <http://localhost:9001/>
 
 ## Running Tests
 
