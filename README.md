@@ -29,7 +29,7 @@ Wagtail CMS and API backend for the Cheminova site, providing:
 Scripts are defined in `tasks.py` and can be run with `uv`:
 
 ```bash
-uv run invoke <task-name>
+uv run invoke $TASK_NAME
 ```
 
 List available tasks:
@@ -40,11 +40,13 @@ uv run invoke --list
 
 Available tasks:
 
+- admin-user: Create or update an admin user.
 - bump: Bump version using uv version and create a git tag.
 - dev: Run the development server with docker compose.
 - export-dump: Dump database and export dump to S3.
 - format: Format code using ruff.
 - import-dump: Import dump from S3 and load it into the database.
+- init-site: Initialize the default Wagtail site with the given URL.
 - sync-assets: Sync static and media assets from S3 to local storage.
 - test: Run tests using django test framework.
 
@@ -93,7 +95,7 @@ docker compose exec wagtail uv run manage.py migrate
 - Create a superuser
 
 ```bash
-uv run invoke admin-user --password <admin-password>
+uv run invoke admin-user --password $ADMIN_PASSWORD
 ```
 
 - Create a default site
@@ -105,7 +107,7 @@ uv run invoke init-site
 - Import site data from dev.***REMOVED*** (optional)
 
 ```bash
-uv run invoke import-dump <latest-dump-filename>
+uv run invoke import-dump $LATEST_DUMP_FILENAME
 ```
 
 - Sync media assets from S3 (optional)
