@@ -29,13 +29,14 @@ ADD --chmod=755 https://dl.min.io/client/mc/release/linux-${ARCH}/mc /usr/local/
 
 WORKDIR /app
 RUN useradd -m wagtail
+RUN mkdir /app/media
 RUN chown -R wagtail:wagtail /app
 USER wagtail
 COPY --chown=wagtail:wagtail ./src .
 COPY --chown=wagtail:wagtail pyproject.toml .
 COPY --chown=wagtail:wagtail uv.lock .
 COPY --chown=wagtail:wagtail .python-version .
-RUN mkdir media
+
 RUN mkdir cheminova/static
 RUN mkdir /home/wagtail/.mc
 RUN uv sync --locked --compile-bytecode
