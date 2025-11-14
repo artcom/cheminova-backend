@@ -14,8 +14,14 @@ Wagtail CMS and API backend for the Cheminova site, providing:
 
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
+- [Local Development (Docker Compose)](#local-development-docker-compose)
 - [Running Tests](#running-tests)
 - [Deployment](#deployment)
+- [Dump Database and Backup to S3](#dump-database-and-backup-to-s3)
+- [Restore Database](#restore-database)
+- [Image Upload Flow](#image-upload-flow)
+- [Image Request Flow (with Authentication)](#image-request-flow-with-authentication)
+- [Image API Request Flow (Metadata)](#image-api-request-flow-metadata)
 
 ---
 
