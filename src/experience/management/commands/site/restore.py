@@ -14,4 +14,4 @@ def restore_site(input_file: Path):
         port=site_data["port"],
         site_name=site_data["site_name"],
     )
-    logger.info(f"Restored site {site_data['hostname']} from {input_file}")
+    logger.info(f"Restored site {site_data['hostname']}")
