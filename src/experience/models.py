@@ -1,6 +1,8 @@
 from django.db import models  # noqa F401
 from wagtail.admin.panels import FieldPanel, InlinePanel
 from wagtail.images import get_image_model_string
+
+from wagtail.models import TranslatableMixin
 from wagtail.models import Page, Orderable
 from wagtail.search.index import SearchField
 from wagtail.fields import RichTextField
@@ -80,7 +82,7 @@ class WelcomeLanguage(Page):
     max_count = 1
 
 
-class Language(Orderable):
+class Language(TranslatableMixin, Orderable):
     page = ParentalKey(
         WelcomeLanguage,
         on_delete=models.CASCADE,
@@ -344,7 +346,7 @@ class Photo(Page):
     max_count_per_parent = 1
 
 
-class ImageDescription(Orderable):
+class ImageDescription(TranslatableMixin, Orderable):
     page = ParentalKey(
         Photo,
         on_delete=models.CASCADE,
