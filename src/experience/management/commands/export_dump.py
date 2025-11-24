@@ -21,38 +21,38 @@ class Command(BaseCommand):
             "--output-dir",
             type=str,
             default="/tmp/db-data",
-            help="Output directory for the database export.",
+            help="Output directory for the database export. (default: /tmp/db-data)",
         )
         parser.add_argument(
             "-f",
             "--file-name",
             type=str,
             default="cheminova.dump",
-            help="Output file for the database export.",
+            help="Output file for the database export. (default: cheminova.dump)",
         )
         parser.add_argument(
-            "-a",
+            "-3",
             "--s3-alias",
             type=str,
             default=bucket_alias,
             required=(bucket_alias is None),
-            help="S3 alias to use for the database export.",
+            help=f"S3 alias to use for the database export. (default: {bucket_alias})",
         )
         parser.add_argument(
-            "-n",
+            "-b",
             "--bucket-name",
             type=str,
             default=bucket_name,
             required=(bucket_name is None),
-            help="S3 bucket name for the database export.",
+            help=f"S3 bucket name for the database export. (default: {bucket_name})",
         )
         parser.add_argument(
-            "-b",
+            "-u",
             "--bucket-path",
             type=str,
             default=db_dump_path,
             required=(db_dump_path is None),
-            help="S3 bucket path for the database export.",
+            help=f"S3 bucket path for the database export. (default: {db_dump_path})",
         )
         parser.add_argument(
             "-l", "--local", action="store_true", help="Only store dump locally."

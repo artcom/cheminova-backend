@@ -29,28 +29,28 @@ class Command(BaseCommand):
             "--download-dir",
             type=str,
             default="/tmp/db-data",
-            help="Directory to download the database dump.",
+            help="Directory to download the database dump. (default: /tmp/db-data)",
         )
         parser.add_argument(
-            "-n",
+            "-u",
             "--bucket-name",
             type=str,
             default="dev-cheminova",
-            help="S3 bucket name for the database import.",
+            help="S3 bucket name for the database import. (default: dev-cheminova)",
         )
         parser.add_argument(
             "-b",
             "--bucket-path",
             type=str,
             default="db-dump",
-            help="S3 bucket path for the database import.",
+            help="S3 bucket path for the database import. (default: db-dump)",
         )
         parser.add_argument(
-            "-a",
+            "-s",
             "--s3-alias",
             type=str,
             default="dev-cheminova",
-            help="S3 alias to use for the database import.",
+            help="S3 alias to use for the database import. (default: dev-cheminova)",
         )
         parser.add_argument(
             "-r",

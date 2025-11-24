@@ -25,26 +25,36 @@ def format(c):
     c.run("uv run ruff format src")
 
 
-@task
+@task(help={"build": "Build images before running the development server."})
 def dev(c, build=False):
     """Run the development server with docker compose."""
     c.run(f"docker compose up {'--build' if build else ''} --watch", pty=True)
 
 
-@task
+@task(
+    help={
+        "show_help": "Show help for the manage.py admin_user command. (type --show-help or -s)"
+    }
+)
 def admin_user(
     c,
-    username="admin",
-    password="",
-    email="",
-    first_name="",
-    last_name="",
+    show_help=False,
+    username=None,
+    password=None,
+    email=None,
+    first_name=None,
+    last_name=None,
 ):
-    """Create or update an admin user."""
+    """
+    Create or update an admin user using manage.py admin_user command.
+    To see all options and defaults of the manage.py admin_user command, use the --show-help option:
+    uv run invoke admin-user --show-help
+    """
     c.run(
-        f"docker compose exec wagtail uv run manage.py admin_user "
-        f"-u {username} "
-        f"-p {password}"
+        f"docker compose exec wagtail uv run manage.py admin_user"
+        f"{' --help' if show_help else ''}"
+        f"{f' -u {username} ' if username else ''}"
+        f"{f' -p {password} ' if password else ''}"
         f"{f' -e {email} ' if email else ''}"
         f"{f' -f {first_name} ' if first_name else ''}"
         f"{f' -l {last_name} ' if last_name else ''}",
@@ -52,11 +62,20 @@ def admin_user(
     )
 
 
-@task
-def init_site(c, site_url=""):
-    """Initialize the default Wagtail site with the given URL."""
+@task(
+    help={
+        "show_help": "Show help for the manage.py init_site command. (type --show-help or -s)"
+    }
+)
+def init_site(c, show_help, site_url=None):
+    """
+    Initialize the default Wagtail site with the given URL using manage.py init_site command.
+    To see all options and defaults of the manage.py init_site command, use the --show-help option:
+    uv run invoke init-site --show-help
+    """
     c.run(
         f"docker compose exec wagtail uv run manage.py init_site"
+        f"{' --help' if show_help else ''}"
         f"{f' --site-url {site_url}' if site_url else ''}",
         pty=True,
     )
@@ -68,68 +87,100 @@ def test(c):
     c.run("docker compose exec wagtail uv run manage.py test")
 
 
-@task
+@task(
+    help={
+        "show_help": "Show help for the manage.py import_dump command. (type --show-help or -s)",
+    },
+)
 def import_dump(
     c,
-    file_name,
-    download_dir="/tmp/db-data",
-    bucket_path="db-dump",
-    s3_alias="dev-cheminova",
-    bucket_name="dev-cheminova",
+    file_name=None,
+    show_help=False,
+    download_dir=None,
+    bucket_path=None,
+    s3_alias=None,
+    bucket_name=None,
+    no_restore_local_data=False,
 ):
-    """Import dump from S3 and load it into the database."""
+    """
+    Import dump from S3 and load it into the database using manage.py import_dump.
+    To see all options and defaults of the manage.py import_dump command, use the --show-help option:
+    uv run invoke import-dump --show-help
+    """
     c.run(
-        f"docker compose exec wagtail uv run manage.py import_dump "
-        f"{file_name} "
-        f"-d {download_dir} "
-        f"-b {bucket_path} "
-        f"-a {s3_alias} "
-        f"-n {bucket_name}",
+        f"docker compose exec wagtail uv run manage.py import_dump"
+        f"{f' {file_name}' if file_name else ''}"
+        f"{' --help' if show_help else ''}"
+        f"{f' -d {download_dir}' if download_dir else ''}"
+        f"{f' -b {bucket_path}' if bucket_path else ''}"
+        f"{f' -3 {s3_alias}' if s3_alias else ''}"
+        f"{f' -u {bucket_name}' if bucket_name else ''}"
+        f"{' -r' if no_restore_local_data else ''}",
         pty=True,
     )
 
 
-@task
+@task(
+    help={
+        "show_help": "Show help for the manage.py export_dump command. (type --show-help or -s)",
+    },
+)
 def export_dump(
     c,
-    output_dir="/tmp/db-data",
-    file_name="data_dump.json",
-    s3_alias="local-cheminova",
-    bucket_name="local-cheminova",
-    bucket_path="db-export",
+    show_help=False,
+    output_dir=None,
+    file_name=None,
+    s3_alias=None,
+    bucket_name=None,
+    bucket_path=None,
     local=False,
 ):
-    """Dump database and export dump to S3."""
+    """
+    Dump database and export dump to S3 using manage.py export_dump.
+    To see all options and defaults of the manage.py export_dump command, use the --show-help option:
+    uv run invoke export-dump --show-help
+    """
     c.run(
-        f"docker compose exec wagtail uv run manage.py export_dump "
-        f"-o {output_dir} "
-        f"-f {file_name} "
-        f"-b {bucket_path} "
-        f"-a {s3_alias} "
-        f"-n {bucket_name} "
-        f"{'-l' if local else ''}",
+        f"docker compose exec wagtail uv run manage.py export_dump"
+        f"{' --help' if show_help else ''}"
+        f"{f' -o {output_dir} ' if output_dir else ''}"
+        f"{f' -f {file_name}' if file_name else ''}"
+        f"{f' -b {bucket_path}' if bucket_path else ''}"
+        f"{f' -3 {s3_alias} ' if s3_alias else ''}"
+        f"{f' -u {bucket_name} ' if bucket_name else ''}"
+        f"{' -l' if local else ''}",
         pty=True,
     )
 
 
-@task
+@task(
+    help={
+        "show_help": "Show help for the manage.py sync_assets command. (type --show-help or -s)",
+    },
+)
 def sync_assets(
     c,
-    s3_alias="dev-cheminova",
-    bucket_name="dev-cheminova",
-    bucket_path="media",
-    media_path="/app/media",
+    show_help=False,
+    s3_alias=None,
+    bucket_name=None,
+    bucket_path=None,
+    media_path=None,
     remove=False,
     overwrite=False,
 ):
-    """Sync static and media assets from S3 to local storage."""
+    """
+    Sync static and media assets from S3 to local storage using manage.py sync_assets command.
+    To see all options and defaults of the manage.py sync_assets command, use the --show-help option:
+    uv run invoke sync-assets --show-help
+    """
     c.run(
-        f"docker compose exec wagtail uv run manage.py sync_assets "
-        f"-a {s3_alias} "
-        f"-n {bucket_name} "
-        f"-b {bucket_path} "
-        f"-m {media_path} "
-        f"{'-r' if remove else ''} "
-        f"{'-o' if overwrite else ''}",
+        f"docker compose exec wagtail uv run manage.py sync_assets"
+        f"{' --help' if show_help else ''} "
+        f"{f' -3 {s3_alias}' if s3_alias else ''}"
+        f"{f' -n {bucket_name}' if bucket_name else ''}"
+        f"{f' -u {bucket_path}' if bucket_path else ''}"
+        f"{f' -m {media_path}' if media_path else ''}"
+        f"{' -r' if remove else ''} "
+        f"{' -o' if overwrite else ''}",
         pty=True,
     )

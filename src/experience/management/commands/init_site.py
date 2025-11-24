@@ -16,11 +16,11 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "-s",
+            "-i",
             "--site-url",
             type=str,
             default=settings.SITE_URL,
-            help="URL of the site to initialize.",
+            help=f"URL of the site to initialize. (default: {settings.SITE_URL})",
         )
 
     def handle(self, *args, **options):

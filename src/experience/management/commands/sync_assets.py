@@ -14,32 +14,32 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "-a",
+            "-3",
             "--s3-alias",
             type=str,
             default="dev-cheminova",
-            help="S3 alias to use for syncing assets.",
+            help="S3 alias to use for syncing assets from. (default: dev-cheminova)",
         )
         parser.add_argument(
             "-n",
             "--bucket-name",
             type=str,
             default="dev-cheminova",
-            help="S3 bucket name for syncing assets.",
+            help="S3 bucket name for syncing assets from. (default: dev-cheminova)",
         )
         parser.add_argument(
-            "-b",
+            "-u",
             "--bucket-path",
             type=str,
             default="media",
-            help="S3 bucket path for syncing assets.",
+            help="S3 bucket path for syncing assets from. (default: media)",
         )
         parser.add_argument(
             "-m",
             "--media-path",
             type=str,
             default="/app/media",
-            help="Local media path for syncing assets.",
+            help="Local media path for syncing assets to. (default: /app/media)",
         )
         parser.add_argument(
             "-r",

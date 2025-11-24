@@ -25,28 +25,28 @@ class Command(BaseCommand):
             "--username",
             default="admin",
             type=str,
-            help="Username of the admin user.",
+            help="Username of the admin user. (default: admin)",
         )
         parser.add_argument(
             "-e",
             "--email",
             default="",
             type=str,
-            help="Email address of the admin user.",
+            help="Email address of the admin user. (default: empty)",
         )
         parser.add_argument(
             "-f",
             "--first-name",
             default="",
             type=str,
-            help="First name of the admin user.",
+            help="First name of the admin user. (default: empty)",
         )
         parser.add_argument(
             "-l",
             "--last-name",
             default="",
             type=str,
-            help="Last name of the admin user.",
+            help="Last name of the admin user. (default: empty)",
         )
 
     def handle(self, *args, **options):
