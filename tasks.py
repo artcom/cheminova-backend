@@ -184,3 +184,28 @@ def sync_assets(
         f"{' -o' if overwrite else ''}",
         pty=True,
     )
+
+
+@task(
+    help={
+        "show_help": "Show help for the manage.py randomize_timestamps command. (type --show-help or -s)",
+    },
+)
+def randomize_timestamps(
+    c,
+    character=None,
+    n_days=30,
+    show_help=False,
+):
+    """
+    Randomize image timestamps using manage.py randomize_timestamps command.
+    To see all options and defaults of the manage.py randomize_timestamps command, use the --show-help option:
+    uv run invoke randomize-timestamps --show-help
+    """
+    c.run(
+        f"docker compose exec wagtail uv run manage.py randomize_timestamps"
+        f"{' --help' if show_help else ''} "
+        f"{f' -c {character}' if character else ''}"
+        f"{f' -n {n_days}' if n_days else ''}",
+        pty=True,
+    )
