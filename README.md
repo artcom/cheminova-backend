@@ -109,10 +109,9 @@ cd cheminova-backend
   uv run invoke init-site
   ```
 
-- Import site data from dev.***REMOVED*** (optional)
+- Import site data from a live environment (optional)
 
-  Get the latest dump filename from the S3 bucket:
-  [dev-cheminova/db-dump](https://***REMOVED***) for dumps from dev.***REMOVED***
+  Get the latest dump filename from the S3 bucket.
 
   ```bash
   uv run invoke import-dump $LATEST_DUMP_FILENAME
@@ -158,7 +157,7 @@ docker compose exec wagtail uv run manage.py export_dump
 
 ## Restore Database
 
-Choose a dump file in the S3 bucket (e.g. [dev-cheminova/db-dump](https://***REMOVED***) for dumps from dev.***REMOVED***). To restore the database from a dump file, you can use the following command:
+Choose a dump file in the S3 bucket. To restore the database from a dump file, you can use the following command:
 
 ```bash
 docker compose exec wagtail uv run manage.py import_dump $DUMP_FILENAME
