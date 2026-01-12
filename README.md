@@ -69,7 +69,7 @@ cd cheminova-backend
 
 ## Local Development (Docker Compose)
 
-- Confugure environment variables
+- Configure environment variables
 
   ```bash
   cp .env.example .env
