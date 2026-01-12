@@ -106,7 +106,7 @@ cd cheminova-backend
 - Create a default site
 
   ```bash
-  uv run invoke init-site
+  uv run invoke init-site --site-url http://localhost
   ```
 
 - Import site data from a live environment (optional)
@@ -114,7 +114,7 @@ cd cheminova-backend
   Get the latest dump filename from the S3 bucket.
 
   ```bash
-  uv run invoke import-dump $LATEST_DUMP_FILENAME
+  uv run invoke import-dump --file-name $LATEST_DUMP_FILENAME
   ```
 
 - Sync media assets from S3 (optional)

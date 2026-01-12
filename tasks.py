@@ -67,7 +67,7 @@ def admin_user(
         "show_help": "Show help for the manage.py init_site command. (type --show-help or -s)"
     }
 )
-def init_site(c, show_help, site_url=None):
+def init_site(c, show_help=False, site_url=None):
     """
     Initialize the default Wagtail site with the given URL using manage.py init_site command.
     To see all options and defaults of the manage.py init_site command, use the --show-help option:
