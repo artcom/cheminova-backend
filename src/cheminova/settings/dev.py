@@ -1,4 +1,5 @@
 import os
+from urllib.parse import urlparse
 
 from .base import *  # noqa F403
 from .base import BASE_DIR, INSTALLED_APPS, MIDDLEWARE
@@ -8,10 +9,12 @@ DEBUG = True
 SERVE_STATIC = False
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-rm=3^hc4v)26#@55+7gqkp6wc=3jo88t7sj$4u-)8c=5excl1r"
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 WAGTAILADMIN_BASE_URL = os.getenv("WAGTAILADMIN_BASE_URL", "http://localhost:8080")
 SITE_URL = os.getenv("SITE_URL", WAGTAILADMIN_BASE_URL)
+parsed_base_url = urlparse(WAGTAILADMIN_BASE_URL)
+PRODUCTION_FRONTEND_URL = os.getenv("PRODUCTION_FRONTEND_URL", "http://localhost:8080")
 
 # SECURITY WARNING: define the correct hosts in production!
 ALLOWED_HOSTS = ["*"]
@@ -32,7 +35,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Vite dev server alternative
     "http://127.0.0.1:3000",
     "http://127.0.0.1:5173",
-    "https://***REMOVED***",  # Production frontend
+    f"{parsed_base_url.scheme}://{parsed_base_url.netloc}",
+    PRODUCTION_FRONTEND_URL,
 ]
 
 # Allow credentials to be included in CORS requests (needed for Django sessions/CSRF)
@@ -60,7 +64,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8080",
     "http://localhost:3000",  # Vite default port
     "http://localhost:5173",  # Vite alternative port
-    "https://***REMOVED***",
+    PRODUCTION_FRONTEND_URL,
 ]
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
@@ -69,10 +73,10 @@ WAGTAILADMIN_BASE_URL = "http://localhost:8080"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("POSTGRES_DB"),
-        "USER": os.environ.get("POSTGRES_USER"),
-        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
-        "HOST": os.environ.get("POSTGRES_HOST"),
+        "NAME": os.getenv("POSTGRES_DB"),
+        "USER": os.getenv("POSTGRES_USER"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+        "HOST": os.getenv("POSTGRES_HOST"),
         "PORT": "5432",
     }
 }
@@ -80,7 +84,7 @@ DATABASES = {
 USE_X_FORWARDED_HOST = True
 USE_X_FORWARDED_PORT = True
 
-BASE_PATH = os.environ.get("BASE_PATH", "/")
+BASE_PATH = os.getenv("BASE_PATH", "/")
 if BASE_PATH != "/":
     FORCE_SCRIPT_NAME = BASE_PATH
     SESSION_COOKIE_PATH = BASE_PATH

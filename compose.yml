@@ -58,6 +58,7 @@ services:
       BUCKET_ALIAS: local-cheminova
       BUCKET_NAME: local-cheminova
       DB_DUMP_PATH: db-dump
+      PRODUCTION_FRONTEND_URL:
     volumes:
       - source: config/mc/config.json
         target: /home/wagtail/.mc/config.json
