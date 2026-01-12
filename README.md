@@ -137,7 +137,7 @@ cd cheminova-backend
 
 ## Deployment
 
-1. Build and push Docker images in GitLab CI (see [.gitlab-ci.yml](.gitlab-ci.yml)).
+1. Build and push Docker images.
 
 2. In production, ensure the following env vars are set:
    • SECRET_KEY
