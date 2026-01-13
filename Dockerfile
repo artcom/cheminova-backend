@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 FROM debian:bookworm-slim
 
 ENV PYTHONUNBUFFERED=1
