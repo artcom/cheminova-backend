@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 
 ENV PYTHONUNBUFFERED=1
 ENV PORT=8000
@@ -25,7 +25,7 @@ RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-r
     postgresql-client-18 \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=ghcr.io/astral-sh/uv:0.7.0 /uv /uvx /usr/local/bin/
+COPY --from=ghcr.io/astral-sh/uv:0.9.24 /uv /uvx /usr/local/bin/
 
 ADD --chmod=755 https://dl.min.io/client/mc/release/linux-${ARCH}/mc /usr/local/bin/mc
 
