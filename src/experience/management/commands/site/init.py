@@ -6,7 +6,7 @@ from wagtail.models import Site
 logger = getLogger(__name__)
 
 
-def init_site(site_url: ParseResult):
+def init_site(site_url: ParseResult) -> None:
     Site.objects.filter(is_default_site=True).update(
         hostname=site_url.hostname,
         port=site_url.port or (443 if site_url.scheme == "https" else 80),

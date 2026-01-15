@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand, CommandError, CommandParser
 
 from ._constants import bucket_alias, bucket_name, db_dump_path
 from .db.dump_data import dump_data
@@ -15,7 +15,7 @@ logging.basicConfig(
 class Command(BaseCommand):
     help = "Exports a database dump and uploads it to S3."
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: CommandParser) -> None:
         parser.add_argument(
             "-o",
             "--output-dir",
@@ -58,7 +58,7 @@ class Command(BaseCommand):
             "-l", "--local", action="store_true", help="Only store dump locally."
         )
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options) -> None:
         output_dir = options["output_dir"]
         file_name = options["file_name"]
         output_file = Path(output_dir).joinpath(file_name)

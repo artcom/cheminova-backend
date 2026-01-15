@@ -1,6 +1,6 @@
 import logging
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand, CommandError, CommandParser
 
 from .s3.sync_assets import sync
 
@@ -12,7 +12,7 @@ logging.basicConfig(
 class Command(BaseCommand):
     help = "Syncs media assets from S3."
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: CommandParser) -> None:
         parser.add_argument(
             "-3",
             "--s3-alias",
@@ -54,7 +54,7 @@ class Command(BaseCommand):
             help="Overwrite local files with S3 files.",
         )
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options) -> None:
         media_path = options["media_path"]
         bucket_name = options["bucket_name"]
         bucket_path = options["bucket_path"]

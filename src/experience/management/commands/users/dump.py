@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 logger = getLogger(__name__)
 
 
-def dump_users(output_file: Path):
+def dump_users(output_file: Path) -> None:
     users = (
         User.objects.all()
         .prefetch_related("groups")

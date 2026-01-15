@@ -7,7 +7,7 @@ logger = getLogger(__name__)
 
 def create_or_update_admin(
     username: str, email: str, first_name: str, last_name: str, password: str
-):
+) -> None:
     try:
         admin = User.objects.get(username=username)
         admin.email = email

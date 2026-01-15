@@ -7,7 +7,7 @@ from wagtail.models import Site
 logger = getLogger(__name__)
 
 
-def dump_site(file: Path):
+def dump_site(file: Path) -> None:
     site = (
         Site.objects.filter(is_default_site=True)
         .values("id", "hostname", "port", "site_name")

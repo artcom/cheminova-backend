@@ -1,6 +1,6 @@
 import logging
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand, CommandError, CommandParser
 
 from .users.admin import create_or_update_admin
 
@@ -12,7 +12,7 @@ logging.basicConfig(
 class Command(BaseCommand):
     help = "Create or update an admin user."
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: CommandParser) -> None:
         parser.add_argument(
             "-p",
             "--password",
@@ -49,7 +49,7 @@ class Command(BaseCommand):
             help="Last name of the admin user. (default: empty)",
         )
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options) -> None:
         try:
             create_or_update_admin(
                 username=options["username"],

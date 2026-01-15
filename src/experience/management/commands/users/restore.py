@@ -7,7 +7,7 @@ from django.contrib.auth.models import Group, User
 logger = getLogger(__name__)
 
 
-def restore_users(users_file: Path):
+def restore_users(users_file: Path) -> None:
     if not users_file.exists():
         logger.error(f"Users file {users_file} does not exist.")
         return

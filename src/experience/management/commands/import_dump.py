@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand, CommandError, CommandParser
 
 from .db.restore_from_dump import restore_from_dump
 from .s3.download import download
@@ -18,7 +18,7 @@ logging.basicConfig(
 class Command(BaseCommand):
     help = "Downloads a database dump from S3 and restores it, preserving local site and user data."
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: CommandParser) -> None:
         parser.add_argument(
             "file_name",
             type=str,
@@ -59,7 +59,7 @@ class Command(BaseCommand):
             help="Disable local data restoration.",
         )
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options) -> None:
         file_name = options["file_name"]
         download_dir = Path(options["download_dir"])
         download_dir.mkdir(parents=True, exist_ok=True)
