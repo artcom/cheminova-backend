@@ -2,7 +2,7 @@ import urllib
 
 from caseutil import to_camel, to_kebab, to_snake
 from django.conf import settings
-from django.db import models  # noqa
+from django.db import models
 from modelcluster.models import get_all_child_relations
 from rest_framework import serializers
 from wagtail.images import get_image_model

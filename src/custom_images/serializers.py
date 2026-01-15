@@ -2,7 +2,6 @@ import uuid
 from pathlib import PurePath
 
 from django.conf import settings
-from django.db import models  # noqa
 from rest_framework import serializers
 
 from .models import CustomImage
