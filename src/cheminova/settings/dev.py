@@ -11,7 +11,7 @@ SERVE_STATIC = False
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-WAGTAILADMIN_BASE_URL = os.getenv("WAGTAILADMIN_BASE_URL", "http://localhost:8080")
+WAGTAILADMIN_BASE_URL = os.getenv("WAGTAILADMIN_BASE_URL", "http://localhost:8080/cms/")
 SITE_URL = os.getenv("SITE_URL", WAGTAILADMIN_BASE_URL)
 parsed_base_url = urlparse(WAGTAILADMIN_BASE_URL)
 PRODUCTION_FRONTEND_URL = os.getenv("PRODUCTION_FRONTEND_URL", "http://localhost:8080")
@@ -67,8 +67,6 @@ CSRF_TRUSTED_ORIGINS = [
     PRODUCTION_FRONTEND_URL,
 ]
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
-WAGTAILADMIN_BASE_URL = "http://localhost:8080"
 
 DATABASES = {
     "default": {

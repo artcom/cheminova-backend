@@ -19,6 +19,9 @@ services:
       - source: wagtail-media
         target: /usr/share/nginx/html/media
         type: volume
+      - source: frontend
+        target: /usr/share/nginx/html
+        type: bind
     depends_on:
       wagtail:
         condition: service_healthy
@@ -53,7 +56,7 @@ services:
       POSTGRES_DB:
       POSTGRES_HOST:
       SECRET_KEY:
-      BASE_PATH: /
+      BASE_PATH: /cms/
       MC_CONFIG_PATH: /home/wagtail/.mc/config.json
       BUCKET_ALIAS: local-cheminova
       BUCKET_NAME: local-cheminova

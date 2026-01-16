@@ -25,7 +25,9 @@ def get_test_image_file(filename="test.png", colour="white", size=(640, 480)):
 
 class ImageAuthTests(APITestCase):
     def setUp(self):
-        self.image_auth_url = reverse("image-permissions")
+        self.image_auth_url = reverse("image-permissions").replace(
+            settings.BASE_PATH, "/"
+        )
         CustomImage = get_image_model()
         root_page = Page.objects.get(slug="root")
 
