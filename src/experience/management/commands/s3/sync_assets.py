@@ -13,20 +13,22 @@ def sync(
     s3_alias: str,
     remove: bool,
     overwrite: bool,
+    to_s3: bool = False,
 ) -> None:
-    logger.info(
-        f"Syncing assets from s3://{bucket_name}/{bucket_path} to {media_path} using alias {s3_alias}."
-    )
-    remove = ("--remove",) if remove else ()
-    overwrite = ("--overwrite",) if overwrite else ()
+    source = media_path if to_s3 else f"{s3_alias}/{bucket_name}/{bucket_path}"
+    target = f"{s3_alias}/{bucket_name}/{bucket_path}" if to_s3 else media_path
+
+    logger.info(f"Syncing assets from {source} to {target}.")
+    remove_arg = ("--remove",) if remove else ()
+    overwrite_arg = ("--overwrite",) if overwrite else ()
     subprocess.run(
         [
             "mc",
             "mirror",
-            *remove,
-            *overwrite,
-            f"{s3_alias}/{bucket_name}/{bucket_path}",
-            media_path,
+            *remove_arg,
+            *overwrite_arg,
+            source,
+            target,
         ],
         env={
             "PATH": os.getenv("PATH"),

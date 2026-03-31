@@ -111,11 +111,11 @@ def import_dump(
         f"docker compose exec wagtail uv run manage.py import_dump"
         f"{f' {file_name}' if file_name else ''}"
         f"{' --help' if show_help else ''}"
-        f"{f' -d {download_dir}' if download_dir else ''}"
-        f"{f' -b {bucket_path}' if bucket_path else ''}"
-        f"{f' -3 {s3_alias}' if s3_alias else ''}"
-        f"{f' -u {bucket_name}' if bucket_name else ''}"
-        f"{' -r' if no_restore_local_data else ''}",
+        f"{f' --download-dir {download_dir}' if download_dir else ''}"
+        f"{f' --bucket-path {bucket_path}' if bucket_path else ''}"
+        f"{f' --s3-alias {s3_alias}' if s3_alias else ''}"
+        f"{f' --bucket-name {bucket_name}' if bucket_name else ''}"
+        f"{' --no-restore-local-data' if no_restore_local_data else ''}",
         pty=True,
     )
 
@@ -143,12 +143,12 @@ def export_dump(
     c.run(
         f"docker compose exec wagtail uv run manage.py export_dump"
         f"{' --help' if show_help else ''}"
-        f"{f' -o {output_dir} ' if output_dir else ''}"
-        f"{f' -f {file_name}' if file_name else ''}"
-        f"{f' -b {bucket_path}' if bucket_path else ''}"
-        f"{f' -3 {s3_alias} ' if s3_alias else ''}"
-        f"{f' -u {bucket_name} ' if bucket_name else ''}"
-        f"{' -l' if local else ''}",
+        f"{f' --output-dir {output_dir} ' if output_dir else ''}"
+        f"{f' --file-name {file_name}' if file_name else ''}"
+        f"{f' --bucket-path {bucket_path}' if bucket_path else ''}"
+        f"{f' --s3-alias {s3_alias} ' if s3_alias else ''}"
+        f"{f' --bucket-name {bucket_name} ' if bucket_name else ''}"
+        f"{' --local' if local else ''}",
         pty=True,
     )
 
@@ -156,6 +156,7 @@ def export_dump(
 @task(
     help={
         "show_help": "Show help for the manage.py sync_assets command. (type --show-help or -s)",
+        "to_s3": "Sync FROM local TO s3. (type --to-s3 or -t)",
     },
 )
 def sync_assets(
@@ -167,21 +168,23 @@ def sync_assets(
     media_path=None,
     remove=False,
     overwrite=False,
+    to_s3=False,
 ):
     """
-    Sync static and media assets from S3 to local storage using manage.py sync_assets command.
+    Sync static and media assets between S3 and local storage using manage.py sync_assets command.
     To see all options and defaults of the manage.py sync_assets command, use the --show-help option:
     uv run invoke sync-assets --show-help
     """
     c.run(
         f"docker compose exec wagtail uv run manage.py sync_assets"
         f"{' --help' if show_help else ''} "
-        f"{f' -3 {s3_alias}' if s3_alias else ''}"
-        f"{f' -n {bucket_name}' if bucket_name else ''}"
-        f"{f' -u {bucket_path}' if bucket_path else ''}"
-        f"{f' -m {media_path}' if media_path else ''}"
-        f"{' -r' if remove else ''} "
-        f"{' -o' if overwrite else ''}",
+        f"{f' --s3-alias {s3_alias}' if s3_alias else ''}"
+        f"{f' --bucket-name {bucket_name}' if bucket_name else ''}"
+        f"{f' --bucket-path {bucket_path}' if bucket_path else ''}"
+        f"{f' --media-path {media_path}' if media_path else ''}"
+        f"{' --remove' if remove else ''} "
+        f"{' --overwrite' if overwrite else ''}"
+        f"{' --to-s3' if to_s3 else ''}",
         pty=True,
     )
 

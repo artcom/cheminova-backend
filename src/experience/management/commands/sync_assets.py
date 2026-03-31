@@ -51,7 +51,13 @@ class Command(BaseCommand):
             "-o",
             "--overwrite",
             action="store_true",
-            help="Overwrite local files with S3 files.",
+            help="Overwrite duplicate files.",
+        )
+        parser.add_argument(
+            "-t",
+            "--to-s3",
+            action="store_true",
+            help="Sync FROM local TO s3.",
         )
 
     def handle(self, *args, **options) -> None:
@@ -61,7 +67,16 @@ class Command(BaseCommand):
         s3_alias = options["s3_alias"]
         remove = options["remove"]
         overwrite = options["overwrite"]
+        to_s3 = options["to_s3"]
         try:
-            sync(media_path, bucket_name, bucket_path, s3_alias, remove, overwrite)
+            sync(
+                media_path,
+                bucket_name,
+                bucket_path,
+                s3_alias,
+                remove,
+                overwrite,
+                to_s3=to_s3,
+            )
         except Exception as e:
             raise CommandError(f"Error syncing assets: {e}")
