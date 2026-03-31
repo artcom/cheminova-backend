@@ -10,7 +10,7 @@ logging.basicConfig(
 
 
 class Command(BaseCommand):
-    help = "Syncs media assets from S3."
+    help = "Syncs media assets between local storage and S3."
 
     def add_arguments(self, parser: CommandParser) -> None:
         parser.add_argument(
@@ -45,7 +45,7 @@ class Command(BaseCommand):
             "-r",
             "--remove",
             action="store_true",
-            help="Remove local files not present in S3.",
+            help="Remove files not present in source.",
         )
         parser.add_argument(
             "-o",
@@ -57,7 +57,7 @@ class Command(BaseCommand):
             "-t",
             "--to-s3",
             action="store_true",
-            help="Sync FROM local TO s3.",
+            help="Sync FROM local TO S3.",
         )
 
     def handle(self, *args, **options) -> None:
