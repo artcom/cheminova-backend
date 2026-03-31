@@ -7,4 +7,4 @@ static
 .ruff_cache
 config/mc/config.json
 frontend/*
-!frontend/config.json.example
+cheminova-frontend-v*.tar.gz

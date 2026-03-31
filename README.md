@@ -66,7 +66,7 @@ Available tasks:
 Clone the repo:
 
 ```bash
-git clone ***REMOVED***
+git clone https://github.com/artcom/cheminova-backend.git
 cd cheminova-backend
 ```
 
@@ -127,6 +127,12 @@ cd cheminova-backend
   ```
 
 - Copy the frontend site to the `frontend` directory (optional)
+
+    ```bash
+    wget https://github.com/artcom/cheminova-frontend/releases/download/v1.0.7/cheminova-frontend-v1.0.7.tar.gz
+    rm -rf frontend/*
+    tar -xzf cheminova-frontend-v1.0.7.tar.gz -C frontend
+    ```
 
 - Wagtail runs at <http://localhost:8000/cms>
 - Frontend at <http://localhost:8080/>
