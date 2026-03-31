@@ -212,3 +212,21 @@ def randomize_timestamps(
         f"{f' -n {n_days}' if n_days else ''}",
         pty=True,
     )
+
+
+@task(
+    help={
+        "dry_run": "List files that would be removed without actually deleting them.",
+        "media_root": "Override the media root directory (default: /app/media).",
+    },
+)
+def clean_assets(c, dry_run=False, media_root=None):
+    """
+    Remove media files not referenced in the database using manage.py clean_assets command.
+    """
+    c.run(
+        f"docker compose exec wagtail uv run manage.py clean_assets"
+        f"{' --dry-run' if dry_run else ''}"
+        f"{f' --media-root {media_root}' if media_root else ''}",
+        pty=True,
+    )
