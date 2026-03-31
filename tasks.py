@@ -230,3 +230,19 @@ def clean_assets(c, dry_run=False, media_root=None):
         f"{f' --media-root {media_root}' if media_root else ''}",
         pty=True,
     )
+
+
+@task(
+    help={
+        "dry_run": "Show how many records would be deleted without actually deleting them."
+    }
+)
+def remove_edit_history(c, dry_run=False):
+    """
+    Remove all Wagtail edit history from the database using manage.py remove_edit_history command.
+    """
+    c.run(
+        f"docker compose exec wagtail uv run manage.py remove_edit_history"
+        f"{' --dry-run' if dry_run else ''}",
+        pty=True,
+    )

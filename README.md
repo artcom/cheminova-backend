@@ -48,12 +48,15 @@ Available tasks:
 
 - admin-user: Create or update an admin user.
 - bump: Bump version using uv version and create a git tag.
+- clean-assets: Remove media files not referenced in the database.
 - dev: Run the development server with docker compose.
 - export-dump: Dump database and export dump to S3.
 - format: Format code using ruff.
 - import-dump: Import dump from S3 and load it into the database.
 - init-site: Initialize the default Wagtail site with the given URL.
-- sync-assets: Sync static and media assets from S3 to local storage.
+- randomize-timestamps: Randomize image timestamps.
+- remove-edit-history: Remove all Wagtail edit history from the database.
+- sync-assets: Sync static and media assets between S3 and local storage.
 - test: Run tests using django test framework.
 
 ---
