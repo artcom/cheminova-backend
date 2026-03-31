@@ -46,7 +46,7 @@ class Command(BaseCommand):
             help="S3 bucket path for the database import. (default: db-dump)",
         )
         parser.add_argument(
-            "-s",
+            "-3",
             "--s3-alias",
             type=str,
             default="dev-cheminova",
