@@ -221,8 +221,8 @@ WAGTAIL_CONTENT_LANGUAGES = LANGUAGES = [
     ("fr", "French"),
     ("es", "Spanish"),
     ("it", "Italian"),
-    ("ua", "Ukrainian"),
-    ("gr", "Greek"),
+    ("uk", "Ukrainian"),
+    ("el", "Greek"),
 ]
 
 WAGTAILIMAGES_IMAGE_MODEL = "custom_images.CustomImage"
