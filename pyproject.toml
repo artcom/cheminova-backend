@@ -5,19 +5,19 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "boto3>=1.42.26",
+    "boto3>=1.43.21",
     "caseutil>=0.7.2",
-    "gunicorn>=23.0.0",
-    "psycopg2-binary>=2.9.11",
-    "wagtail>=7.2.1",
-    "wagtail-localize>=1.12.2",
+    "gunicorn>=26.0.0",
+    "psycopg2-binary>=2.9.12",
+    "wagtail==7.4.0",
+    "wagtail-localize==1.13.1",
 ]
 
 [dependency-groups]
 dev = [
  "django-cors-headers>=4.9.0",
- "invoke>=2.2.1",
- "ruff>=0.14.11",
+ "invoke>=3.0.3",
+ "ruff>=0.15.15",
 ]
 
 [tool.ruff]
