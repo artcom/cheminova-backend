@@ -103,7 +103,7 @@ cd cheminova-backend
 - Create a superuser
 
   ```bash
-  uv run invoke admin-user --password $ADMIN_PASSWORD
+  uv run invoke admin-user --password <ADMIN_PW>
   ```
 
 - Create a default site
@@ -117,7 +117,7 @@ cd cheminova-backend
   Get the latest dump filename from the S3 bucket.
 
   ```bash
-  uv run invoke import-dump --file-name $LATEST_DUMP_FILENAME
+  uv run invoke import-dump --file-name <CHEMINOVA_DUMP_FILE>
   ```
 
 - Sync media assets from S3 (optional)
