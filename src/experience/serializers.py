@@ -69,6 +69,15 @@ class ImageModelSerializer(serializers.ModelSerializer):
         fields = ["file"]
 
 
+def image_serializer_fields(serialized_model: models.Model) -> dict:
+    return {
+        field.name: ImageModelSerializer()
+        for field in serialized_model._meta.get_fields()
+        if isinstance(field, models.fields.related.ForeignKey)
+        and field.related_model == get_image_model()
+    }
+
+
 class CamelCaseMixin:
     def to_representation(self, *args, **kwargs):
         return to_camel_case_data(super().to_representation(*args, **kwargs))
@@ -81,6 +90,10 @@ class BrowsablePageModelSerializer(CamelCaseMixin, serializers.ModelSerializer):
     children = serializers.SerializerMethodField()
     locale = serializers.CharField(source="locale.language_code", read_only=True)
     selfUrl = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
+
+    def get_type(self, obj: models.Model) -> str:
+        return to_kebab(obj.__class__.__name__)
 
     def get_selfUrl(self, obj: models.Model) -> str:
         return f"{absolute_url(settings.API_BASE_URL + endpoint(obj) + f'/{obj.id}')}{query_params_string(self.context)}"
@@ -152,6 +165,7 @@ def create_model_cluster_serializer(related_model: models.Model):
             serializers.ModelSerializer,
         ),
         {
+            **image_serializer_fields(related_model),
             "Meta": Meta,
         },
     )
@@ -202,17 +216,15 @@ def create_model_serializer(model_name: str):
 
     serializer_model = getattr(experience_models, model_name)
     page_model_serializer_extra_fields = [
+        "id",
+        "type",
+        "slug",
+        "translation_key",
         "locale",
         "children",
         "selfUrl",
     ]
-    image_field_names = [
-        field.name
-        for field in serializer_model._meta.get_fields()
-        if isinstance(field, models.fields.related.ForeignKey)
-        and field.related_model == get_image_model()
-    ]
-    image_fields = {name: ImageModelSerializer() for name in image_field_names}
+    image_fields = image_serializer_fields(serializer_model)
     model_cluster_relations = [
         (
             relation.related_name,
