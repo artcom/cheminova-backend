@@ -1,0 +1,13 @@
+[profile local-cheminova]
+endpoint_url = http://s3:3900
+region = garage
+aws_access_key_id = GK00000000000000000000000000000000
+aws_secret_access_key = 0000000000000000000000000000000000000000000000000000000000000000
+s3 =
+    addressing_style = path
+
+[profile dev-cheminova]
+endpoint_url = https://fra1.digitaloceanspaces.com
+region = fra1
+aws_access_key_id = bucket_access_key
+aws_secret_access_key = bucket_secret_key

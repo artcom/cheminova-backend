@@ -5,6 +5,6 @@ media/
 static
 .s3cfg
 .ruff_cache
-config/mc/config.json
+config/aws/config
 frontend/*
 cheminova-frontend-v*.tar.gz
