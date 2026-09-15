@@ -1,13 +1,13 @@
 from django.db import models
 from modelcluster.fields import ParentalKey
-from wagtail.admin.panels import FieldPanel, InlinePanel
+from wagtail.admin.panels import FieldPanel, InlinePanel, PageChooserPanel
 from wagtail.fields import RichTextField
 from wagtail.images import get_image_model_string
 from wagtail.models import Orderable, Page, TranslatableMixin
 from wagtail.search.index import SearchField
 
 from .child_capacity import ChildCapacity, ChildCapacityMixin
-from .page_flow import ALLOWED_PARENTS, ALLOWED_SUBPAGES
+from .page_flow import ALLOWED_PARENTS, ALLOWED_SUBPAGES, FLOW_LINK_TARGET_TYPES
 
 __all__ = [
     "Characters",
@@ -26,6 +26,7 @@ __all__ = [
     "Collage",
     "LogbookRecord",
     "Timeline",
+    "FlowLink",
     "Ending",
     "Survey",
 ]
@@ -546,6 +547,35 @@ class Timeline(ChildCapacityMixin, Page):
     ]
     parent_page_types = ALLOWED_PARENTS["Timeline"]
     subpage_types = ALLOWED_SUBPAGES["Timeline"]
+
+
+class FlowLink(ChildCapacityMixin, Page):
+    """Continues the flow at an existing page instead of at a subtree of its own."""
+
+    target = models.ForeignKey(
+        "wagtailcore.Page",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    search_fields = Page.search_fields
+    content_panels = Page.content_panels + [
+        PageChooserPanel(
+            "target",
+            page_type=[f"experience.{name}" for name in FLOW_LINK_TARGET_TYPES],
+        ),
+    ]
+    api_fields = [
+        "title",
+        "target_translation_key",
+    ]
+    parent_page_types = ALLOWED_PARENTS["FlowLink"]
+    subpage_types = ALLOWED_SUBPAGES["FlowLink"]
+
+    @property
+    def target_translation_key(self):
+        return self.target.translation_key if self.target_id else None
 
 
 class Ending(ChildCapacityMixin, Page):
