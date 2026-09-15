@@ -27,7 +27,7 @@ RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-r
 
 COPY --from=ghcr.io/astral-sh/uv:0.9.24 /uv /uvx /usr/local/bin/
 
-ADD --chmod=755 https://dl.min.io/client/mc/release/linux-${ARCH}/mc /usr/local/bin/mc
+ADD --chmod=755 https://github.com/golithus/minio-builds/releases/download/mc-RELEASE.2025-08-13T08-35-41Z/mc-linux-${ARCH} /usr/local/bin/mc
 
 WORKDIR /app
 RUN useradd -m wagtail
