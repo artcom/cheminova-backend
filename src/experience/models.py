@@ -11,31 +11,23 @@ from .page_flow import ALLOWED_PARENTS, ALLOWED_SUBPAGES
 
 __all__ = [
     "Characters",
-
     "WelcomeLanguage",
     "WelcomeIntro",
     "Welcome",
     "WelcomeCharacter",
     "ChooseCharacter",
     "Introduction",
-
     "Photo",
-
     "Insight",
-
     "ChooseOption",
-
     "ExperienceIntro",
     "ExperienceGallery",
     "ExperienceCreate",
-
     "Collage",
-
     "LogbookRecord",
-
     "Timeline",
-
-    "Reflection",
+    "Ending",
+    "Survey",
 ]
 
 
@@ -556,8 +548,13 @@ class Timeline(ChildCapacityMixin, Page):
     subpage_types = ALLOWED_SUBPAGES["Timeline"]
 
 
-class Reflection(ChildCapacityMixin, Page):
-    reflection_text = RichTextField(null=True, blank=True)
+class Ending(ChildCapacityMixin, Page):
+    text = RichTextField(null=True, blank=True)
+    continue_button_text = models.CharField(
+        max_length=30,
+        blank=True,
+        null=True,
+    )
     return_to_monument_button_text = models.CharField(
         max_length=30,
         blank=True,
@@ -565,13 +562,47 @@ class Reflection(ChildCapacityMixin, Page):
     )
     search_fields = Page.search_fields
     content_panels = Page.content_panels + [
-        FieldPanel("reflection_text"),
+        FieldPanel("text"),
+        FieldPanel("continue_button_text"),
         FieldPanel("return_to_monument_button_text"),
     ]
     api_fields = [
         "title",
-        "reflection_text",
+        "text",
+        "continue_button_text",
         "return_to_monument_button_text",
     ]
-    parent_page_types = ALLOWED_PARENTS["Reflection"]
-    subpage_types = ALLOWED_SUBPAGES["Reflection"]
+    parent_page_types = ALLOWED_PARENTS["Ending"]
+    subpage_types = ALLOWED_SUBPAGES["Ending"]
+
+
+class Survey(ChildCapacityMixin, Page):
+    heading = models.CharField(max_length=255, blank=True, null=True)
+    description = RichTextField(null=True, blank=True)
+    survey_url = models.URLField(blank=True, null=True)
+    survey_button_text = models.CharField(max_length=30, blank=True, null=True)
+    return_to_monument_button_text = models.CharField(
+        max_length=30,
+        blank=True,
+        null=True,
+    )
+    search_fields = Page.search_fields + [
+        SearchField("heading"),
+    ]
+    content_panels = Page.content_panels + [
+        FieldPanel("heading"),
+        FieldPanel("description"),
+        FieldPanel("survey_url"),
+        FieldPanel("survey_button_text"),
+        FieldPanel("return_to_monument_button_text"),
+    ]
+    api_fields = [
+        "title",
+        "heading",
+        "description",
+        "survey_url",
+        "survey_button_text",
+        "return_to_monument_button_text",
+    ]
+    parent_page_types = ALLOWED_PARENTS["Survey"]
+    subpage_types = ALLOWED_SUBPAGES["Survey"]

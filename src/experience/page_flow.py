@@ -9,7 +9,7 @@ ROOT_PAGE_TYPES = ["Characters", "WelcomeLanguage"]
 
 OPTION_PAGE_TYPES = ["Photo", "Insight", "ExperienceIntro"]
 OPTION_OR_CHOICE_PAGE_TYPES = [*OPTION_PAGE_TYPES, "ChooseOption"]
-NEXT_OPTION_OR_END = [*OPTION_OR_CHOICE_PAGE_TYPES, "Reflection"]
+NEXT_OPTION_OR_END = [*OPTION_OR_CHOICE_PAGE_TYPES, "Ending"]
 
 ONBOARDING_FLOW = {
     "WelcomeLanguage": ["WelcomeIntro"],
@@ -36,7 +36,8 @@ PAGE_FLOW = {
     "Insight": NEXT_OPTION_OR_END,
     "ChooseOption": OPTION_PAGE_TYPES,
     **EXPERIENCE_OPTION_FLOW,
-    "Reflection": [],
+    "Ending": ["Survey"],
+    "Survey": [],
 }
 
 

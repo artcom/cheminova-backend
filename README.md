@@ -120,11 +120,17 @@ cd cheminova-backend
   uv run invoke import-dump --file-name <CHEMINOVA_DUMP_FILE>
   ```
 
+uv run invoke import-dump --s3-alias cheminova --file-name cheminova_20260915_102857.dump --bucket-name cheminova
+
+
+
 - Sync media assets from S3 (optional)
 
   ```bash
   uv run invoke sync-assets
   ```
+
+uv run invoke sync-assets --s3-alias cheminova --bucket-name cheminova
 
 - Copy the frontend site to the `frontend` directory (optional)
 
