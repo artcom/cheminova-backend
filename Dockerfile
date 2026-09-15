@@ -16,6 +16,7 @@ RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-r
     libwebp-dev \
     ffmpeg \
     curl \
+    unzip \
     ca-certificates \
     postgresql-common \
     && rm -rf /var/lib/apt/lists/*
@@ -27,7 +28,15 @@ RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-r
 
 COPY --from=ghcr.io/astral-sh/uv:0.9.24 /uv /uvx /usr/local/bin/
 
-ADD --chmod=755 https://github.com/golithus/minio-builds/releases/download/mc-RELEASE.2025-08-13T08-35-41Z/mc-linux-${ARCH} /usr/local/bin/mc
+RUN case "$ARCH" in \
+    amd64) AWS_ARCH=x86_64 ;; \
+    arm64) AWS_ARCH=aarch64 ;; \
+    *) echo "unsupported ARCH: $ARCH" >&2; exit 1 ;; \
+    esac \
+    && curl --fail --silent --show-error --location "https://awscli.amazonaws.com/awscli-exe-linux-${AWS_ARCH}.zip" -o /tmp/awscliv2.zip \
+    && unzip -q /tmp/awscliv2.zip -d /tmp \
+    && /tmp/aws/install \
+    && rm -rf /tmp/awscliv2.zip /tmp/aws
 
 WORKDIR /app
 RUN useradd -m wagtail
@@ -40,7 +49,7 @@ COPY --chown=wagtail:wagtail uv.lock .
 COPY --chown=wagtail:wagtail .python-version .
 
 RUN mkdir cheminova/static
-RUN mkdir /home/wagtail/.mc
+RUN mkdir /home/wagtail/.aws
 RUN uv sync --locked --compile-bytecode
 RUN uv run manage.py collectstatic --noinput --clear
 
