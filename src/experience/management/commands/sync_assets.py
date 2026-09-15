@@ -48,12 +48,6 @@ class Command(BaseCommand):
             help="Remove files not present in source.",
         )
         parser.add_argument(
-            "-o",
-            "--overwrite",
-            action="store_true",
-            help="Overwrite duplicate files.",
-        )
-        parser.add_argument(
             "-t",
             "--to-s3",
             action="store_true",
@@ -66,7 +60,6 @@ class Command(BaseCommand):
         bucket_path = options["bucket_path"]
         s3_alias = options["s3_alias"]
         remove = options["remove"]
-        overwrite = options["overwrite"]
         to_s3 = options["to_s3"]
         try:
             sync(
@@ -75,7 +68,6 @@ class Command(BaseCommand):
                 bucket_path,
                 s3_alias,
                 remove,
-                overwrite,
                 to_s3=to_s3,
             )
         except Exception as e:

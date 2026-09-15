@@ -167,7 +167,6 @@ def sync_assets(
     bucket_path=None,
     media_path=None,
     remove=False,
-    overwrite=False,
     to_s3=False,
 ):
     """
@@ -183,7 +182,6 @@ def sync_assets(
         f"{f' --bucket-path {bucket_path}' if bucket_path else ''}"
         f"{f' --media-path {media_path}' if media_path else ''}"
         f"{' --remove' if remove else ''} "
-        f"{' --overwrite' if overwrite else ''}"
         f"{' --to-s3' if to_s3 else ''}",
         pty=True,
     )
