@@ -78,17 +78,20 @@ cd cheminova-backend
   cp .env.example .env
   ```
 
-  and edit `.env` to set variables as needed. Set `ARCH` to match your host architecture (e.g. `amd64` or `arm64`) — it's used as a build arg to fetch the correct Minio client binary.
+  and edit `.env` to set variables as needed. Set `ARCH` to match your host architecture (e.g. `amd64` or `arm64`) — it's used as a build arg to fetch the correct AWS CLI binary.
 
-- Configure the Minio client
+- Configure the AWS CLI
 
   ```bash
-  cp config/mc/config.json.example config/mc/config.json
+  cp config/aws/config.example config/aws/config
   ```
 
-  and edit it to set access key and secret key for the different environments.
+  and edit it to set access key and secret key for the different environments. Each
+  profile replaces what used to be a Minio client alias, so `--s3-alias` keeps working.
+  The `local-cheminova` credentials must match `S3_ACCESS_KEY` and `S3_SECRET_KEY` in
+  `.env` — Garage creates that key on first start.
 
-- Bring up the full stack (Postgres, Wagtail, Nginx, Minio)
+- Bring up the full stack (Postgres, Wagtail, Nginx, Garage)
 
   ```bash
   uv run invoke dev
@@ -138,7 +141,12 @@ cd cheminova-backend
 - Frontend at <http://localhost:8080/>
 - Wagtail CMS admin at <http://localhost:8080/cms/admin/>
 - Backend API at <http://localhost:8080/cms/api/>
-- Minio web UI at <http://localhost:9001/>
+- The S3 API at <http://localhost:3900/>. Garage has no web console; browse buckets with
+  the AWS CLI, e.g.
+
+  ```bash
+  aws --profile local-cheminova --endpoint-url http://localhost:3900 s3 ls s3://local-cheminova/
+  ```
 
 ## Running Tests
 
