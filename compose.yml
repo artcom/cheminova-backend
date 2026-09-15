@@ -61,14 +61,14 @@ services:
       POSTGRES_HOST:
       SECRET_KEY:
       BASE_PATH: /cms/
-      MC_CONFIG_PATH: /home/wagtail/.mc/config.json
+      S3_CONFIG_PATH: /home/wagtail/.aws/config
       BUCKET_ALIAS: local-cheminova
       BUCKET_NAME: local-cheminova
       DB_DUMP_PATH: db-dump
       PRODUCTION_FRONTEND_URL:
     volumes:
-      - source: config/mc/config.json
-        target: /home/wagtail/.mc/config.json
+      - source: config/aws/config
+        target: /home/wagtail/.aws/config
         type: bind
       - source: wagtail-static
         target: /app/static
