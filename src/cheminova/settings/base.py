@@ -227,4 +227,11 @@ WAGTAIL_CONTENT_LANGUAGES = LANGUAGES = [
 
 WAGTAILIMAGES_IMAGE_MODEL = "custom_images.CustomImage"
 
+# How many levels of descendants the page explorer lists under the page being explored.
+# 1 is Wagtail's stock listing of direct children only; editors pick a level from the
+# "Tree view" dropdown in the listing header, which overrides this for their session.
+PAGE_EXPLORER_TREE_DEPTH = 3
+
+PAGE_EXPLORER_TREE_DEPTH_CHOICES = [1, 2, 3, 5, 10]
+
 API_BASE_URL = "/api"

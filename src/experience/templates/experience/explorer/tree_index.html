@@ -1,0 +1,16 @@
+{% extends "wagtailadmin/pages/explorable_index.html" %}
+{% load i18n %}
+
+{% block bulk_actions %}
+    {% if tree_mode %}
+        {% comment %}
+        "Select all pages in listing" resolves server-side to the explored page's direct children,
+        so in tree mode it would act on a different set than the one on screen. footer.html gates
+        that button on objects.has_other_pages, so passing an empty "objects" drops the button
+        while keeping the bulk action buttons the per-row checkboxes rely on.
+        {% endcomment %}
+        {% include 'wagtailadmin/bulk_actions/footer.html' with app_label='wagtailcore' model_name='page' objects='' %}
+    {% else %}
+        {{ block.super }}
+    {% endif %}
+{% endblock %}
