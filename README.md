@@ -78,7 +78,7 @@ cd cheminova-backend
   cp .env.example .env
   ```
 
-  and edit `.env` to set variables as needed. Set `ARCH` to match your host architecture (e.g. `amd64` or `arm64`) — it's used as a build arg to fetch the correct AWS CLI binary.
+  and edit `.env` to set variables as needed.
 
 - Configure the AWS CLI
 

@@ -42,7 +42,6 @@ services:
       dockerfile: Dockerfile
       args:
         DJANGO_SETTINGS_MODULE: "cheminova.settings.dev"
-        ARCH:
     develop:
       watch:
         - action: sync

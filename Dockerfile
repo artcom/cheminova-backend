@@ -12,7 +12,6 @@ FROM ghcr.io/astral-sh/uv:0.12.15 AS uv
 FROM debian:${DEBIAN_TAG} AS builder
 
 ARG DJANGO_SETTINGS_MODULE="cheminova.settings.production"
-ARG ARCH=""
 ARG TARGETARCH
 ARG UV_PYTHON_INSTALL_DIR
 
@@ -47,10 +46,10 @@ RUN /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
 
 # The AWS CLI bundles its own Python and CA bundle; at runtime it needs only
 # glibc and libz.
-RUN case "${ARCH:-$TARGETARCH}" in \
+RUN case "$TARGETARCH" in \
     amd64) AWS_ARCH=x86_64 ;; \
     arm64) AWS_ARCH=aarch64 ;; \
-    *) echo "unsupported ARCH: ${ARCH:-$TARGETARCH}" >&2; exit 1 ;; \
+    *) echo "unsupported TARGETARCH: $TARGETARCH" >&2; exit 1 ;; \
     esac \
     && curl --fail --silent --show-error --location "https://awscli.amazonaws.com/awscli-exe-linux-${AWS_ARCH}.zip" -o /tmp/awscliv2.zip \
     && unzip -q /tmp/awscliv2.zip -d /tmp \
