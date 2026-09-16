@@ -140,8 +140,8 @@ RUN install -d -o wagtail -g wagtail \
 
 USER wagtail
 
-HEALTHCHECK --interval=30s --timeout=30s --start-interval=5s --start-period=10s --retries=3 CMD ["/app/.venv/bin/python", "-c", "import urllib.request; urllib.request.urlopen(urllib.request.Request('http://localhost:8000/health', method='HEAD'))"]
+HEALTHCHECK --interval=30s --timeout=30s --start-interval=5s --start-period=10s --retries=3 CMD ["/app/.venv/bin/python", "-c", "import os, urllib.request; urllib.request.urlopen(urllib.request.Request(f\"http://localhost:{os.getenv('PORT', '8000')}/health\", method='HEAD'))"]
 
-CMD ["uv", "run", "gunicorn", "cheminova.wsgi:application"]
+CMD ["uv", "run", "gunicorn", "--config", "gunicorn.conf.py", "cheminova.wsgi:application"]
 
 EXPOSE 8000
