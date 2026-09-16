@@ -1,10 +1,13 @@
 from django.db import models
 from modelcluster.fields import ParentalKey
-from wagtail.admin.panels import FieldPanel, InlinePanel
+from wagtail.admin.panels import FieldPanel, InlinePanel, PageChooserPanel
 from wagtail.fields import RichTextField
 from wagtail.images import get_image_model_string
 from wagtail.models import Orderable, Page, TranslatableMixin
 from wagtail.search.index import SearchField
+
+from .child_capacity import ChildCapacity, ChildCapacityMixin
+from .page_flow import ALLOWED_PARENTS, ALLOWED_SUBPAGES, FLOW_LINK_TARGET_TYPES
 
 __all__ = [
     "Characters",
@@ -16,24 +19,27 @@ __all__ = [
     "Introduction",
     "Photo",
     "Insight",
+    "ChooseOption",
     "ExperienceIntro",
     "ExperienceGallery",
     "ExperienceCreate",
     "Collage",
     "LogbookRecord",
     "Timeline",
-    "Reflection",
+    "FlowLink",
+    "Ending",
+    "Survey",
 ]
 
 
-class Characters(Page):
+class Characters(ChildCapacityMixin, Page):
     search_fields = Page.search_fields
     content_panels = Page.content_panels + [
         InlinePanel("characters", label="Characters", min_num=3, max_num=3),
     ]
     api_fields = ["characters"]
-    parent_page_types = ["wagtailcore.Page"]
-    subpage_types = []
+    parent_page_types = ALLOWED_PARENTS["Characters"]
+    subpage_types = ALLOWED_SUBPAGES["Characters"]
     max_count = 1
 
 
@@ -68,15 +74,15 @@ class Character(Orderable):
     ]
 
 
-class WelcomeLanguage(Page):
+class WelcomeLanguage(ChildCapacityMixin, Page):
     choose_language_text = models.CharField(max_length=255, blank=True, null=True)
     content_panels = Page.content_panels + [
         FieldPanel("choose_language_text"),
         InlinePanel("languages", label="Languages", min_num=2, max_num=2),
     ]
     api_fields = ["title", "choose_language_text", "languages"]
-    parent_page_types = ["wagtailcore.Page"]
-    subpage_types = ["WelcomeIntro"]
+    parent_page_types = ALLOWED_PARENTS["WelcomeLanguage"]
+    subpage_types = ALLOWED_SUBPAGES["WelcomeLanguage"]
     max_count = 1
 
 
@@ -92,7 +98,7 @@ class Language(TranslatableMixin, Orderable):
     panels = [FieldPanel("language_id"), FieldPanel("language")]
 
 
-class WelcomeIntro(Page):
+class WelcomeIntro(ChildCapacityMixin, Page):
     description = models.CharField(max_length=255, blank=True, null=True)
     site_name = models.CharField(max_length=255, blank=True, null=True)
     intro_text = RichTextField(blank=True, null=True)
@@ -146,12 +152,12 @@ class WelcomeIntro(Page):
         "background_image_layer_2",
         "background_image_layer_3",
     ]
-    parent_page_types = ["WelcomeLanguage"]
-    subpage_types = ["Welcome"]
+    parent_page_types = ALLOWED_PARENTS["WelcomeIntro"]
+    subpage_types = ALLOWED_SUBPAGES["WelcomeIntro"]
     max_count = 1
 
 
-class Welcome(Page):
+class Welcome(ChildCapacityMixin, Page):
     description = models.CharField(max_length=255, blank=True, null=True)
     site_name = models.CharField(max_length=255, blank=True, null=True)
     intro_text = RichTextField(blank=True, null=True)
@@ -178,12 +184,12 @@ class Welcome(Page):
         "intro_text",
         "background_image",
     ]
-    parent_page_types = ["WelcomeIntro"]
-    subpage_types = ["WelcomeCharacter"]
+    parent_page_types = ALLOWED_PARENTS["Welcome"]
+    subpage_types = ALLOWED_SUBPAGES["Welcome"]
     max_count = 1
 
 
-class WelcomeCharacter(Page):
+class WelcomeCharacter(ChildCapacityMixin, Page):
     site_name = models.CharField(max_length=255, blank=True, null=True)
     onboarding = RichTextField(blank=True, null=True)
     background_image = models.ForeignKey(
@@ -205,12 +211,13 @@ class WelcomeCharacter(Page):
         "onboarding",
         "background_image",
     ]
-    parent_page_types = ["Welcome"]
-    subpage_types = ["ChooseCharacter"]
+    parent_page_types = ALLOWED_PARENTS["WelcomeCharacter"]
+    subpage_types = ALLOWED_SUBPAGES["WelcomeCharacter"]
+    child_capacity = ChildCapacity.MANY
     max_count = 1
 
 
-class ChooseCharacter(Page):
+class ChooseCharacter(ChildCapacityMixin, Page):
     character_type = models.CharField(max_length=255, blank=True, null=True)
     name = models.CharField(max_length=255, blank=True, null=True)
     description = RichTextField(blank=True, null=True)
@@ -254,8 +261,8 @@ class ChooseCharacter(Page):
         "character_image",
         "background_image",
     ]
-    parent_page_types = ["WelcomeCharacter"]
-    subpage_types = ["Introduction"]
+    parent_page_types = ALLOWED_PARENTS["ChooseCharacter"]
+    subpage_types = ALLOWED_SUBPAGES["ChooseCharacter"]
     max_count = 3
 
     class Meta:
@@ -267,7 +274,7 @@ class ChooseCharacter(Page):
         ]
 
 
-class Introduction(Page):
+class Introduction(ChildCapacityMixin, Page):
     heading = models.CharField(max_length=255, blank=True, null=True)
     description = RichTextField(null=True, blank=True)
     character_image = models.ForeignKey(
@@ -309,9 +316,8 @@ class Introduction(Page):
         "description",
         "image",
     ]
-    parent_page_types = ["ChooseCharacter"]
-    subpage_types = ["Photo"]
-    max_count_per_parent = 1
+    parent_page_types = ALLOWED_PARENTS["Introduction"]
+    subpage_types = ALLOWED_SUBPAGES["Introduction"]
 
     class Meta:
         permissions = [
@@ -322,7 +328,7 @@ class Introduction(Page):
         ]
 
 
-class Photo(Page):
+class Photo(ChildCapacityMixin, Page):
     heading = models.CharField(max_length=255, blank=True, null=True)
     continue_button_text = models.CharField(max_length=10, blank=True, null=True)
     search_fields = Page.search_fields
@@ -339,9 +345,8 @@ class Photo(Page):
         "continue_button_text",
         "image_descriptions",
     ]
-    parent_page_types = ["Introduction"]
-    subpage_types = ["Insight"]
-    max_count_per_parent = 1
+    parent_page_types = ALLOWED_PARENTS["Photo"]
+    subpage_types = ALLOWED_SUBPAGES["Photo"]
 
 
 class ImageDescription(TranslatableMixin, Orderable):
@@ -356,7 +361,7 @@ class ImageDescription(TranslatableMixin, Orderable):
     panels = [FieldPanel("short_description"), FieldPanel("description")]
 
 
-class Insight(Page):
+class Insight(ChildCapacityMixin, Page):
     heading = models.CharField(max_length=255, blank=True, null=True)
     description = RichTextField(null=True, blank=True)
     character_image = models.ForeignKey(
@@ -396,9 +401,8 @@ class Insight(Page):
         "top_image",
         "bottom_image",
     ]
-    parent_page_types = ["Photo"]
-    subpage_types = ["ExperienceIntro"]
-    max_count_per_parent = 1
+    parent_page_types = ALLOWED_PARENTS["Insight"]
+    subpage_types = ALLOWED_SUBPAGES["Insight"]
 
     class Meta:
         permissions = [
@@ -409,7 +413,52 @@ class Insight(Page):
         ]
 
 
-class ExperienceIntro(Page):
+class ChooseOption(ChildCapacityMixin, Page):
+    heading = models.CharField(max_length=255, blank=True, null=True)
+    description = RichTextField(null=True, blank=True)
+    search_fields = Page.search_fields + [
+        SearchField("heading"),
+    ]
+    content_panels = Page.content_panels + [
+        FieldPanel("heading"),
+        FieldPanel("description"),
+        InlinePanel("options", label="Options", min_num=3, max_num=3),
+    ]
+    api_fields = [
+        "title",
+        "heading",
+        "description",
+        "options",
+    ]
+    parent_page_types = ALLOWED_PARENTS["ChooseOption"]
+    subpage_types = ALLOWED_SUBPAGES["ChooseOption"]
+    child_capacity = ChildCapacity.ONE_PER_TYPE
+
+
+class Option(TranslatableMixin, Orderable):
+    page = ParentalKey(
+        ChooseOption,
+        on_delete=models.CASCADE,
+        related_name="options",
+    )
+    label = models.CharField(max_length=255, blank=True, null=True)
+    short_description = models.CharField(max_length=255, blank=True, null=True)
+    image = models.ForeignKey(
+        get_image_model_string(),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    api_fields = ["label", "short_description", "image"]
+    panels = [
+        FieldPanel("label"),
+        FieldPanel("short_description"),
+        FieldPanel("image"),
+    ]
+
+
+class ExperienceIntro(ChildCapacityMixin, Page):
     heading = models.CharField(max_length=255, blank=True, null=True)
     description = RichTextField(null=True, blank=True)
     image = models.ForeignKey(
@@ -431,12 +480,11 @@ class ExperienceIntro(Page):
         "description",
         "image",
     ]
-    parent_page_types = ["Insight"]
-    subpage_types = ["ExperienceGallery"]
-    max_count_per_parent = 1
+    parent_page_types = ALLOWED_PARENTS["ExperienceIntro"]
+    subpage_types = ALLOWED_SUBPAGES["ExperienceIntro"]
 
 
-class ExperienceGallery(Page):
+class ExperienceGallery(ChildCapacityMixin, Page):
     description = RichTextField(null=True, blank=True)
     search_fields = Page.search_fields
     content_panels = Page.content_panels + [
@@ -446,23 +494,21 @@ class ExperienceGallery(Page):
         "title",
         "description",
     ]
-    parent_page_types = ["ExperienceIntro"]
-    subpage_types = ["ExperienceCreate", "Collage", "LogbookRecord"]
-    max_count_per_parent = 1
+    parent_page_types = ALLOWED_PARENTS["ExperienceGallery"]
+    subpage_types = ALLOWED_SUBPAGES["ExperienceGallery"]
 
 
-class Collage(Page):
+class Collage(ChildCapacityMixin, Page):
     search_fields = Page.search_fields
     content_panels = Page.content_panels
     api_fields = [
         "title",
     ]
-    parent_page_types = ["ExperienceGallery"]
-    subpage_types = ["Reflection"]
-    max_count_per_parent = 1
+    parent_page_types = ALLOWED_PARENTS["Collage"]
+    subpage_types = ALLOWED_SUBPAGES["Collage"]
 
 
-class LogbookRecord(Page):
+class LogbookRecord(ChildCapacityMixin, Page):
     heading = models.CharField(max_length=255, blank=True, null=True)
     search_fields = Page.search_fields
     content_panels = Page.content_panels + [
@@ -472,12 +518,11 @@ class LogbookRecord(Page):
         "title",
         "heading",
     ]
-    parent_page_types = ["ExperienceGallery"]
-    subpage_types = ["ExperienceCreate"]
-    max_count_per_parent = 1
+    parent_page_types = ALLOWED_PARENTS["LogbookRecord"]
+    subpage_types = ALLOWED_SUBPAGES["LogbookRecord"]
 
 
-class ExperienceCreate(Page):
+class ExperienceCreate(ChildCapacityMixin, Page):
     heading = models.CharField(max_length=255, blank=True, null=True)
     add_text_prompt = models.CharField(max_length=255, blank=True, null=True)
     search_fields = Page.search_fields
@@ -490,24 +535,56 @@ class ExperienceCreate(Page):
         "heading",
         "add_text_prompt",
     ]
-    parent_page_types = ["ExperienceGallery", "LogbookRecord"]
-    subpage_types = ["Timeline", "Reflection"]
-    max_count_per_parent = 1
+    parent_page_types = ALLOWED_PARENTS["ExperienceCreate"]
+    subpage_types = ALLOWED_SUBPAGES["ExperienceCreate"]
 
 
-class Timeline(Page):
+class Timeline(ChildCapacityMixin, Page):
     search_fields = Page.search_fields
     content_panels = Page.content_panels
     api_fields = [
         "title",
     ]
-    parent_page_types = ["ExperienceCreate"]
-    subpage_types = ["Reflection"]
-    max_count_per_parent = 1
+    parent_page_types = ALLOWED_PARENTS["Timeline"]
+    subpage_types = ALLOWED_SUBPAGES["Timeline"]
 
 
-class Reflection(Page):
-    reflection_text = RichTextField(null=True, blank=True)
+class FlowLink(ChildCapacityMixin, Page):
+    """Continues the flow at an existing page instead of at a subtree of its own."""
+
+    target = models.ForeignKey(
+        "wagtailcore.Page",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    search_fields = Page.search_fields
+    content_panels = Page.content_panels + [
+        PageChooserPanel(
+            "target",
+            page_type=[f"experience.{name}" for name in FLOW_LINK_TARGET_TYPES],
+        ),
+    ]
+    api_fields = [
+        "title",
+        "target_translation_key",
+    ]
+    parent_page_types = ALLOWED_PARENTS["FlowLink"]
+    subpage_types = ALLOWED_SUBPAGES["FlowLink"]
+
+    @property
+    def target_translation_key(self):
+        return self.target.translation_key if self.target_id else None
+
+
+class Ending(ChildCapacityMixin, Page):
+    text = RichTextField(null=True, blank=True)
+    continue_button_text = models.CharField(
+        max_length=30,
+        blank=True,
+        null=True,
+    )
     return_to_monument_button_text = models.CharField(
         max_length=30,
         blank=True,
@@ -515,14 +592,47 @@ class Reflection(Page):
     )
     search_fields = Page.search_fields
     content_panels = Page.content_panels + [
-        FieldPanel("reflection_text"),
+        FieldPanel("text"),
+        FieldPanel("continue_button_text"),
         FieldPanel("return_to_monument_button_text"),
     ]
     api_fields = [
         "title",
-        "reflection_text",
+        "text",
+        "continue_button_text",
         "return_to_monument_button_text",
     ]
-    parent_page_types = ["ExperienceCreate", "Collage", "Timeline"]
-    subpage_types = []
-    max_count_per_parent = 1
+    parent_page_types = ALLOWED_PARENTS["Ending"]
+    subpage_types = ALLOWED_SUBPAGES["Ending"]
+
+
+class Survey(ChildCapacityMixin, Page):
+    heading = models.CharField(max_length=255, blank=True, null=True)
+    description = RichTextField(null=True, blank=True)
+    survey_url = models.URLField(blank=True, null=True)
+    survey_button_text = models.CharField(max_length=30, blank=True, null=True)
+    return_to_monument_button_text = models.CharField(
+        max_length=30,
+        blank=True,
+        null=True,
+    )
+    search_fields = Page.search_fields + [
+        SearchField("heading"),
+    ]
+    content_panels = Page.content_panels + [
+        FieldPanel("heading"),
+        FieldPanel("description"),
+        FieldPanel("survey_url"),
+        FieldPanel("survey_button_text"),
+        FieldPanel("return_to_monument_button_text"),
+    ]
+    api_fields = [
+        "title",
+        "heading",
+        "description",
+        "survey_url",
+        "survey_button_text",
+        "return_to_monument_button_text",
+    ]
+    parent_page_types = ALLOWED_PARENTS["Survey"]
+    subpage_types = ALLOWED_SUBPAGES["Survey"]
