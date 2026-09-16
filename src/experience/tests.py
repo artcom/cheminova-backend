@@ -1,6 +1,9 @@
 import json
+from unittest.mock import patch
 
+from django.contrib.auth import get_user_model
 from django.test import TestCase
+from django.urls import get_script_prefix, reverse
 from rest_framework.renderers import JSONRenderer
 from wagtail.models import Page
 
@@ -14,6 +17,7 @@ from .models import (
     Introduction,
     Photo,
 )
+from .page_tree_listing import TreeExplorableIndexView
 from .serializers import FlowLinkModelSerializer
 
 
@@ -110,3 +114,92 @@ class FlowLinkTests(TestCase):
         draft = Insight(title="Draft", live=False)
         self.ending.add_child(instance=draft)
         self.assertIsNone(describe_move_problem(draft, self.photo))
+
+
+class PageExplorerTreeTests(TestCase):
+    def setUp(self):
+        self.root = Page.objects.get(depth=2)
+        self.character = ChooseCharacter(title="Artist")
+        self.root.add_child(instance=self.character)
+        self.introduction = Introduction(title="Introduction")
+        self.character.add_child(instance=self.introduction)
+        self.choice = ChooseOption(title="Choice")
+        self.introduction.add_child(instance=self.choice)
+        self.photo = Photo(title="Photo")
+        self.choice.add_child(instance=self.photo)
+
+        self.editor = get_user_model().objects.create_superuser(
+            username="editor", email="editor@example.com", password="password"
+        )
+        self.client.force_login(self.editor)
+
+    def explore(self, page, **params):
+        # Deployments mount the CMS under a script prefix, which reverse() includes but the
+        # test client resolves without.
+        url = reverse("wagtailadmin_explore", args=[page.id]).removeprefix(
+            get_script_prefix().removesuffix("/")
+        )
+        return self.client.get(url, params)
+
+    def titles_listed(self, response):
+        return [page.title for page in response.context["object_list"]]
+
+    def test_children_only_depth_lists_direct_children_alone(self):
+        listed = self.titles_listed(self.explore(self.character, tree_depth=1))
+        self.assertEqual(listed, ["Introduction"])
+
+    def test_tree_depth_lists_descendants_down_to_that_depth(self):
+        listed = self.titles_listed(self.explore(self.character, tree_depth=3))
+        self.assertEqual(listed, ["Introduction", "Choice", "Photo"])
+
+    def test_descendants_are_listed_in_depth_first_order(self):
+        insight = Insight(title="Insight")
+        self.choice.add_child(instance=insight)
+        ending = Ending(title="Ending")
+        self.photo.add_child(instance=ending)
+        listed = self.titles_listed(self.explore(self.character, tree_depth=10))
+        self.assertEqual(
+            listed, ["Introduction", "Choice", "Photo", "Ending", "Insight"]
+        )
+
+    def test_rows_are_indented_by_distance_below_the_explored_page(self):
+        response = self.explore(self.character, tree_depth=3)
+        self.assertContains(response, "padding-inline-start: 1rem")
+        self.assertContains(response, "padding-inline-start: 2rem")
+
+    def test_chosen_depth_is_remembered_for_the_session(self):
+        self.explore(self.character, tree_depth=2)
+        listed = self.titles_listed(self.explore(self.character))
+        self.assertEqual(listed, ["Introduction", "Choice"])
+
+    def test_unknown_depth_falls_back_to_the_configured_default(self):
+        listed = self.titles_listed(self.explore(self.character, tree_depth="banana"))
+        self.assertEqual(listed, ["Introduction", "Choice", "Photo"])
+
+    def test_explicit_ordering_falls_back_to_the_flat_listing(self):
+        response = self.explore(self.character, tree_depth=3, ordering="title")
+        self.assertEqual(self.titles_listed(response), ["Introduction"])
+        self.assertNotContains(response, "padding-inline-start")
+
+    def test_searching_falls_back_to_the_flat_listing(self):
+        response = self.explore(self.character, tree_depth=3, q="Photo")
+        self.assertNotContains(response, "padding-inline-start")
+
+    def paginated_listing(self, page, **params):
+        """Force pagination so the "select all in listing" button has a reason to render."""
+        with patch.object(TreeExplorableIndexView, "paginate_by", 1):
+            return self.explore(page, **params)
+
+    def test_select_all_in_listing_is_withheld_in_tree_mode(self):
+        response = self.paginated_listing(self.character, tree_depth=3)
+        self.assertNotContains(response, "Select all pages in listing")
+        # The per-row checkboxes stay usable, so their action buttons must survive.
+        self.assertContains(response, "bulk-actions-buttons")
+
+    def test_select_all_in_listing_is_offered_in_the_flat_listing(self):
+        self.choice.add_child(instance=Insight(title="Insight"))
+        response = self.paginated_listing(self.choice, tree_depth=1)
+        self.assertContains(response, "Select all pages in listing")
+
+    def test_depth_dropdown_is_offered_in_the_listing_header(self):
+        self.assertContains(self.explore(self.character), "Tree view: 3 levels")
