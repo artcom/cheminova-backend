@@ -1,5 +1,5 @@
 {% extends "wagtailadmin/pages/explorable_index.html" %}
-{% load i18n static %}
+{% load i18n hashed_static %}
 
 {% block bulk_actions %}
     {% if tree_mode %}
@@ -17,10 +17,10 @@
 
 {% block extra_css %}
     {{ block.super }}
-    <link rel="stylesheet" href="{% static 'experience/css/page-tree.css' %}">
+    <link rel="stylesheet" href="{% hashed_static 'experience/css/page-tree.css' %}">
 {% endblock %}
 
 {% block extra_js %}
     {{ block.super }}
-    <script src="{% static 'experience/js/page-tree.js' %}"></script>
+    <script src="{% hashed_static 'experience/js/page-tree.js' %}"></script>
 {% endblock %}
