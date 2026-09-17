@@ -22,6 +22,12 @@ SESSION_KEY = "page_explorer_tree_depth"
 
 CHILDREN_ONLY = 1
 
+# Wagtail sizes admin icons through a containing class and has no global rule for them, so a
+# button that leaves "button button--icon" off renders its icon at the browser's default SVG
+# size. "button" also carries the height, padding and radius the -small/-secondary modifiers
+# only adjust.
+TOOLBAR_BUTTON_CLASSNAME = "button button-small button-secondary button--icon"
+
 
 def depth_choices():
     return getattr(settings, "PAGE_EXPLORER_TREE_DEPTH_CHOICES", [CHILDREN_ONLY])
@@ -210,14 +216,14 @@ class TreeExplorableIndexView(ExplorableIndexView):
         return [
             ToolbarButton(
                 "Expand all",
-                classname="button-secondary button-small",
+                classname=TOOLBAR_BUTTON_CLASSNAME,
                 icon_name="collapse-down",
                 attrs={"data-tree-expand-all": True},
                 priority=60,
             ),
             ToolbarButton(
                 "Collapse all",
-                classname="button-secondary button-small",
+                classname=TOOLBAR_BUTTON_CLASSNAME,
                 icon_name="expand-right",
                 attrs={"data-tree-collapse-all": True},
                 priority=70,

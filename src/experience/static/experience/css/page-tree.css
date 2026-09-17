@@ -42,3 +42,19 @@
     padding-top: 1rem;
     padding-bottom: 0.75rem;
 }
+
+.tree-toolbar .button--icon .icon {
+    margin-inline-end: 0.4em;
+}
+
+/* The dropdown brings its own font size and a 1rem icon, which next to the small buttons
+   reads as oversized; match their proportions instead. */
+.tree-toolbar .w-dropdown__toggle {
+    font-size: 0.76125rem;
+    height: 2em;
+}
+
+.tree-toolbar .w-dropdown__toggle-icon {
+    width: 1em;
+    height: 1em;
+}

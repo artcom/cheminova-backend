@@ -1,4 +1,5 @@
 import json
+import re
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
@@ -248,6 +249,17 @@ class PageExplorerTreeTests(TestCase):
     def test_depth_dropdown_is_withheld_while_searching(self):
         response = self.explore(self.character, tree_depth=3, q="Photo")
         self.assertNotContains(response, "Tree view:")
+
+    def test_toolbar_buttons_carry_the_classes_that_size_their_icons(self):
+        # Wagtail has no global icon size rule, so a button missing these renders its icon
+        # at the browser's default SVG size.
+        response = self.explore(self.character, tree_depth=3)
+        for markup in re.findall(
+            r"<button[^>]*data-tree-(?:expand|collapse)-all[^>]*>",
+            self.body_html(response),
+        ):
+            self.assertIn("button--icon", markup)
+            self.assertRegex(markup, r'class="[^"]*\bbutton\b')
 
     def test_tree_controls_no_longer_crowd_the_header(self):
         response = self.explore(self.character, tree_depth=3)
