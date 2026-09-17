@@ -1,5 +1,5 @@
 {% extends "wagtailadmin/pages/explorable_index.html" %}
-{% load i18n hashed_static %}
+{% load static %}
 
 {% block bulk_actions %}
     {% if tree_mode %}
@@ -15,12 +15,20 @@
     {% endif %}
 {% endblock %}
 
+{% comment %}
+The asset links sit in blocks of their own so a project can point them somewhere else -- at
+hashed URLs, or a bundled build -- by extending this template instead of forking it.
+{% endcomment %}
 {% block extra_css %}
     {{ block.super }}
-    <link rel="stylesheet" href="{% hashed_static 'wagtail_page_tree/css/page-tree.css' %}">
+    {% block tree_css %}
+        <link rel="stylesheet" href="{% static 'wagtail_page_tree/css/page-tree.css' %}">
+    {% endblock %}
 {% endblock %}
 
 {% block extra_js %}
     {{ block.super }}
-    <script src="{% hashed_static 'wagtail_page_tree/js/page-tree.js' %}"></script>
+    {% block tree_js %}
+        <script src="{% static 'wagtail_page_tree/js/page-tree.js' %}"></script>
+    {% endblock %}
 {% endblock %}
