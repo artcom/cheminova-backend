@@ -1,0 +1,9 @@
+{% load wagtailadmin_tags %}
+{% comment %}
+Wagtail's button template renders an anchor, but these buttons drive the collapse script
+rather than navigating anywhere, so they need to be real buttons.
+{% endcomment %}
+<button type="button" class="{{ button.classname }}" {{ button.base_attrs_string }}>
+    {% if button.icon_name %}{% icon name=button.icon_name %}{% endif %}
+    {{ button.label }}
+</button>

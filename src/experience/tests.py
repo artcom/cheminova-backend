@@ -201,5 +201,31 @@ class PageExplorerTreeTests(TestCase):
         response = self.paginated_listing(self.choice, tree_depth=1)
         self.assertContains(response, "Select all pages in listing")
 
+    def test_rows_carry_the_depth_and_identity_the_collapse_script_walks(self):
+        response = self.explore(self.character, tree_depth=3)
+        self.assertContains(response, f'data-tree-listing="{self.character.id}"')
+        self.assertContains(response, 'data-tree-depth="1"')
+        self.assertContains(response, 'data-tree-depth="3"')
+        self.assertContains(response, f'data-tree-page="{self.photo.id}"')
+
+    def test_only_pages_with_listed_children_get_a_collapse_toggle(self):
+        response = self.explore(self.character, tree_depth=3)
+        # Introduction and Choice each have a child on screen; Photo, the deepest row, does not.
+        self.assertEqual(response.content.decode().count("data-tree-toggle"), 2)
+
+    def test_pages_whose_children_fall_outside_the_depth_get_no_toggle(self):
+        response = self.explore(self.character, tree_depth=1)
+        self.assertNotContains(response, "data-tree-toggle")
+
+    def test_expand_and_collapse_all_buttons_are_offered_in_tree_mode(self):
+        response = self.explore(self.character, tree_depth=3)
+        self.assertContains(response, "data-tree-expand-all")
+        self.assertContains(response, "data-tree-collapse-all")
+
+    def test_expand_and_collapse_all_buttons_are_withheld_from_the_flat_listing(self):
+        response = self.explore(self.character, tree_depth=1)
+        self.assertNotContains(response, "data-tree-expand-all")
+        self.assertNotContains(response, "data-tree-collapse-all")
+
     def test_depth_dropdown_is_offered_in_the_listing_header(self):
         self.assertContains(self.explore(self.character), "Tree view: 3 levels")

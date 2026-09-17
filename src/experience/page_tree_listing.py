@@ -12,9 +12,10 @@ for an order that indentation would contradict.
 
 from django.conf import settings
 from django.utils.functional import cached_property
-from wagtail.admin.ui.tables.pages import PageTitleColumn
+from wagtail.admin.ui.tables.pages import PageTable, PageTitleColumn
 from wagtail.admin.views.pages.listing import ExplorableIndexView
-from wagtail.admin.widgets.button import Button, ButtonWithDropdown
+from wagtail.admin.widgets.button import Button, ButtonWithDropdown, HeaderButton
+from wagtail.models import Page
 from wagtail.permissions import page_permission_policy
 
 SESSION_KEY = "page_explorer_tree_depth"
@@ -39,10 +40,49 @@ def default_depth():
     return getattr(settings, "PAGE_EXPLORER_TREE_DEPTH", CHILDREN_ONLY)
 
 
+def expandable_page_ids(pages):
+    """Ids of listed pages that have at least one of their own children listed below them.
+
+    Only those rows get a collapse toggle: a page whose children fall outside the depth limit,
+    onto the next pagination page, or outside the user's permissions has nothing to collapse.
+    """
+    parent_paths = {page.path[: -Page.steplen] for page in pages}
+    return {page.id for page in pages if page.path in parent_paths}
+
+
 def describe_depth(depth):
     if depth == CHILDREN_ONLY:
         return "Tree view: off"
     return f"Tree view: {depth} levels"
+
+
+class HeaderActionButton(HeaderButton):
+    """A header button that drives the collapse script instead of navigating."""
+
+    template_name = "experience/explorer/_header_action_button.html"
+
+
+class TreePageTable(PageTable):
+    """Carries the row metadata the collapse script walks: depth, identity and expandability."""
+
+    def __init__(
+        self, *args, base_depth=None, expandable_page_ids=frozenset(), **kwargs
+    ):
+        super().__init__(*args, **kwargs)
+        self.base_depth = base_depth
+        self.expandable_page_ids = expandable_page_ids
+
+    def get_row_attrs(self, instance):
+        attrs = super().get_row_attrs(instance)
+        if self.base_depth is not None:
+            attrs["data-tree-depth"] = instance.depth - self.base_depth
+            attrs["data-tree-page"] = instance.id
+        return attrs
+
+    def get_context_data(self, parent_context):
+        context = super().get_context_data(parent_context)
+        context["expandable_page_ids"] = self.expandable_page_ids
+        return context
 
 
 class TreeDepthColumn(PageTitleColumn):
@@ -59,12 +99,16 @@ class TreeDepthColumn(PageTitleColumn):
         # PageTitleColumn reassigns parent_context's "parent_page" to the search-result parent,
         # so the explored parent's depth has to come from the column itself.
         context["indent_level"] = max(0, instance.depth - self.base_depth - 1)
+        context["is_expandable"] = instance.id in parent_context.get(
+            "expandable_page_ids", ()
+        )
         return context
 
 
 class TreeExplorableIndexView(ExplorableIndexView):
     # The bulk actions footer lives in the full page template, not the results partial.
     template_name = "experience/explorer/tree_index.html"
+    table_class = TreePageTable
 
     @cached_property
     def tree_depth(self):
@@ -130,6 +174,19 @@ class TreeExplorableIndexView(ExplorableIndexView):
             for column in columns
         ]
 
+    def get_table(self, object_list):
+        if not self.tree_mode:
+            return super().get_table(object_list)
+        rows = list(object_list)
+        return self.table_class(
+            self.explorable_columns,
+            rows,
+            base_depth=self.parent_page.depth,
+            expandable_page_ids=expandable_page_ids(rows),
+            attrs={"data-tree-listing": self.parent_page.id},
+            **self.get_table_kwargs(),
+        )
+
     @cached_property
     def depth_button(self):
         return ButtonWithDropdown(
@@ -147,8 +204,29 @@ class TreeExplorableIndexView(ExplorableIndexView):
         )
 
     @cached_property
+    def collapse_buttons(self):
+        if not self.tree_mode:
+            return []
+        return [
+            HeaderActionButton(
+                "Expand all",
+                classname="button-secondary",
+                icon_name="collapse-down",
+                attrs={"data-tree-expand-all": True},
+                priority=60,
+            ),
+            HeaderActionButton(
+                "Collapse all",
+                classname="button-secondary",
+                icon_name="expand-right",
+                attrs={"data-tree-collapse-all": True},
+                priority=70,
+            ),
+        ]
+
+    @cached_property
     def header_buttons(self):
-        return [*super().header_buttons, self.depth_button]
+        return [*super().header_buttons, self.depth_button, *self.collapse_buttons]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

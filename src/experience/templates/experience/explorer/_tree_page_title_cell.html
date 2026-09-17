@@ -1,9 +1,19 @@
-{% load l10n wagtailadmin_tags %}
+{% load i18n l10n wagtailadmin_tags %}
 {% comment %}
-Wagtail's page title cell, indented by the row's distance below the explored parent. The indent
-is an inline style because this project has no admin asset pipeline to add a stylesheet to.
+Wagtail's page title cell, indented by the row's distance below the explored parent and prefixed
+with a collapse toggle. The indent is an inline style because this project has no admin asset
+pipeline to generate utility classes with.
 {% endcomment %}
 <td {% if column.classname %}class="{{ column.classname }}"{% endif %} {% if indent_level %}style="padding-inline-start: {{ indent_level }}rem"{% endif %} data-listing-page-title>
+    {% if is_expandable %}
+        <button type="button" class="tree-toggle" data-tree-toggle aria-expanded="true"
+                aria-label="{% blocktrans trimmed with title=instance.get_admin_display_title %}Collapse the pages below '{{ title }}'{% endblocktrans %}">
+            {% icon name="collapse-down" classname="tree-toggle__expanded" %}
+            {% icon name="expand-right" classname="tree-toggle__collapsed" %}
+        </button>
+    {% else %}
+        <span class="tree-toggle tree-toggle--placeholder" aria-hidden="true"></span>
+    {% endif %}
     {% include "wagtailadmin/pages/listing/_page_title_explore.html" with page=instance show_locale_labels=show_locale_labels actions_next_url=actions_next_url %}
     {% if parent_page %}
         <div>
