@@ -1,8 +1,9 @@
 from django.apps import AppConfig
 
 
-class ExperienceConfig(AppConfig):
-    name = "experience"
+class WagtailPageTreeConfig(AppConfig):
+    name = "wagtail_page_tree"
+    verbose_name = "Wagtail page tree"
 
     def ready(self):
         """Point Wagtail's built-in page viewset at the tree explorer.
@@ -14,6 +15,6 @@ class ExperienceConfig(AppConfig):
         """
         from wagtail.admin.viewsets.pages import base_page_viewset
 
-        from .page_tree_listing import TreeExplorableIndexView
+        from .listing import TreeExplorableIndexView
 
         base_page_viewset.index_view_class = TreeExplorableIndexView

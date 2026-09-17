@@ -24,6 +24,9 @@ BASE_DIR = os.path.dirname(PROJECT_DIR)
 # Application definition
 
 INSTALLED_APPS = [
+    # Ahead of this project's own apps: its AppConfig.ready() replaces Wagtail's page
+    # listing view, so anything meaning to build on that has to run after it.
+    "wagtail_page_tree",
     "custom_images",
     "experience",
     "image_auth",
@@ -227,9 +230,9 @@ WAGTAIL_CONTENT_LANGUAGES = LANGUAGES = [
 
 WAGTAILIMAGES_IMAGE_MODEL = "custom_images.CustomImage"
 
-# How many levels of descendants the page explorer lists under the page being explored.
-# 1 is Wagtail's stock listing of direct children only; editors pick a level from the
-# "Tree view" dropdown in the listing header, which overrides this for their session.
+# How many levels of descendants the page explorer lists under the page being explored,
+# and the levels the "Tree view" dropdown above the listing offers; 1 is Wagtail's stock
+# listing of direct children only. See src/wagtail_page_tree/README.md.
 PAGE_EXPLORER_TREE_DEPTH = 3
 
 PAGE_EXPLORER_TREE_DEPTH_CHOICES = [1, 2, 3, 5, 10]

@@ -1,9 +1,9 @@
 """A page explorer that lists descendants as an indented tree.
 
-Wagtail's explorer lists direct children only, so following this project's narrative flow
-costs one page load per level and never shows the shape of a branch. Wagtail offers no hook
-for listing columns, so the indentation needs its own view; ``apps.ExperienceConfig`` points
-the built-in page viewset at it.
+Wagtail's explorer lists direct children only, so following a branch costs one page load
+per level and never shows its shape. Wagtail offers no hook for listing columns, so the
+indentation needs its own view; ``apps.WagtailPageTreeConfig`` points the built-in page
+viewset at it.
 
 Tree mode steps aside whenever the listing means something other than "this subtree":
 searching and filtering already return whole-tree results, and an explicit column sort asks
@@ -56,7 +56,7 @@ def describe_depth(depth):
 class ToolbarButton(BaseButton):
     """A listing toolbar button that drives the collapse script instead of navigating."""
 
-    template_name = "experience/explorer/_toolbar_button.html"
+    template_name = "wagtail_page_tree/explorer/_toolbar_button.html"
 
 
 class TreePageTable(PageTable):
@@ -85,7 +85,7 @@ class TreePageTable(PageTable):
 class TreeDepthColumn(PageTitleColumn):
     """The title column, indented by how far the page sits below the explored parent."""
 
-    cell_template_name = "experience/explorer/_tree_page_title_cell.html"
+    cell_template_name = "wagtail_page_tree/explorer/_tree_page_title_cell.html"
 
     def __init__(self, *args, base_depth, **kwargs):
         super().__init__(*args, **kwargs)
@@ -105,8 +105,8 @@ class TreeDepthColumn(PageTitleColumn):
 class TreeExplorableIndexView(ExplorableIndexView):
     # The bulk actions footer lives in the full page template, not the results partial;
     # the depth picker and collapse controls live in the results partial, above the table.
-    template_name = "experience/explorer/tree_index.html"
-    results_template_name = "experience/explorer/tree_index_results.html"
+    template_name = "wagtail_page_tree/explorer/tree_index.html"
+    results_template_name = "wagtail_page_tree/explorer/tree_index_results.html"
     table_class = TreePageTable
 
     @cached_property
