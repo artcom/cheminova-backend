@@ -12,6 +12,7 @@ for an order that indentation would contradict.
 
 from django.conf import settings
 from django.utils.functional import cached_property
+from django.utils.translation import gettext
 from wagtail.admin.ui.tables.pages import PageTable, PageTitleColumn
 from wagtail.admin.views.pages.listing import ExplorableIndexView
 from wagtail.admin.widgets.button import BaseButton, Button, ButtonWithDropdown
@@ -49,8 +50,8 @@ def expandable_page_ids(pages):
 
 def describe_depth(depth):
     if depth == CHILDREN_ONLY:
-        return "Tree view: off"
-    return f"Tree view: {depth} levels"
+        return gettext("Tree view: off")
+    return gettext("Tree view: %(depth)d levels") % {"depth": depth}
 
 
 class ToolbarButton(BaseButton):
@@ -215,14 +216,14 @@ class TreeExplorableIndexView(ExplorableIndexView):
             return []
         return [
             ToolbarButton(
-                "Expand all",
+                gettext("Expand all"),
                 classname=TOOLBAR_BUTTON_CLASSNAME,
                 icon_name="collapse-down",
                 attrs={"data-tree-expand-all": True},
                 priority=60,
             ),
             ToolbarButton(
-                "Collapse all",
+                gettext("Collapse all"),
                 classname=TOOLBAR_BUTTON_CLASSNAME,
                 icon_name="expand-right",
                 attrs={"data-tree-collapse-all": True},
