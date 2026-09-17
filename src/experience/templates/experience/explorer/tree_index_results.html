@@ -1,0 +1,16 @@
+{% extends "wagtailadmin/pages/explorable_index_results.html" %}
+{% load wagtailadmin_tags %}
+{% comment %}
+The depth picker and collapse controls live here, in the results partial above the table,
+rather than in the page header: they act on this listing specifically, and the header is
+already carrying the add-page and breadcrumb controls.
+{% endcomment %}
+
+{% block before_results %}
+    {% if tree_toolbar_buttons %}
+        <div class="nice-padding tree-toolbar">
+            {% for button in tree_toolbar_buttons %}{% component button %}{% endfor %}
+        </div>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}

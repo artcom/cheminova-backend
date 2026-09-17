@@ -14,22 +14,13 @@ from django.conf import settings
 from django.utils.functional import cached_property
 from wagtail.admin.ui.tables.pages import PageTable, PageTitleColumn
 from wagtail.admin.views.pages.listing import ExplorableIndexView
-from wagtail.admin.widgets.button import Button, ButtonWithDropdown, HeaderButton
+from wagtail.admin.widgets.button import BaseButton, Button, ButtonWithDropdown
 from wagtail.models import Page
 from wagtail.permissions import page_permission_policy
 
 SESSION_KEY = "page_explorer_tree_depth"
 
 CHILDREN_ONLY = 1
-
-# Copied from the dropdown Wagtail builds in WagtailAdminTemplateMixin.get_header_buttons, so
-# the depth menu stays anchored to its toggle when the breadcrumbs expand.
-DROPDOWN_ATTRS = {
-    "data-action": (
-        "w-breadcrumbs:opened@document->w-dropdown#hide "
-        "w-breadcrumbs:closed@document->w-dropdown#hide"
-    )
-}
 
 
 def depth_choices():
@@ -56,10 +47,10 @@ def describe_depth(depth):
     return f"Tree view: {depth} levels"
 
 
-class HeaderActionButton(HeaderButton):
-    """A header button that drives the collapse script instead of navigating."""
+class ToolbarButton(BaseButton):
+    """A listing toolbar button that drives the collapse script instead of navigating."""
 
-    template_name = "experience/explorer/_header_action_button.html"
+    template_name = "experience/explorer/_toolbar_button.html"
 
 
 class TreePageTable(PageTable):
@@ -106,8 +97,10 @@ class TreeDepthColumn(PageTitleColumn):
 
 
 class TreeExplorableIndexView(ExplorableIndexView):
-    # The bulk actions footer lives in the full page template, not the results partial.
+    # The bulk actions footer lives in the full page template, not the results partial;
+    # the depth picker and collapse controls live in the results partial, above the table.
     template_name = "experience/explorer/tree_index.html"
+    results_template_name = "experience/explorer/tree_index_results.html"
     table_class = TreePageTable
 
     @cached_property
@@ -124,13 +117,21 @@ class TreeExplorableIndexView(ExplorableIndexView):
         return default_depth()
 
     @cached_property
-    def tree_mode(self):
+    def tree_navigable(self):
+        """Whether the listing is showing this page's own subtree at all.
+
+        Search and filter results range over the whole tree, and an explicit column sort asks
+        for an order indentation would contradict, so the depth picker has nothing to apply to.
+        """
         return (
-            self.tree_depth > CHILDREN_ONLY
-            and not self.is_searching
+            not self.is_searching
             and not self.is_filtering
             and not self.is_explicitly_ordered
         )
+
+    @cached_property
+    def tree_mode(self):
+        return self.tree_navigable and self.tree_depth > CHILDREN_ONLY
 
     def get_ordering(self):
         if self.tree_mode:
@@ -198,8 +199,7 @@ class TreeExplorableIndexView(ExplorableIndexView):
                 for index, choice in enumerate(depth_choices())
             ],
             icon_name="list-ul",
-            classname="w-h-slim-header",
-            attrs=DROPDOWN_ATTRS,
+            classname="button-small",
             priority=50,
         )
 
@@ -208,16 +208,16 @@ class TreeExplorableIndexView(ExplorableIndexView):
         if not self.tree_mode:
             return []
         return [
-            HeaderActionButton(
+            ToolbarButton(
                 "Expand all",
-                classname="button-secondary",
+                classname="button-secondary button-small",
                 icon_name="collapse-down",
                 attrs={"data-tree-expand-all": True},
                 priority=60,
             ),
-            HeaderActionButton(
+            ToolbarButton(
                 "Collapse all",
-                classname="button-secondary",
+                classname="button-secondary button-small",
                 icon_name="expand-right",
                 attrs={"data-tree-collapse-all": True},
                 priority=70,
@@ -225,10 +225,15 @@ class TreeExplorableIndexView(ExplorableIndexView):
         ]
 
     @cached_property
-    def header_buttons(self):
-        return [*super().header_buttons, self.depth_button, *self.collapse_buttons]
+    def tree_toolbar_buttons(self):
+        # The depth picker stays available whenever it would do something; the collapse
+        # controls only once there is more than one level on screen to collapse.
+        if not self.tree_navigable:
+            return []
+        return [self.depth_button, *self.collapse_buttons]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["tree_mode"] = self.tree_mode
+        context["tree_toolbar_buttons"] = self.tree_toolbar_buttons
         return context

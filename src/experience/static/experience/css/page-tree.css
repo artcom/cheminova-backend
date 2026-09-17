@@ -32,3 +32,13 @@
 .listing tr[data-tree-hidden] {
     display: none;
 }
+
+/* The depth picker and expand/collapse-all controls, above the tree listing. */
+
+.tree-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-top: 1rem;
+    padding-bottom: 0.75rem;
+}

@@ -217,15 +217,41 @@ class PageExplorerTreeTests(TestCase):
         response = self.explore(self.character, tree_depth=1)
         self.assertNotContains(response, "data-tree-toggle")
 
+    def header_html(self, response):
+        html = response.content.decode()
+        start = html.index('id="w-slim-header-buttons"')
+        return html[start : html.index("</nav>", start)]
+
+    def body_html(self, response):
+        html = response.content.decode()
+        return html[html.index('id="listing-results"') :]
+
     def test_expand_and_collapse_all_buttons_are_offered_in_tree_mode(self):
         response = self.explore(self.character, tree_depth=3)
-        self.assertContains(response, "data-tree-expand-all")
-        self.assertContains(response, "data-tree-collapse-all")
+        self.assertIn("data-tree-expand-all", self.body_html(response))
+        self.assertIn("data-tree-collapse-all", self.body_html(response))
 
     def test_expand_and_collapse_all_buttons_are_withheld_from_the_flat_listing(self):
         response = self.explore(self.character, tree_depth=1)
         self.assertNotContains(response, "data-tree-expand-all")
         self.assertNotContains(response, "data-tree-collapse-all")
 
-    def test_depth_dropdown_is_offered_in_the_listing_header(self):
-        self.assertContains(self.explore(self.character), "Tree view: 3 levels")
+    def test_depth_dropdown_is_offered_in_the_listing_body(self):
+        response = self.explore(self.character, tree_depth=3)
+        self.assertIn("Tree view: 3 levels", self.body_html(response))
+
+    def test_depth_dropdown_stays_available_in_the_flat_listing(self):
+        # Otherwise there would be no way back into tree mode once it is switched off.
+        response = self.explore(self.character, tree_depth=1)
+        self.assertIn("Tree view: off", self.body_html(response))
+
+    def test_depth_dropdown_is_withheld_while_searching(self):
+        response = self.explore(self.character, tree_depth=3, q="Photo")
+        self.assertNotContains(response, "Tree view:")
+
+    def test_tree_controls_no_longer_crowd_the_header(self):
+        response = self.explore(self.character, tree_depth=3)
+        header = self.header_html(response)
+        self.assertNotIn("Tree view:", header)
+        self.assertNotIn("data-tree-expand-all", header)
+        self.assertNotIn("data-tree-collapse-all", header)
