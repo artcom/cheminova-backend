@@ -128,6 +128,7 @@ COPY --chown=wagtail:wagtail ./src .
 COPY --chown=wagtail:wagtail pyproject.toml .
 COPY --chown=wagtail:wagtail uv.lock .
 COPY --chown=wagtail:wagtail .python-version .
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 # /app must be writable by wagtail for `docker compose watch`; media/* seeds the
 # wagtail-media volume on first creation.
@@ -141,6 +142,8 @@ RUN install -d -o wagtail -g wagtail \
 USER wagtail
 
 HEALTHCHECK --interval=30s --timeout=30s --start-interval=5s --start-period=10s --retries=3 CMD ["/app/.venv/bin/python", "-c", "import os, urllib.request; urllib.request.urlopen(urllib.request.Request(f\"http://localhost:{os.getenv('PORT', '8000')}/health\", method='HEAD'))"]
+
+ENTRYPOINT ["docker-entrypoint.sh"]
 
 CMD ["uv", "run", "gunicorn", "--config", "gunicorn.conf.py", "cheminova.wsgi:application"]
 
